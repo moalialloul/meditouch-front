@@ -28,6 +28,7 @@ import face4 from "../assets/images/face-4.jpg";
 import face5 from "../assets/images/face-5.jpeg";
 import face6 from "../assets/images/face-6.jpeg";
 import pencil from "../assets/images/pencil.svg";
+import Main from "../components/layout/Main";
 
 const { Title } = Typography;
 
@@ -579,7 +580,7 @@ function Tables() {
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
 
   return (
-    <>
+    <Main>
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs="24" xl={24}>
@@ -643,7 +644,7 @@ function Tables() {
           </Col>
         </Row>
       </div>
-    </>
+    </Main>
   );
 }
 

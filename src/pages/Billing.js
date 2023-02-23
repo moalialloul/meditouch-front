@@ -13,6 +13,7 @@ import { PlusOutlined, ExclamationOutlined } from "@ant-design/icons";
 import mastercard from "../assets/images/mastercard-logo.png";
 import paypal from "../assets/images/paypal-logo-2.png";
 import visa from "../assets/images/visa-logo.png";
+import Main from "../components/layout/Main";
 
 function Billing() {
   const data = [
@@ -307,7 +308,7 @@ function Billing() {
   ];
 
   return (
-    <>
+    <Main>
       <Row gutter={[24, 0]}>
         <Col xs={24} md={16}>
           <Row gutter={[24, 0]}>
@@ -540,7 +541,7 @@ function Billing() {
           </Card>
         </Col>
       </Row>
-    </>
+    </Main>
   );
 }
 

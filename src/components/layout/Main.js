@@ -1,13 +1,21 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useDispatch, useSelector } from "react-redux";
+import { EncryptStorage } from "encrypt-storage";
 
 const { Header: AntHeader, Content, Sider } = Layout;
 
 function Main({ children }) {
+  const navigate = useNavigate();
+  const userData = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const encryptStorage1 = new EncryptStorage("secret-key", {
+    prefix: "@instance1",
+  });
   const [visible, setVisible] = useState(false);
   const [placement, setPlacement] = useState("right");
   const [sidenavColor, setSidenavColor] = useState("#1890ff");
@@ -29,6 +37,29 @@ function Main({ children }) {
       setPlacement("right");
     }
   }, [pathname]);
+  useEffect(() => {
+    let user = encryptStorage1.getItem("meditouch_user");
+    if (user) {
+      if (userData.userInfo === null) {
+        dispatch({
+          type: "SET_USER_INFO",
+          userInfo: encryptStorage1.getItem("meditouch_user").userInfo,
+        });
+      }
+
+      if (user.businessAccountInfo) {
+        if (userData.businessAccountInfo === null) {
+          dispatch({
+            type: "SET_BUSINESS_ACCOUNT_INFO",
+            businessAccountInfo:
+              encryptStorage1.getItem("meditouch_user").businessAccountInfo,
+          });
+        }
+      }
+    } else {
+      navigate("/sign-in");
+    }
+  }, []);
 
   return (
     <Layout
@@ -70,7 +101,7 @@ function Main({ children }) {
         breakpoint="lg"
         collapsedWidth="0"
         onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
+          // console.log(collapsed, type);
         }}
         trigger={null}
         width={250}

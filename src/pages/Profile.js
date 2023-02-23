@@ -31,6 +31,7 @@ import convesionImg5 from "../assets/images/face-2.jpg";
 import project1 from "../assets/images/home-decor-1.jpeg";
 import project2 from "../assets/images/home-decor-2.jpeg";
 import project3 from "../assets/images/home-decor-3.jpeg";
+import Main from "../components/layout/Main";
 
 function Profile() {
   const [imageURL, setImageURL] = useState(false);
@@ -147,7 +148,7 @@ function Profile() {
   ];
 
   return (
-    <>
+    <Main>
       <div
         className="profile-nav-bg"
         style={{ backgroundImage: "url(" + BgProfile + ")" }}
@@ -357,7 +358,7 @@ function Profile() {
           </Col>
         </Row>
       </Card>
-    </>
+    </Main>
   );
 }
 

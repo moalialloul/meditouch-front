@@ -2,7 +2,7 @@ const eChart = {
   series: [
     {
       name: "Sales",
-      data: [450, 200, 100, 220, 500, 100, 400, 230, 500],
+      data: [],
       color: "#fff",
     },
   ],
@@ -38,17 +38,7 @@ const eChart = {
       strokeDashArray: 2,
     },
     xaxis: {
-      categories: [
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-      ],
+      categories: ["Mon", "Tue", "Wed", "Thurs", "Fri", "Sat", "Sun"],
       labels: {
         show: true,
         align: "right",
@@ -96,7 +86,7 @@ const eChart = {
     tooltip: {
       y: {
         formatter: function (val) {
-          return "$ " + val + " thousands";
+          return  val + " appointments";
         },
       },
     },

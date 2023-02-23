@@ -1,10 +1,14 @@
 import ReactApexChart from "react-apexcharts";
 import { Row, Col, Typography } from "antd";
 import eChart from "./configs/eChart";
+import { useEffect, useRef, useState } from "react";
+import { businessAccountController } from "../../controllers/businessAccountController";
+import { useSelector } from "react-redux";
+import { util } from "../../public/util";
 
 function EChart() {
   const { Title, Paragraph } = Typography;
-
+  const chartRef = useRef();
   const items = [
     {
       Title: "3,6K",
@@ -23,33 +27,96 @@ function EChart() {
       user: "Items",
     },
   ];
+  const userData = useSelector((state) => state);
+  const eChartOptions = eChart.options;
+  const [eChartData, setEChartData] = useState({
+    Approved: 0,
+    Cancelled: 0,
+    NotCancelled: 0,
+    NotApproved: 0,
+  });
 
+  const [eChartSeries, setEChartSeries] = useState(eChart.series);
+  useEffect(() => {
+    if (userData.businessAccountInfo) {
+      let daysOfWeekDates = util.getDaysOfWeekDates();
+      let firstDayDate = "";
+      let lastDayDate = "";
+      let keys = Object.keys(daysOfWeekDates);
+      firstDayDate = daysOfWeekDates[keys[0]];
+      lastDayDate = daysOfWeekDates[keys[keys.length - 1]];
+
+      businessAccountController
+        .getBusinessAccountAppointmentsStatistics({
+          businessAccountId: userData.businessAccountInfo.businessAccountId,
+          fromDate: firstDayDate,
+          toDate: lastDayDate,
+        })
+        .then((res) => {
+          let results = res.data.results;
+          let tempEChartData = { ...eChartData };
+          for (let i = 0; i < results.length; i++) {
+            tempEChartData.Approved =
+              tempEChartData.Approved + results[i].numAppointmentsApproved;
+            tempEChartData.NotApproved =
+              tempEChartData.NotApproved +
+              results[i].numAppointmentsNotApproved;
+            tempEChartData.Cancelled =
+              tempEChartData.Cancelled + results[i].numAppointmentsCancelled;
+            tempEChartData.NotCancelled =
+              tempEChartData.NotCancelled +
+              results[i].numAppointmentsNotCancelled;
+          }
+          setEChartData(tempEChartData);
+          let tempSeries = {
+            series: [
+              {
+                name: "Appointments",
+                data: [],
+                color: "#fff",
+              },
+            ],
+          };
+          for (let i = 0; i < 7; i++) {
+            let dateRecordsIndex = results.findIndex(
+              (d) => d.appointmentDate === daysOfWeekDates[keys[i]]
+            );
+            tempSeries.series[0].data.push(
+              dateRecordsIndex >= 0
+                ? results[dateRecordsIndex].numAppointments
+                : 0
+            );
+          }
+          setEChartSeries(tempSeries.series);
+        });
+    }
+  }, [userData.businessAccountInfo]);
   return (
     <>
       <div id="chart">
         <ReactApexChart
+          ref={chartRef}
           className="bar-chart"
-          options={eChart.options}
-          series={eChart.series}
+          options={eChartOptions}
+          series={eChartSeries}
           type="bar"
           height={220}
         />
       </div>
       <div className="chart-vistior">
-        <Title level={5}>Active Users</Title>
+        <Title level={5}>This Week Appointments</Title>
         <Paragraph className="lastweek">
-          than last week <span className="bnb2">+30%</span>
+          {/* than last week <span className="bnb2">+30%</span> */}
         </Paragraph>
         <Paragraph className="lastweek">
-          We have created multiple options for you to put together and customise
-          into pixel perfect pages.
+          General statistics of your this week appointments till now
         </Paragraph>
         <Row gutter>
-          {items.map((v, index) => (
+          {Object.keys(eChartData).map((key, index) => (
             <Col xs={6} xl={6} sm={6} md={6} key={index}>
               <div className="chart-visitor-count">
-                <Title level={4}>{v.Title}</Title>
-                <span>{v.user}</span>
+                <Title level={4}>{key}</Title>
+                <span>{eChartData[key]}</span>
               </div>
             </Col>
           ))}
