@@ -129,9 +129,9 @@ const addAppointmentResult = ({ body }) => {
     data: body,
   });
 };
-const getAppointments = ({ id, userType, pageNumber, recordsByPage }) => {
+const getAppointments = ({ id, userType, pageNumber, recordsByPage, body }) => {
   return axios({
-    method: "GET",
+    method: "POST",
     url:
       url +
       "getAppointments/" +
@@ -141,7 +141,8 @@ const getAppointments = ({ id, userType, pageNumber, recordsByPage }) => {
       "/" +
       pageNumber +
       "/" +
-      recordsByPage,
+      recordsByPage ,
+    data: body,
   });
 };
 const deleteReferrals = ({ body }) => {

@@ -79,7 +79,6 @@ export default function Dashboard() {
     totalBlockedUsers: 0,
     totalPatients: 0,
     totalAppointments: 0,
-
   });
   const { Title, Text } = Typography;
 
@@ -106,6 +105,9 @@ export default function Dashboard() {
                 : userData.businessAccountInfo.businessAccountId,
             pageNumber: 1,
             recordsByPage: 4,
+            body: {
+              isAll: true,
+            },
           })
           .then((response) => {
             setAppointmentsData(response.data);
@@ -114,7 +116,6 @@ export default function Dashboard() {
     } else {
     }
   }, [userData.businessAccountInfo, userData.userInfo]);
-
 
   const list = [
     {

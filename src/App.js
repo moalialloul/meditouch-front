@@ -1,4 +1,3 @@
-import Tables from "./pages/Tables";
 import Billing from "./pages/Billing";
 import Rtl from "./pages/Rtl";
 import Profile from "./pages/Profile";
@@ -11,6 +10,7 @@ import { Route, Routes, HashRouter } from "react-router-dom";
 import Main from "./components/layout/Main";
 import { createHashHistory } from "history";
 import Dashboard from "./pages/Dashboard";
+import Appointments from "./pages/Appointments";
 
 function App() {
   return (
@@ -18,8 +18,9 @@ function App() {
       <Routes>
         <Route exact path="/sign-up" element={<SignUp />} />
         <Route exact path="/sign-in" element={<SignIn />} />
+        <Route exact path="/" element={<SignIn />} />
 
-        <Route exact path="/tables" element={<Tables />} />
+        <Route exact path="/appointments" element={<Appointments />} />
         <Route exact path="/billing" element={<Billing />} />
         <Route exact path="/rtl" element={<Rtl />} />
         <Route exact path="/profile" element={<Profile />} />

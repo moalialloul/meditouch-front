@@ -1,0 +1,24 @@
+.appointments-wrapper{
+   padding: 40px;
+}
+.appointment-card{
+   background-color: #fff;
+   border-radius: 10px;
+   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+   margin-top: 20px;
+   padding-bottom: 10px;
+
+}
+.appointment-profile{
+  
+   width: 70px;
+   height: 70px;
+}
+.appointment-profile img{
+   border-radius: 50%;
+   
+}
+.appointment-datetime svg{
+   width: 20px;
+   height: 20px;
+}

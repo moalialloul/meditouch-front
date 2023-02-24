@@ -2361,11 +2361,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 .ant-row-flex-middle {
   align-items: center;
 }
-.d-flex {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
+
 .payment-method-card.ant-card {
   box-shadow: none;
   word-spacing: 10px;
