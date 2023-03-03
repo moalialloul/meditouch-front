@@ -127,30 +127,14 @@ function Sidenav({ color }) {
     </svg>,
   ];
 
-  const signup = [
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      key={0}
-    >
-      <path
-        d="M0,2A2,2,0,0,1,2,0H8a2,2,0,0,1,2,2V8a2,2,0,0,1-2,2H2A2,2,0,0,1,0,8Z"
-        transform="translate(4 4)"
-        fill={color}
-      />
-      <path
-        d="M2,0A2,2,0,0,0,0,2V8a2,2,0,0,0,2,2V4A2,2,0,0,1,4,2h6A2,2,0,0,0,8,0Z"
-        fill={color}
-      />
-    </svg>,
-  ];
+ 
 
   return (
     <>
       <div className="brand">
-        <img src={logo} alt="" />
+        <NavLink to="/">
+          <img src={logo} alt="" />
+        </NavLink>
         <span>MediTouch Dashboard</span>
       </div>
       <hr />
@@ -208,9 +192,9 @@ function Sidenav({ color }) {
           </NavLink>
         </Menu.Item>
         <Menu.Item className="menu-item-header" key="5">
-          Account Pages
+          Account Settings
         </Menu.Item>
-        <Menu.Item key="6">
+        <Menu.Item key="5">
           <NavLink to="/profile">
             <span
               className="icon"
@@ -223,16 +207,10 @@ function Sidenav({ color }) {
             <span className="label">Profile</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="7">
-          <NavLink to="/sign-in">
+        <Menu.Item key="6">
+          <NavLink to="/schedule">
             <span className="icon">{signin}</span>
-            <span className="label">Sign In</span>
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="8">
-          <NavLink to="/sign-up">
-            <span className="icon">{signup}</span>
-            <span className="label">Sign Up</span>
+            <span className="label">Schedule</span>
           </NavLink>
         </Menu.Item>
       </Menu>

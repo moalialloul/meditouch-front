@@ -2,14 +2,11 @@ import {
   Row,
   Col,
   Card,
-  Radio,
-  Table,
-  Upload,
-  message,
-  Progress,
+
   Button,
-  Avatar,
-  Typography,
+ 
+  Select,
+  Tag,
 } from "antd";
 
 import "../assets/styles/appointments.css";
@@ -22,9 +19,7 @@ import { useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
 import Calendar from "../icons/calendar";
 import Dollor from "../icons/dollor";
-import moment from "moment";
 
-const { Title } = Typography;
 
 function Appointments() {
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
@@ -33,20 +28,21 @@ function Appointments() {
   const userData = useSelector((state) => state);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [filters, setFilters] = useState({
-    isApproved: false,
-    isCancelled: false,
-    appointmentStatus: null,
-    isUpcoming: false,
-    isAll: true,
-    withFilters: false,
+    appointmentStatus: "",
+    appointmentType: "ALL",
+    isCancelled: -1,
   });
   function acceptAppointment(i) {
     let newData = [...upcomingAppointments];
     userController
       .updateAppointment({
         body: {
-          appointmentActualStartTime: newData[i].appointmentActualStartTime,
-          appointmentActualEndTime: newData[i].appointmentActualEndTime,
+          appointmentActualStartTime: new Date(
+            newData[i].appointmentActualStartTime
+          ),
+          appointmentActualEndTime: new Date(
+            newData[i].appointmentActualEndTime
+          ),
           appointmentStatus: "ACCEPTED",
           isApproved: 1,
           isCancelled: 0,
@@ -54,7 +50,6 @@ function Appointments() {
         },
       })
       .then(() => {
-        debugger;
 
         newData[i].appointmentStatus = "ACCEPTED";
         newData[i].isApproved = 1;
@@ -85,14 +80,6 @@ function Appointments() {
   useEffect(() => {
     if (userData.businessAccountInfo) {
       if (userData.userInfo) {
-        let jsonFilter = {};
-        if (filters.isAll) {
-          jsonFilter.isAll = true;
-        } else {
-          jsonFilter.isAll = false;
-
-          jsonFilter.isUpcoming = filters.isUpcoming;
-        }
         setLoading(true);
         businessAccountController
           .getAppointments({
@@ -103,7 +90,7 @@ function Appointments() {
                 : userData.businessAccountInfo.businessAccountId,
             pageNumber: pageNumber,
             recordsByPage: 2,
-            body: jsonFilter,
+            body: filters,
           })
           .then((response) => {
             let appointmentsData = response.data.appointments;
@@ -117,25 +104,159 @@ function Appointments() {
       }
     }
   }, [userData.businessAccountInfo, userData.userInfo, pageNumber, filters]);
-  const onChange = (e) => {
-    let val = e.target.value;
-    let tempFilter = { ...filters };
-    if (val === "upcoming") {
-      tempFilter.isAll = false;
-      tempFilter.isUpcoming = true;
+  const [options, setOptions] = useState([
+    { id: 2, value: "Upcoming" },
+    { id: 3, value: "History" },
+    { id: 4, value: "Accepted" },
+    { id: 5, value: "Pending" },
+    { id: 6, value: "Rejected" },
+    { id: 7, value: "Cancelled" },
+    { id: 8, value: "Not Cancelled" },
+  ]);
+
+  const tagRender = (props) => {
+    const { label, closable, onClose } = props;
+
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    return (
+      <Tag
+        color={"black"}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{ marginRight: 3 }}
+      >
+        {label}
+      </Tag>
+    );
+  };
+  function onChangeFilters(e) {
+    let array = e;
+    let tempOptions = [...options];
+
+    let indexOfCancelled = array.findIndex((u) => u === "Cancelled");
+    let indexOfNotCancelled = array.findIndex((u) => u === "Not Cancelled");
+    if (array[array.length - 1] === "All") {
+      let index = tempOptions.findIndex((u) => u.value === "Upcoming");
+      tempOptions.splice(index, 1);
+      index = tempOptions.findIndex((u) => u.value === "History");
+      tempOptions.splice(index, 1);
+    } else if (array[array.length - 1] === "Upcoming") {
+      let index = tempOptions.findIndex((u) => u.value === "History");
+      tempOptions.splice(index, 1);
+    } else if (array[array.length - 1] === "History") {
+      let index = tempOptions.findIndex((u) => u.value === "Upcoming");
+      tempOptions.splice(index, 1);
+    } else {
+      if (tempOptions.findIndex((u) => u.value === "Upcoming") < 0) {
+        tempOptions.push({
+          id: 2,
+          value: "Upcoming",
+        });
+      }
+      if (tempOptions.findIndex((u) => u.value === "History") < 0) {
+        tempOptions.push({
+          id: 3,
+          value: "History",
+        });
+      }
     }
-    if (val === "history") {
-      tempFilter.isAll = false;
-      tempFilter.isUpcoming = false;
+
+    if (array[array.length - 1] === "Accepted") {
+      let index = tempOptions.findIndex((u) => u.value === "Rejected");
+      tempOptions.splice(index, 1);
+      index = tempOptions.findIndex((u) => u.value === "Pending");
+      tempOptions.splice(index, 1);
+    } else if (array[array.length - 1] === "Rejected") {
+      let index = tempOptions.findIndex((u) => u.value === "Accepted");
+      tempOptions.splice(index, 1);
+      index = tempOptions.findIndex((u) => u.value === "Pending");
+      tempOptions.splice(index, 1);
+    } else if (array[array.length - 1] === "Pending") {
+      let index = tempOptions.findIndex((u) => u.value === "Accepted");
+      tempOptions.splice(index, 1);
+      index = tempOptions.findIndex((u) => u.value === "Rejected");
+      tempOptions.splice(index, 1);
+    } else {
+      if (tempOptions.findIndex((u) => u.value === "Accepted") < 0) {
+        tempOptions.push({
+          id: 4,
+          value: "Accepted",
+        });
+      }
+      if (tempOptions.findIndex((u) => u.value === "Pending") < 0) {
+        tempOptions.push({
+          id: 5,
+          value: "Pending",
+        });
+      }
+      if (tempOptions.findIndex((u) => u.value === "Rejected") < 0) {
+        tempOptions.push({
+          id: 6,
+          value: "Rejected",
+        });
+      }
     }
-    if (val === "all") {
-      tempFilter.isAll = true;
-      tempFilter.isUpcoming = false;
+    if (indexOfCancelled >= 0) {
+      let index = tempOptions.findIndex((u) => u.value === "Not Cancelled");
+      tempOptions.splice(index, 1);
+    } else {
+      let index = tempOptions.findIndex((u) => u.value === "Cancelled");
+      if (index < 0) {
+        tempOptions.push({
+          id: 7,
+          value: "Cancelled",
+        });
+      }
+    }
+    if (indexOfNotCancelled >= 0) {
+      let index = tempOptions.findIndex((u) => u.value === "Cancelled");
+      tempOptions.splice(index, 1);
+    } else {
+      let index = tempOptions.findIndex((u) => u.value === "Not Cancelled");
+      if (index < 0 && indexOfCancelled < 0) {
+        tempOptions.push({
+          id: 8,
+          value: "Not Cancelled",
+        });
+      }
+    }
+    tempOptions.sort(function (a, b) {
+      return parseInt(a.id) - parseInt(b.id);
+    });
+    let tempFilters = {
+      appointmentStatus: "",
+      appointmentType: "ALL",
+      isCancelled: -1,
+    };
+    if (array.findIndex((u) => u === "All") >= 0) {
+      tempFilters.appointmentType = "ALL";
+    } else if (array.findIndex((u) => u === "Upcoming") >= 0) {
+      tempFilters.appointmentType = "UPCOMING";
+    } else if (array.findIndex((u) => u === "History") >= 0) {
+      tempFilters.appointmentType = "HISTORY";
+    }
+
+    if (array.findIndex((u) => u === "Accepted") >= 0) {
+      tempFilters.appointmentStatus = "ACCEPTED";
+    } else if (array.findIndex((u) => u === "Rejected") >= 0) {
+      tempFilters.appointmentStatus = "REJECTED";
+    } else if (array.findIndex((u) => u === "Pending") >= 0) {
+      tempFilters.appointmentStatus = "PENDING";
+    }
+    if (array.findIndex((u) => u === "Cancelled") >= 0) {
+      tempFilters.isCancelled = 1;
+    } else if (array.findIndex((u) => u === "Not Cancelled") >= 0) {
+      tempFilters.isCancelled = 0;
     }
     setUpcomingAppointments([]);
     setPageNumber(1);
-    setFilters(tempFilter);
-  };
+    setFilters(tempFilters);
+    setOptions(tempOptions);
+  }
   return (
     <Main>
       <div className="tabled">
@@ -146,13 +267,15 @@ function Appointments() {
               className="criclebox tablespace mb-24"
               title="All Appointments"
               extra={
-                <>
-                  <Radio.Group onChange={onChange} defaultValue="a">
-                    <Radio.Button value="all">All</Radio.Button>
-                    <Radio.Button value="upcoming">Upcoming</Radio.Button>
-                    <Radio.Button value="history">History</Radio.Button>
-                  </Radio.Group>
-                </>
+                <Select
+                  mode="multiple"
+                  placeholder="Select filter"
+                  onChange={onChangeFilters}
+                  showArrow
+                  tagRender={tagRender}
+                  style={{ width: "200px" }}
+                  options={options}
+                />
               }
             >
               <div className="appointments-wrapper row d-flex flex-wrap justify-content-between">
@@ -219,46 +342,49 @@ function Appointments() {
                     </div>
                   </div>
                 ))}
+                {!loading && upcomingAppointments.length === 0 && (
+                  <div
+                    style={{
+                      textAlign: "center",
+
+                      lineHeight: "32px",
+                    }}
+                  >
+                    <Button>no data</Button>
+                  </div>
+                )}
+                {loading && (
+                  <div
+                    className="mt-3"
+                    style={{
+                      textAlign: "center",
+
+                      lineHeight: "32px",
+                    }}
+                  >
+                    <Button
+                      loading={loading}
+                      onClick={() => setPageNumber(pageNumber + 1)}
+                    >
+                      loading
+                    </Button>
+                  </div>
+                )}
+                {totalNumberOfPages > pageNumber && !loading && (
+                  <div
+                    className="mt-3"
+                    style={{
+                      textAlign: "center",
+
+                      lineHeight: "32px",
+                    }}
+                  >
+                    <Button onClick={() => setPageNumber(pageNumber + 1)}>
+                      Load More
+                    </Button>
+                  </div>
+                )}
               </div>
-              {!loading && upcomingAppointments.length === 0 && (
-                <div
-                  style={{
-                    textAlign: "center",
-
-                    lineHeight: "32px",
-                  }}
-                >
-                  <Button onClick={() => setPageNumber(pageNumber + 1)}>
-                    no data
-                  </Button>
-                </div>
-              )}
-              {loading && (
-                <div
-                  style={{
-                    textAlign: "center",
-
-                    lineHeight: "32px",
-                  }}
-                >
-                  <Button onClick={() => setPageNumber(pageNumber + 1)}>
-                    loading
-                  </Button>
-                </div>
-              )}
-              {totalNumberOfPages > pageNumber && !loading && (
-                <div
-                  style={{
-                    textAlign: "center",
-
-                    lineHeight: "32px",
-                  }}
-                >
-                  <Button onClick={() => setPageNumber(pageNumber + 1)}>
-                    Load More
-                  </Button>
-                </div>
-              )}
             </Card>
           </Col>
         </Row>

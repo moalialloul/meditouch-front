@@ -1,5 +1,6 @@
 .appointments-wrapper{
-   padding: 40px;
+   padding: 20px;
+   min-height: 200px;
 }
 .appointment-card{
    background-color: #fff;

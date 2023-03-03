@@ -1,5 +1,5 @@
-import React, { Component, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
+import React, {  useEffect, useState } from "react";
+import {  useNavigate,  Link } from "react-router-dom";
 import {
   Layout,
   Menu,
@@ -22,9 +22,7 @@ import { userController } from "../controllers/userController";
 import { useDispatch } from "react-redux";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { EncryptStorage } from "encrypt-storage";
-function onChange(checked) {
-  console.log(`switch to ${checked}`);
-}
+
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
 const template = [

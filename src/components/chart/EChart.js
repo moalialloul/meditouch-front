@@ -9,24 +9,7 @@ import { util } from "../../public/util";
 function EChart() {
   const { Title, Paragraph } = Typography;
   const chartRef = useRef();
-  const items = [
-    {
-      Title: "3,6K",
-      user: "Users",
-    },
-    {
-      Title: "2m",
-      user: "Clicks",
-    },
-    {
-      Title: "$772",
-      user: "Sales",
-    },
-    {
-      Title: "82",
-      user: "Items",
-    },
-  ];
+ 
   const userData = useSelector((state) => state);
   const eChartOptions = eChart.options;
   const [eChartData, setEChartData] = useState({
