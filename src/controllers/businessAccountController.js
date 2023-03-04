@@ -145,6 +145,12 @@ const getAppointments = ({ id, userType, pageNumber, recordsByPage, body }) => {
     data: body,
   });
 };
+const getTodaysAppointments = ({ businessAccountId }) => {
+  return axios({
+    method: "GET",
+    url: url + "getTodayAppointments/" + businessAccountId,
+  });
+};
 const deleteReferrals = ({ body }) => {
   return axios({
     method: "DELETE",
@@ -190,6 +196,7 @@ const getBusinessAccountAppointmentsStatistics = ({
   });
 };
 export const businessAccountController = {
+  getTodaysAppointments,
   globalSearch,
   setSchedule,
   deleteSchedule,

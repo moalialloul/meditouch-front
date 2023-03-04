@@ -194,7 +194,7 @@ function Sidenav({ color }) {
         <Menu.Item className="menu-item-header" key="5">
           Account Settings
         </Menu.Item>
-        <Menu.Item key="5">
+        <Menu.Item key="6">
           <NavLink to="/profile">
             <span
               className="icon"
@@ -207,12 +207,30 @@ function Sidenav({ color }) {
             <span className="label">Profile</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="6">
+        <Menu.Item key="7">
           <NavLink to="/schedule">
             <span className="icon">{signin}</span>
             <span className="label">Schedule</span>
           </NavLink>
         </Menu.Item>
+
+        <Menu.Item className="menu-item-header" key="8">
+          Live Settings
+        </Menu.Item>
+        <Menu.Item key="9">
+          <NavLink to="/live-clinic">
+            <span
+              className="icon"
+              style={{
+                background: page === "live-clinic" ? color : "",
+              }}
+            >
+              {profile}
+            </span>
+            <span className="label">Live Clinic</span>
+          </NavLink>
+        </Menu.Item>
+
       </Menu>
       <div className="aside-footer">
         <div

@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
 import Landing from "./pages/Landing";
 import Schedule from "./pages/Schedule";
+import LiveClinic from "./pages/LiveClinic";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/dashboard" element={<Dashboard />} />
         <Route exact path="/schedule" element={<Schedule />} />
+        <Route exact path="/live-clinic" element={<LiveClinic />} />
 
       </Routes>
     </HashRouter>
