@@ -4,7 +4,9 @@ import "../assets/styles/animate.css";
 import "../assets/styles/landing.css";
 import { EncryptStorage } from "encrypt-storage";
 
+
 export default function Landing() {
+  
   const encryptStorage1 = new EncryptStorage("secret-key", {
     prefix: "@instance1",
   });

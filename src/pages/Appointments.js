@@ -1,13 +1,4 @@
-import {
-  Row,
-  Col,
-  Card,
-
-  Button,
- 
-  Select,
-  Tag,
-} from "antd";
+import { Row, Col, Card, Button, Select, Tag } from "antd";
 
 import "../assets/styles/appointments.css";
 
@@ -19,7 +10,6 @@ import { useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
 import Calendar from "../icons/calendar";
 import Dollor from "../icons/dollor";
-
 
 function Appointments() {
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
@@ -50,7 +40,6 @@ function Appointments() {
         },
       })
       .then(() => {
-
         newData[i].appointmentStatus = "ACCEPTED";
         newData[i].isApproved = 1;
         newData[i].isCancelled = 0;
@@ -311,34 +300,36 @@ function Appointments() {
                           {ap.servicePrice + "" + ap.currencyUnit}
                         </div>
                       </div>
-                      <div className="mt-3">
-                        {ap.appointmentStatus === "PENDING" ? (
-                          <div className="d-flex  w-100 justify-content-between">
-                            <Button
-                              type="primary"
-                              className="w-50"
-                              onClick={() => acceptAppointment(index)}
-                            >
-                              Accept
+                      {userData.userInfo?.userRole !== "PATIENT" && (
+                        <div className="mt-3">
+                          {ap.appointmentStatus === "PENDING" ? (
+                            <div className="d-flex  w-100 justify-content-between">
+                              <Button
+                                type="primary"
+                                className="w-50"
+                                onClick={() => acceptAppointment(index)}
+                              >
+                                Accept
+                              </Button>
+                              <Button
+                                className="w-50 mx-2"
+                                danger
+                                onClick={() => rejectAppointment(index)}
+                              >
+                                Reject
+                              </Button>
+                            </div>
+                          ) : ap.appointmentStatus === "ACCEPTED" ? (
+                            <Button type="primary" disabled className="w-100">
+                              Accepted
                             </Button>
-                            <Button
-                              className="w-50 mx-2"
-                              danger
-                              onClick={() => rejectAppointment(index)}
-                            >
-                              Reject
+                          ) : (
+                            <Button danger className="w-100">
+                              Rejected
                             </Button>
-                          </div>
-                        ) : ap.appointmentStatus === "ACCEPTED" ? (
-                          <Button type="primary" disabled className="w-100">
-                            Accepted
-                          </Button>
-                        ) : (
-                          <Button danger className="w-100">
-                            Rejected
-                          </Button>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
