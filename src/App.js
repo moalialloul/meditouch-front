@@ -12,24 +12,32 @@ import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
 import Landing from "./pages/Landing";
 import Schedule from "./pages/Schedule";
+import LiveClinic from "./pages/LiveClinic";
+import Patients from "./pages/Patients";
+import { SocketWrapperProvider } from "./public/SocketWrapper";
+import CommunityPosts from "./pages/CommunityPosts";
 
 function App() {
   return (
     <HashRouter basename="/" history={createHashHistory()}>
-      <Routes>
-      
-        <Route exact path="/sign-up" element={<SignUp />} />
-        <Route exact path="/sign-in" element={<SignIn />} />
-        <Route exact path="/" element={<Landing />} />
+      <SocketWrapperProvider>
+        <Routes>
+          <Route exact path="/sign-up" element={<SignUp />} />
+          <Route exact path="/sign-in" element={<SignIn />} />
+          <Route exact path="/" element={<Landing />} />
 
-        <Route exact path="/appointments" element={<Appointments />} />
-        <Route exact path="/billing" element={<Billing />} />
-        <Route exact path="/rtl" element={<Rtl />} />
-        <Route exact path="/profile" element={<Profile />} />
-        <Route exact path="/dashboard" element={<Dashboard />} />
-        <Route exact path="/schedule" element={<Schedule />} />
+          <Route exact path="/appointments" element={<Appointments />} />
+          <Route exact path="/billing" element={<Billing />} />
+          <Route exact path="/rtl" element={<Rtl />} />
+          <Route exact path="/profile" element={<Profile />} />
+          <Route exact path="/dashboard" element={<Dashboard />} />
+          <Route exact path="/schedule" element={<Schedule />} />
+          <Route exact path="/live-clinic" element={<LiveClinic />} />
+          <Route exact path="/patients" element={<Patients />} />
+          <Route exact path="/community-posts" element={<CommunityPosts />} />
 
-      </Routes>
+        </Routes>
+      </SocketWrapperProvider>
     </HashRouter>
   );
 }

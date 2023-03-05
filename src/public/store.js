@@ -1,6 +1,11 @@
 const data = {
   userInfo: null,
   businessAccountInfo: null,
+  communityPosts: {
+    pageNumber: -1,
+    totalNumberOfPages: 1,
+    posts: [],
+  },
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -13,6 +18,11 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         businessAccountInfo: action.businessAccountInfo,
+      };
+    case "SET_COMMUNITY_POSTS":
+      return {
+        ...state,
+        communityPosts: action.communityPosts,
       };
     default:
       return state;

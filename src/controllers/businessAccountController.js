@@ -141,8 +141,20 @@ const getAppointments = ({ id, userType, pageNumber, recordsByPage, body }) => {
       "/" +
       pageNumber +
       "/" +
-      recordsByPage ,
+      recordsByPage,
     data: body,
+  });
+};
+const getTodaysAppointments = ({ businessAccountId }) => {
+  return axios({
+    method: "GET",
+    url: url + "getTodayAppointments/" + businessAccountId,
+  });
+};
+const getBusinessAccountPatients = ({ businessAccountId }) => {
+  return axios({
+    method: "GET",
+    url: url + "getBusinessAccountPatients/" + businessAccountId,
   });
 };
 const deleteReferrals = ({ body }) => {
@@ -190,6 +202,8 @@ const getBusinessAccountAppointmentsStatistics = ({
   });
 };
 export const businessAccountController = {
+  getBusinessAccountPatients,
+  getTodaysAppointments,
   globalSearch,
   setSchedule,
   deleteSchedule,

@@ -1,6 +1,8 @@
 import { Menu, Button } from "antd";
 import { EncryptStorage } from "encrypt-storage";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import Logout from "../../icons/Logout";
 
@@ -15,6 +17,7 @@ function Sidenav({ color }) {
      encryptStorage1.removeItem("meditouch_user");
      navigate("/");
   }
+  const userData = useSelector((state) => state);
   const dashboard = [
     <svg
       width="20"
@@ -198,7 +201,20 @@ function Sidenav({ color }) {
             <span className="label">Billing</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="4">
+        <Menu.Item key="11">
+          <NavLink to="/community-posts">
+            <span
+              className="icon"
+              style={{
+                background: page === "community-posts" ? color : "",
+              }}
+            >
+              {billing}
+            </span>
+            <span className="label">Community Posts</span>
+          </NavLink>
+        </Menu.Item>
+        {/* <Menu.Item key="4">
           <NavLink to="/rtl">
             <span
               className="icon"
@@ -210,11 +226,27 @@ function Sidenav({ color }) {
             </span>
             <span className="label">RTL</span>
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
+        {userData.userInfo?.userRole !== "PATIENT" && (
+          <Menu.Item key="4">
+            <NavLink to="/patients">
+              <span
+                className="icon"
+                style={{
+                  background: page === "patients" ? color : "",
+                }}
+              >
+                {rtl}
+              </span>
+              <span className="label">Patients</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+
         <Menu.Item className="menu-item-header" key="5">
           Account Settings
         </Menu.Item>
-        <Menu.Item key="5">
+        <Menu.Item key="6">
           <NavLink to="/profile">
             <span
               className="icon"
@@ -227,11 +259,17 @@ function Sidenav({ color }) {
             <span className="label">Profile</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="6">
-          <NavLink to="/schedule">
-            <span className="icon">{signin}</span>
-            <span className="label">Schedule</span>
-          </NavLink>
+        {userData.userInfo?.userRole !== "PATIENT" && (
+          <Menu.Item key="7">
+            <NavLink to="/schedule">
+              <span className="icon">{signin}</span>
+              <span className="label">Schedule</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+
+        <Menu.Item className="menu-item-header" key="8">
+          Live Settings
         </Menu.Item>
         <Menu.Item key="7" onClick={handleLogout}>
         <NavLink >
@@ -240,6 +278,21 @@ function Sidenav({ color }) {
           </NavLink>
         </Menu.Item>
       
+        {userData.userInfo?.userRole !== "PATIENT" && (
+          <Menu.Item key="9">
+            <NavLink to="/live-clinic">
+              <span
+                className="icon"
+                style={{
+                  background: page === "live-clinic" ? color : "",
+                }}
+              >
+                {profile}
+              </span>
+              <span className="label">Live Clinic</span>
+            </NavLink>
+          </Menu.Item>
+        )}
       </Menu>
     </>
   );
