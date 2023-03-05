@@ -63,6 +63,12 @@ const getReservationSlots = ({ userId }) => {
     url: url + "getReservationSlots/" + userId,
   });
 };
+const getGeneralStatistics = () => {
+  return axios({
+    method: "GET",
+    url: url + "getGeneralStatistics",
+  });
+};
 const deleteReservationSlot = ({ reservationId }) => {
   return axios({
     method: "DELETE",
@@ -364,6 +370,7 @@ const getSurveyQuestionsAnswers = ({ surveyId }) => {
   });
 };
 export const userController = {
+  getGeneralStatistics,
   registerUser,
   checkToken,
   approveUser,

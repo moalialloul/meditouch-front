@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
-import Footer from "./Footer";
+
 import { useDispatch, useSelector } from "react-redux";
 import { EncryptStorage } from "encrypt-storage";
 
@@ -140,7 +140,7 @@ function Main({ children }) {
           </AntHeader>
         )}
         <Content className="content-ant">{children}</Content>
-        <Footer />
+    
       </Layout>
     </Layout>
   );

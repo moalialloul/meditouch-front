@@ -771,7 +771,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   margin-top: 15px;
 }
 .ant-layout {
-  background: #fafafa;
+  background: transparent;
 }
 .pageheader {
   display: flex;
@@ -1791,11 +1791,7 @@ body {
   margin-top: -62.8px;
   padding-top: 137.8px;
   border-radius: 12px;
-  box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
-  background-size: cover;
-  background-position: 50%;
-  text-align: center;
-  background: url("../images/bg-signup.jpg") no-repeat center top;
+
 }
 .header-col.header-brand {
   white-space: nowrap;
@@ -1851,13 +1847,18 @@ body {
   border-radius: 6px;
 }
 .card-signup {
-  width: 100%;
+  width: 170%;
   max-width: 500px;
   margin: auto;
-  box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
+  box-shadow: 0 15px 27px rgb(0 0 0 / 15%);
   border-radius: 12px;
-  margin-top: -190px;
-  margin-bottom: 20px;
+border:none;
+  height:auto;
+  position:relative;
+ bottom:40px;
+}
+.signin-wrapper{
+ 
 }
 .card-signup h5 {
   text-align: center;
@@ -2101,8 +2102,10 @@ body {
   font-weight: 400;
 }
 .signin h1 {
-  font-size: 48px;
-  font-weight: 700;
+  font-size: 36px;
+  line-height: 42px;
+ font-style: normal;
+ font-weight: 500;
   color: #141414;
 }
 
@@ -3030,4 +3033,14 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
   svg
   path {
   fill: #8c8c8c;
+}
+.layout-children {
+  height: fit-content;
+  /* overflow: unset; */
+}
+.sign-in-txt{
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 22px;
+  color:black;
 }

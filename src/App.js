@@ -17,6 +17,7 @@ function App() {
   return (
     <HashRouter basename="/" history={createHashHistory()}>
       <Routes>
+      
         <Route exact path="/sign-up" element={<SignUp />} />
         <Route exact path="/sign-in" element={<SignIn />} />
         <Route exact path="/" element={<Landing />} />
