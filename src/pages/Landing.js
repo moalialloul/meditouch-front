@@ -21,7 +21,9 @@ import { userController } from "../controllers/userController";
 import Navbar from "../components/Navbar";
 import Layout from "../components/Layout";
 import LayoutWrapper from "../components/Layout";
+import { useNavigate } from "react-router";
 export default function Landing() {
+  const navigate = useNavigate();
   const [generalStatisticsData, setGeneralStatisticsData] = useState({
     number_of_hps: 0,
     number_of_pts: 0,
@@ -74,6 +76,7 @@ export default function Landing() {
                   We work to take care of your health and body.
                 </p>
                 <button
+                onClick={() => navigate("/global-search")}
                   className="main-btn btn-hover wow fadeInUp"
                   data-wow-delay=".6s"
                 >

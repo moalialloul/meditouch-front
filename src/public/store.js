@@ -6,6 +6,8 @@ const data = {
     totalNumberOfPages: 1,
     posts: [],
   },
+  reservedSlots: [],
+  favoriteDoctors: [],
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -23,6 +25,16 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         communityPosts: action.communityPosts,
+      };
+    case "SET_RESERVED_SLOTS":
+      return {
+        ...state,
+        reservedSlots: action.reservedSlots,
+      };
+    case "SET_FAVORITE_DOCTORS":
+      return {
+        ...state,
+        favoriteDoctors: action.favoriteDoctors,
       };
     default:
       return state;

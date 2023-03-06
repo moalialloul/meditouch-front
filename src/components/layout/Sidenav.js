@@ -2,7 +2,6 @@ import { Menu, Button } from "antd";
 import { EncryptStorage } from "encrypt-storage";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import Logout from "../../icons/Logout";
 
