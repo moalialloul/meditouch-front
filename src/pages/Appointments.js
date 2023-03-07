@@ -6,12 +6,14 @@ import avatar from "../assets/images/avatar.jpg";
 import Main from "../components/layout/Main";
 import { useEffect, useState } from "react";
 import { businessAccountController } from "../controllers/businessAccountController";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
 import Calendar from "../icons/calendar";
 import Dollor from "../icons/dollor";
 
 function Appointments() {
+  const dispatch = useDispatch();
+
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -67,8 +69,8 @@ function Appointments() {
       });
   }
   useEffect(() => {
-    if (userData.businessAccountInfo) {
-      if (userData.userInfo) {
+    if (userData.userInfo) {
+      if (userData.businessAccountInfo) {
         setLoading(true);
         businessAccountController
           .getAppointments({
@@ -93,6 +95,13 @@ function Appointments() {
       }
     }
   }, [userData.businessAccountInfo, userData.userInfo, pageNumber, filters]);
+  useEffect(() => {
+    let allMyAppointments = [...upcomingAppointments];
+    dispatch({
+      type: "SET_MY_APPOINTMENTS",
+      myAppointments: allMyAppointments,
+    });
+  }, [upcomingAppointments]);
   const [options, setOptions] = useState([
     { id: 2, value: "Upcoming" },
     { id: 3, value: "History" },
@@ -268,7 +277,7 @@ function Appointments() {
               }
             >
               <div className="appointments-wrapper row d-flex flex-wrap justify-content-between">
-                {upcomingAppointments.map((ap, index) => (
+                {userData.myAppointments.map((ap, index) => (
                   <div
                     key={index}
                     className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1"
@@ -330,6 +339,12 @@ function Appointments() {
                           )}
                         </div>
                       )}
+                      {userData.userInfo?.userRole === "PATIENT" &&
+                        (ap.prescriptionId === -1 ? (
+                          "Prescription In Progress"
+                        ) : (
+                          <Button type="primary">View Prescription</Button>
+                        ))}
                     </div>
                   </div>
                 ))}

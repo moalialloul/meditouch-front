@@ -143,7 +143,32 @@ export default function LiveClinic() {
 
     return () => clearInterval(intervalId);
   }, [currentAppointmentIndex, minutesRemaining, secondsRemaining]);
-
+  function modifyAppointmentPrescription(t, index) {
+    if (t.prescriptionId === -1) {
+      businessAccountController
+        .addAppointmentPrescription({
+          body: {
+            appointmentFk: t.appointmentId,
+            prescriptionDescription: "test",
+          },
+        })
+        .then((response) => {
+          let prescriptionId = response.data.result.prescriptionId;
+          let tempAppointments = [...appointments];
+          tempAppointments[index].prescriptionId = prescriptionId;
+          setAppointments(tempAppointments);
+        });
+    } else {
+      businessAccountController.updateAppointmentPrescription({
+        body: {
+          prescriptionId: t.prescriptionId,
+          prescriptionDescription: "test2",
+          appointmentFk: t.appointmentId,
+        },
+      });
+    }
+  }
+  console.log(appointments);
   return (
     <Main>
       <Col xs={24} sm={24} md={24} lg={24} xl={24} className="mb-24">
@@ -211,6 +236,18 @@ export default function LiveClinic() {
                           >
                             End
                           </Button>
+                          {t.started === true && t.ended === true && (
+                            <Button
+                              onClick={() =>
+                                modifyAppointmentPrescription(t, index)
+                              }
+                              type="primary"
+                            >
+                              {t.prescriptionId === -1
+                                ? " Add Appointment Prescription"
+                                : " Edit Appointment Prescription"}
+                            </Button>
+                          )}
                         </Text>
                       </div>
                     </Timeline.Item>

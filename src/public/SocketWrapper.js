@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import { useDispatch, useSelector } from "react-redux";
+import { userController } from "../controllers/userController";
 export const SocketWrapperContext = React.createContext("");
 export const SocketWrapperProvider = ({ ...props }) => {
   const [connected, setConnected] = useState(false);
@@ -15,6 +16,9 @@ export const SocketWrapperProvider = ({ ...props }) => {
   });
   const reservedSlots = useRef([]);
   const favoriteDoctors = useRef([]);
+  const myAppointments = useRef([]);
+  const notifications = useRef([]);
+  const specialities = useRef([]);
 
   useEffect(() => {
     communityPostsRef.current = userData.communityPosts;
@@ -23,8 +27,22 @@ export const SocketWrapperProvider = ({ ...props }) => {
     reservedSlots.current = userData.reservedSlots;
   }, [userData.reservedSlots]);
   useEffect(() => {
-    favoriteDoctors.current = userData.favoriteDoctors;
-  }, [userData.favoriteDoctors]);
+    myAppointments.current = userData.myAppointments;
+  }, [userData.myAppointments]);
+  useEffect(() => {
+    notifications.current = userData.notifications;
+  }, [userData.notifications]);
+  useEffect(() => {
+    if (userData.specialities.length === 0) {
+      userController.getSpecialities().then((response) => {
+        specialities.current = response.data.specialities;
+        dispatch({
+          type: "SET_SPECIALITIES",
+          specialities: specialities.current,
+        });
+      });
+    }
+  }, []);
   useEffect(() => {
     if (stompClientRef.current === null) {
       connect();
@@ -102,14 +120,42 @@ export const SocketWrapperProvider = ({ ...props }) => {
       );
 
       stompClientRef.current.subscribe(
+        "/topic/appointmentsReminder/" + userData.userInfo.userId,
+        function (payload) {
+          var newNotification = JSON.parse(payload.body);
+
+          let allNotifications = [newNotification, ...notifications.current];
+          dispatch({
+            type: "SET_MY_NOTIFICATIONS",
+            notifications: allNotifications,
+          });
+        }
+      );
+
+      stompClientRef.current.subscribe(
         "/topic/clinicTurn/" + userData.userInfo.userId,
         function (payload) {
           var message = JSON.parse(payload.body);
           console.log("Received: " + message.message);
         }
       );
+
+      if (userData.businessAccountInfo !== null) {
+        stompClientRef.current.subscribe(
+          "/topic/appointment/" +
+            userData.businessAccountInfo.businessAccountId,
+          function (payload) {
+            var appointment = JSON.parse(payload.body).appointment;
+            let allMyAppointments = [appointment, ...myAppointments.current];
+            dispatch({
+              type: "SET_MY_APPOINTMENTS",
+              myAppointments: allMyAppointments,
+            });
+          }
+        );
+      }
     }
-  }, [userData.userInfo, connected]);
+  }, [userData.userInfo, connected, userData.businessAccountInfo]);
   useEffect(() => {
     if (connected) {
       stompClientRef.current.send(

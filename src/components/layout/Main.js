@@ -60,8 +60,14 @@ function Main({ children }) {
       navigate("/sign-in");
     }
   }, []);
+ 
 
-  return (
+  return userData.userInfo === null ? (
+    "loading..."
+  ) : userData.userInfo.userRole === "HEALTH_PROFESSIONAL" &&
+    userData.businessAccountInfo === null ? (
+    "loading..."
+  ) : (
     <Layout
       className={`layout-dashboard ${
         pathname === "profile" ? "layout-profile" : ""
@@ -140,7 +146,6 @@ function Main({ children }) {
           </AntHeader>
         )}
         <Content className="content-ant">{children}</Content>
-    
       </Layout>
     </Layout>
   );

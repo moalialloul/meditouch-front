@@ -242,6 +242,7 @@ export default function SignIn() {
                             } else {
                               encryptStorage1.setItem("meditouch_user", {
                                 userInfo: data.user,
+                                businessAccountInfo: -1
                               });
                               navigate("/dashboard");
                             }

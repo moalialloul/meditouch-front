@@ -1,7 +1,12 @@
+import { DownOutlined, SmileOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Badge, Dropdown, Space } from "antd";
 import { EncryptStorage } from "encrypt-storage";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import img5 from "../assets/images/1.jfif";
+import { util } from "../public/util";
+import avatar from "../assets/images/avatar.jpg";
+import Notifications from "./Notifications";
 const Navbar = (props) => {
   const encryptStorage1 = new EncryptStorage("secret-key", {
     prefix: "@instance1",
@@ -87,13 +92,16 @@ const Navbar = (props) => {
                         </a>
                       </li>
                     </ul>
-
-                    <a
-                      class="btn btn-sm btn-outline-primary rounded-pill order-1 order-lg-0 ms-lg-4 px-3 py-2"
-                      href="/#/sign-in"
-                    >
-                      Sign In
-                    </a>
+                    {util.isUserAuthorized() ? (
+                      <Notifications />
+                    ) : (
+                      <a
+                        class="btn btn-sm btn-outline-primary rounded-pill order-1 order-lg-0 ms-lg-4 px-3 py-2"
+                        href="/#/sign-in"
+                      >
+                        Sign In
+                      </a>
+                    )}
                   </div>
                 </nav>
               </div>

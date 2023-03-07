@@ -261,6 +261,12 @@ const updateUser = ({ body }) => {
     data: body,
   });
 };
+const getSpecialities = () => {
+  return axios({
+    method: "GET",
+    url: url + "getSpecialities",
+  });
+};
 const postponeAppointment = ({ body }) => {
   return axios({
     method: "POST",
@@ -370,6 +376,7 @@ const getSurveyQuestionsAnswers = ({ surveyId }) => {
   });
 };
 export const userController = {
+  getSpecialities,
   getGeneralStatistics,
   registerUser,
   checkToken,

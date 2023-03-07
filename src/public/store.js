@@ -8,6 +8,9 @@ const data = {
   },
   reservedSlots: [],
   favoriteDoctors: [],
+  myAppointments: [],
+  notifications: [],
+  specialities: [],
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -35,6 +38,21 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         favoriteDoctors: action.favoriteDoctors,
+      };
+    case "SET_MY_APPOINTMENTS":
+      return {
+        ...state,
+        myAppointments: action.myAppointments,
+      };
+    case "SET_MY_NOTIFICATIONS":
+      return {
+        ...state,
+        notifications: action.notifications,
+      };
+    case "SET_SPECIALITIES":
+      return {
+        ...state,
+        specialities: action.specialities,
       };
     default:
       return state;

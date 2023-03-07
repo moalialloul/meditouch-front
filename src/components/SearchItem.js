@@ -50,7 +50,9 @@ export default function SearchItem({ item }) {
             serviceFk: slots[slotIndexChosen].serviceId,
           },
         })
-        .then(() => {});
+        .then((response) => {
+          alert(response.data.message);
+        });
     } else {
       alert("login first");
     }
@@ -98,6 +100,7 @@ export default function SearchItem({ item }) {
         <div>{item.userDetails.lastName}</div>
         <div>{item.userDetails.userEmail}</div>
         <div>{item.userDetails.specialityName}</div>
+        <div>Service Price : {slots[slotIndexChosen]?.servicePrice}</div>
         <div>
           <div>
             Schedule between {moment(daysOfWeek[0]).format("YYYY-MM-DD")} and{" "}
@@ -155,18 +158,15 @@ export default function SearchItem({ item }) {
           <div className="w-100 justify-content-center">
             <Button
               type={slotIndexChosen !== -1 ? "primary" : ""}
-              disabled={slotIndexChosen === -1 || userData.userInfo.userId === item.userDetails.userId}
+              // disabled={slotIndexChosen === -1 || userData.userInfo.userId === item.userDetails.userId}
+              disabled={slotIndexChosen === -1}
               onClick={() => reserveAppointment()}
             >
               Reserve Appointment
             </Button>
           </div>
           <div className="w-100 justify-content-center">
-            <Button
-              type={"primary"}
-
-              onClick={() => modifyFavorite()}
-            >
+            <Button type={"primary"} onClick={() => modifyFavorite()}>
               {userData.favoriteDoctors.findIndex(
                 (d) =>
                   d.businessAccountFk === item.userDetails.businessAccountId

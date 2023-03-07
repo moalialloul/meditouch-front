@@ -57,6 +57,13 @@ const updateBusinessAccount = ({ body }) => {
     data: body,
   });
 };
+const updateAppointmentPrescription = ({ body }) => {
+  return axios({
+    method: "PUT",
+    url: url + "updateAppointmentPrescription",
+    data: body,
+  });
+};
 const removeBlockUser = ({ blockId }) => {
   return axios({
     method: "DELETE",
@@ -202,6 +209,7 @@ const getBusinessAccountAppointmentsStatistics = ({
   });
 };
 export const businessAccountController = {
+  updateAppointmentPrescription,
   getBusinessAccountPatients,
   getTodaysAppointments,
   globalSearch,
