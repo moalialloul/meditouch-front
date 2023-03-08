@@ -22,6 +22,7 @@ import Navbar from "../components/Navbar";
 import Layout from "../components/Layout";
 import LayoutWrapper from "../components/Layout";
 import { useNavigate } from "react-router";
+import moment from "moment";
 export default function Landing() {
   const navigate = useNavigate();
   const [generalStatisticsData, setGeneralStatisticsData] = useState({
@@ -31,18 +32,26 @@ export default function Landing() {
     number_of_specialities: 0,
   });
   useEffect(() => {
-    userController.getGeneralStatistics().then((response) => {
-      setGeneralStatisticsData(response.data.statistics);
-    });
+    // userController.getGeneralStatistics().then((response) => {
+    //   setGeneralStatisticsData(response.data.statistics);
+    // });
   }, []);
   const encryptStorage1 = new EncryptStorage("secret-key", {
     prefix: "@instance1",
   });
   const isLoggedIn = encryptStorage1.getItem("meditouch_user") !== null;
+  function addDate() {
+    userController.addDate({
+      body: {
+        date: moment(new Date()).format("YYYY-MM-DDTHH:mm:ss"),
+      },
+    });
+  }
+  function getDate() {
+    userController.getDate();
+  }
   return (
     <LayoutWrapper style={{ position: "relative" }} withFooter={true}>
-   
-
       <section id="home" className="hero-section">
         <div className="container">
           <div className="row align-items-center">
@@ -76,7 +85,7 @@ export default function Landing() {
                   We work to take care of your health and body.
                 </p>
                 <button
-                onClick={() => navigate("/global-search")}
+                  onClick={() => navigate("/global-search")}
                   className="main-btn btn-hover wow fadeInUp"
                   data-wow-delay=".6s"
                 >
@@ -201,7 +210,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
+     
       <section
         id="service"
         className="service-section img-bg pt-100 pb-100 mt-150"
@@ -371,11 +380,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
-         
-   
-     
- 
     </LayoutWrapper>
   );
 }

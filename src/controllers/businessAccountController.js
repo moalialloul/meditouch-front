@@ -174,7 +174,7 @@ const deleteReferrals = ({ body }) => {
 const addReferrals = ({ body }) => {
   return axios({
     method: "POST",
-    url: url + "addReferrals/",
+    url: url + "addReferrals",
     data: body,
   });
 };

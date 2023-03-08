@@ -153,6 +153,21 @@ export const SocketWrapperProvider = ({ ...props }) => {
             });
           }
         );
+
+        if (userData.businessAccountInfo !== null) {
+          stompClientRef.current.subscribe(
+            "/topic/referral/" +
+              userData.businessAccountInfo.businessAccountId,
+            function (payload) {
+              // var appointment = JSON.parse(payload.body).appointment;
+              // let allMyAppointments = [appointment, ...myAppointments.current];
+              // dispatch({
+              //   type: "SET_MY_APPOINTMENTS",
+              //   myAppointments: allMyAppointments,
+              // });
+            }
+          );
+        }
       }
     }
   }, [userData.userInfo, connected, userData.businessAccountInfo]);

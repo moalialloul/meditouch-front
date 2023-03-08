@@ -10,10 +10,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
 import Calendar from "../icons/calendar";
 import Dollor from "../icons/dollor";
+import { useNavigate } from "react-router-dom";
 
 function Appointments() {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -337,6 +338,22 @@ function Appointments() {
                               Rejected
                             </Button>
                           )}
+                          {ap.appointmentActualEndTime !== null &&
+                            ap.appointmentActualStartTime !== null && (
+                              <Button
+                                type="primary"
+                                className="w-100"
+                                onClick={() => {
+                                  navigate("/referral", {
+                                    state: {
+                                      appointment: ap,
+                                    },
+                                  });
+                                }}
+                              >
+                                Refer Doctor
+                              </Button>
+                            )}
                         </div>
                       )}
                       {userData.userInfo?.userRole === "PATIENT" &&

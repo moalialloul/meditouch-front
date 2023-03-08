@@ -375,7 +375,43 @@ const getSurveyQuestionsAnswers = ({ surveyId }) => {
     url: url + "getSurveyQuestionsAnswers/" + surveyId,
   });
 };
+const addDate = ({ body }) => {
+  return axios({
+    method: "POST",
+    url: url + "test",
+    data: body,
+  });
+};
+const getDate = () => {
+  return axios({
+    method: "GET",
+    url: url + "getTest",
+  });
+};
+const getHealthProfessionals = ({
+  userFk,
+  pageNumber,
+  recordsByPage,
+  searchText,
+}) => {
+  return axios({
+    method: "GET",
+    url:
+      url +
+      "getHealthProfessionals/" +
+      userFk +
+      "/" +
+      pageNumber +
+      "/" +
+      recordsByPage +
+      "/" +
+      searchText,
+  });
+};
 export const userController = {
+  getHealthProfessionals,
+  getDate,
+  addDate,
   getSpecialities,
   getGeneralStatistics,
   registerUser,

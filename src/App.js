@@ -17,6 +17,7 @@ import Patients from "./pages/Patients";
 import { SocketWrapperProvider } from "./public/SocketWrapper";
 import CommunityPosts from "./pages/CommunityPosts";
 import GlobalSearch from "./pages/GlobalSearch";
+import Referral from "./pages/Referral";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route exact path="/patients" element={<Patients />} />
           <Route exact path="/community-posts" element={<CommunityPosts />} />
           <Route exact path="/global-search" element={<GlobalSearch />} />
+          <Route exact path="/referral" element={<Referral />} />
 
         </Routes>
       </SocketWrapperProvider>

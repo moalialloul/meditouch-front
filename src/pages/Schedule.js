@@ -15,13 +15,11 @@ import classNames from "classnames";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { useSelector } from "react-redux";
 
-const min = new Date(2023, 1, 21);
-
-const max = new Date(2023, 1, 25);
 const draggingGroupName = "appointmentsGroup";
 
 export default function Schedule() {
   const [allSlots, setAllSlots] = useState([]);
+  const [restTime, setRestTime] = useState(0);
   const [mySlots, setMySlots] = useState([]);
   const [slotDuration, setSlotDuration] = useState(20);
   const [daysOfWeek, setDaysOfWeek] = useState([]);
@@ -33,6 +31,44 @@ export default function Schedule() {
     startTime: "09:00",
     endTime: "10:00",
   });
+  useEffect(() => {
+    if (userData.businessAccountInfo !== null) {
+      businessAccountController
+        .getBusinessAccountSchedule({
+          businessAccountId: userData.businessAccountInfo.businessAccountId,
+          pageNumber: -1,
+          recordsByPage: -1,
+        })
+        .then((response) => {
+          if (response.data.responseCode !== -1) {
+            let tempSchedule = [];
+            let schedule = response.data.body.businessAccountSchedule;
+            for (let i = 0; i < schedule.length; i++) {
+              let json = {
+                index: i,
+                text: "",
+                startDate: moment(
+                  schedule[i].slotStartTime,
+                  "YYYY-MM-DD HH:mm:ss"
+                ).toString(),
+                endDate: moment(
+                  schedule[i].slotEndTime,
+                  "YYYY-MM-DD HH:mm:ss"
+                ).toString(),
+                allDay: false,
+              };
+              tempSchedule.push(json);
+            }
+            let tempSlotDuration = moment(tempSchedule[0].endDate).diff(
+              moment(tempSchedule[0].startDate),
+              "minutes"
+            );
+            setSlotDuration(tempSlotDuration);
+            setMySlots(tempSchedule);
+          }
+        });
+    }
+  }, [userData.businessAccountInfo]);
   useEffect(() => {
     let days = [];
     let keys = Object.keys(tempDaysOfWeek);
@@ -97,6 +133,9 @@ export default function Schedule() {
     temptimes[key] = value;
     setTimes(temptimes);
   }
+  const isOverlapping = (startDate1, endDate1, startDate2, endDate2) => {
+    return startDate1.isBefore(endDate2) && startDate2.isBefore(endDate1);
+  };
   function fetchSlots() {
     if (daysChosen.length === 0) {
       alert("choose days");
@@ -104,7 +143,7 @@ export default function Schedule() {
     }
     let tempMySlots = [...mySlots];
     let keys = Object.keys(tempDaysOfWeek);
-    let tempIndex = 0;
+    let tempIndex = tempMySlots.length;
     for (let i = 0; i < daysChosen.length; i++) {
       let startTime =
         tempDaysOfWeek[keys[daysChosen[i]]] + " " + times.startTime;
@@ -123,11 +162,11 @@ export default function Schedule() {
           .add(slotDuration, "minutes")
           .format("YYYY-MM-DD HH:mm")
           .toString();
-        json.text = "Slot" + tempIndex;
+        json.text = "";
         tempMySlots.push(json);
         tempIndex++;
         startTime = moment(startTime, "YYYY-MM-DD HH:mm").add(
-          slotDuration,
+          slotDuration + restTime,
           "minutes"
         );
         if (moment(startTime).isSameOrAfter(moment(endTime))) {
@@ -135,7 +174,33 @@ export default function Schedule() {
         }
       }
     }
-    setMySlots(tempMySlots);
+    let overlapped = false;
+    for (let i = 0; i < tempMySlots.length; i++) {
+      for (let j = i + 1; j < tempMySlots.length; j++) {
+        if (
+          isOverlapping(
+            moment(tempMySlots[i].startDate),
+            moment(tempMySlots[i].endDate),
+            moment(tempMySlots[j].startDate),
+            moment(tempMySlots[j].endDate)
+          ) &&
+          !overlapped
+        ) {
+          overlapped = true;
+        }
+        if (overlapped) {
+          break;
+        }
+      }
+      if (overlapped) {
+        break;
+      }
+    }
+    if (!overlapped) {
+      setMySlots(tempMySlots);
+    } else {
+      alert("timings overlap");
+    }
   }
   function addSlots() {
     let body = [];
@@ -155,6 +220,15 @@ export default function Schedule() {
       businessAccountId: userData.businessAccountInfo.businessAccountId,
       body: body,
     });
+  }
+  function deleteSchedule() {
+    businessAccountController
+      .deleteSchedule({
+        businessAccountId: userData.businessAccountInfo.businessAccountId,
+      })
+      .then(() => {
+        setMySlots([]);
+      });
   }
   return (
     <Main>
@@ -176,6 +250,13 @@ export default function Schedule() {
             type={"time"}
             value={times.endTime}
             onChange={(e) => modifyTiming("endTime", e.target.value)}
+          />
+          <InputNumber
+            size="large"
+            min={1}
+            max={60}
+            defaultValue={restTime}
+            onChange={setRestTime}
           />
         </div>
 
@@ -209,38 +290,27 @@ export default function Schedule() {
           <Button type="primary" onClick={() => addSlots()}>
             Add Slots
           </Button>
+          {mySlots.length !== 0 && (
+            <Button type="primary" onClick={() => deleteSchedule()}>
+              Delete Schedule
+            </Button>
+          )}
         </div>
       </div>
       <div className="d-flex w-100">
-        <Draggable
-          id="list"
-          data="dropArea"
-          group={draggingGroupName}
-          onDragStart={onListDragStart}
-        >
-          {allSlots.map((task) => (
-            <Draggable
-              key={task.text}
-              className="item dx-card dx-theme-text-color dx-theme-background-color"
-              clone={true}
-              group={draggingGroupName}
-              data={task}
-              onDragStart={onItemDragStart}
-              onDragEnd={onItemDragEnd}
-            >
-              {task.text}
-            </Draggable>
-          ))}
-        </Draggable>
         <Scheduler
-          min={min}
-          max={max}
+          min={new Date(daysOfWeek[0])}
+          max={new Date(daysOfWeek[daysOfWeek.length - 1])}
           id="scheduler"
           dataSource={mySlots}
           defaultCurrentView="Vertical Grouping"
           startDayHour={9}
           maxAppointmentsPerCell={1}
-          editing={true}
+          editing={{
+            allowDeleting: true,
+            allowDragging: true,
+            allowAdding: true,
+          }}
           crossScrollingEnabled={true}
           showAllDayPanel={false}
         >
