@@ -17,7 +17,9 @@ export default function CommunityPosts() {
   const [loadMore, setLoadMore] = useState(
     userData.communityPosts.pageNumber === -1
   );
-  console.log(userData)
+  const [loadMoreComments, setLoadMoreComments] = useState(false);
+  const [postSelectedIndex, setPostSelectedIndex] = useState(-1);
+  const [commentText, setCommentText] = useState("");
   useEffect(() => {
     if (
       userData.communityPosts.pageNumber <=
@@ -34,6 +36,14 @@ export default function CommunityPosts() {
           searchText: "null",
         })
         .then((response) => {
+          let data = response.data.communityPosts;
+          for (let i = 0; i < data.length; i++) {
+            data[i].communityPostComments = {
+              pageNumber: -1,
+              totalNumberOfPages: 1,
+              comments: [],
+            };
+          }
           dispatch({
             type: "SET_COMMUNITY_POSTS",
             communityPosts: {
@@ -42,13 +52,10 @@ export default function CommunityPosts() {
                   ? 2
                   : userData.communityPosts.pageNumber + 1,
               totalNumberOfPages: response.data.totalNumberOfPages,
-              posts: [
-                ...userData.communityPosts.posts,
-                ...response.data.communityPosts,
-              ],
+              posts: [...userData.communityPosts.posts, ...data],
             },
           });
-          setLoadMore(false)
+          setLoadMore(false);
         });
   }, [loadMore]);
 
@@ -72,6 +79,69 @@ export default function CommunityPosts() {
         },
       })
       .then((response) => {});
+  }
+  useEffect(() => {
+    if (postSelectedIndex !== -1 && loadMoreComments) {
+      let postCommentsDetails =
+        userData.communityPosts.posts[postSelectedIndex].communityPostComments;
+      if (
+        postCommentsDetails.pageNumber <= postCommentsDetails.totalNumberOfPages
+      ) {
+        userController
+          .getCommunityPostComment({
+            postId: userData.communityPosts.posts[postSelectedIndex].postId,
+            pageNumber:
+              postCommentsDetails.pageNumber === -1
+                ? 1
+                : postCommentsDetails.pageNumber,
+            recordsByPage: 3,
+          })
+          .then((response) => {
+            let data = response.data;
+            let tempCommunityPosts = [...userData.communityPosts.posts];
+            tempCommunityPosts[
+              postSelectedIndex
+            ].communityPostComments.totalNumberOfPages =
+              data.totalNumberOfPages;
+            tempCommunityPosts[
+              postSelectedIndex
+            ].communityPostComments.pageNumber =
+              tempCommunityPosts[postSelectedIndex].communityPostComments
+                .pageNumber === -1
+                ? 2
+                : tempCommunityPosts[postSelectedIndex].communityPostComments
+                    .pageNumber + 1;
+            tempCommunityPosts[
+              postSelectedIndex
+            ].communityPostComments.comments = [
+              ...tempCommunityPosts[postSelectedIndex].communityPostComments
+                .comments,
+              ...data.postComments,
+            ];
+            dispatch({
+              type: "SET_COMMUNITY_POSTS",
+              communityPosts: {
+                pageNumber:
+                  userData.communityPosts.pageNumber === -1
+                    ? 2
+                    : userData.communityPosts.pageNumber + 1,
+                totalNumberOfPages: response.data.totalNumberOfPages,
+                posts: [...tempCommunityPosts],
+              },
+            });
+            setLoadMoreComments(false);
+          });
+      }
+    }
+  }, [loadMoreComments]);
+  function addComment() {
+    userController.addCommunityPostComment({
+      body: {
+        userFk: userData.userInfo.userId,
+        postFk: userData.communityPosts.posts[postSelectedIndex].postId,
+        commentDescription: commentText,
+      },
+    });
   }
   return (
     <Main>
@@ -105,21 +175,82 @@ export default function CommunityPosts() {
           </Card>
         )}
         <Card bordered={false} className="criclebox h-full">
-          {userData.communityPosts.posts.map((post, index) => {
-            return (
-              <div key={"post" + index} className="mt-3">
-                <div> {post.firstName + " " + post.lastName}</div>
-                <div> {post.postService}</div>
-                <div> {post.postDescription}</div>
+          <div className="d-flex">
+            <div>
+              {userData.communityPosts.posts.map((post, index) => {
+                return (
+                  <div
+                    style={{
+                      cursor: "pointer",
+                      backgroundColor:
+                        postSelectedIndex === index ? "red" : "white",
+                    }}
+                    onClick={() => {
+                      if (post.commentCount !== 0) {
+                        setPostSelectedIndex(index);
+                        setLoadMoreComments(true);
+                      }
+                    }}
+                    key={"post" + index}
+                    className="mt-3"
+                  >
+                    <div> {post.firstName + " " + post.lastName}</div>
+                    <div> {post.postService}</div>
+                    <div> {post.postDescription}</div>
+                    <div>{post.commentCount} comment</div>
+                  </div>
+                );
+              })}
+              {userData.communityPosts.pageNumber !== -1 &&
+                userData.communityPosts.pageNumber <=
+                  userData.communityPosts.totalNumberOfPages && (
+                  <Button type="primary" onClick={() => setLoadMore(true)}>
+                    load
+                  </Button>
+                )}
+            </div>
+            {postSelectedIndex !== -1 && (
+              <div>
+                {userData.communityPosts.posts[
+                  postSelectedIndex
+                ].communityPostComments.comments.map((com) => {
+                  return (
+                    <div className="mt-3">
+                      <div>{com.firstName}</div>
+                      <div>{com.lastName}</div>
+                      <div>{com.userEmail}</div>
+                      <div>{com.commentDescription}</div>
+                    </div>
+                  );
+                })}
+                <div className="d-flex">
+                  <input
+                    type="text"
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Add Comment"
+                  />
+                  <Button type="primary" onClick={() => addComment()}>
+                    Add comment
+                  </Button>
+                </div>
+                <Button type="primary" onClick={() => setPostSelectedIndex(-1)}>
+                  back
+                </Button>
+                {userData.communityPosts.posts[postSelectedIndex]
+                  .communityPostComments.pageNumber <=
+                  userData.communityPosts.posts[postSelectedIndex]
+                    .communityPostComments.totalNumberOfPages && (
+                  <Button
+                    type="primary"
+                    onClick={() => setLoadMoreComments(true)}
+                  >
+                    load
+                  </Button>
+                )}
               </div>
-            );
-          })}
-          {userData.communityPosts.pageNumber !== -1 && userData.communityPosts.pageNumber <=
-            userData.communityPosts.totalNumberOfPages && (
-            <Button type="primary" onClick={() => setLoadMore(true)}>
-              load
-            </Button>
-          )}
+            )}
+          </div>
         </Card>
       </Col>
     </Main>

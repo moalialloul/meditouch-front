@@ -208,12 +208,7 @@ const addCommunityPostComment = ({ body }) => {
     data: body,
   });
 };
-const getCommunityPostComment = ({
-  postId,
-  pageNumber,
-  recordsByPage,
-  searchText,
-}) => {
+const getCommunityPostComment = ({ postId, pageNumber, recordsByPage }) => {
   return axios({
     method: "GET",
     url:
@@ -223,9 +218,7 @@ const getCommunityPostComment = ({
       "/" +
       pageNumber +
       "/" +
-      recordsByPage +
-      "/" +
-      (searchText === "" || searchText === null ? "null" : searchText),
+      recordsByPage,
   });
 };
 const updateCommunityPostComment = ({ body }) => {
@@ -408,7 +401,28 @@ const getHealthProfessionals = ({
       searchText,
   });
 };
+const getUserStatistics = ({ userFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "getUserStatistics/" + userFk,
+  });
+};
+const getUserAppointmentsStatistics = ({ userFk, fromDate, toDate }) => {
+  return axios({
+    method: "GET",
+    url:
+      url +
+      "getUserAppointmentsStatistics/" +
+      userFk +
+      "/" +
+      fromDate +
+      "/" +
+      toDate,
+  });
+};
 export const userController = {
+  getUserAppointmentsStatistics,
+  getUserStatistics,
   getHealthProfessionals,
   getDate,
   addDate,

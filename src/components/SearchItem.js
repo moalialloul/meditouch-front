@@ -25,6 +25,16 @@ export default function SearchItem({ item }) {
   }, []);
   useEffect(() => {
     let schedule = item.userSchedule;
+    for(let i = 0 ; i < schedule.length ; i++){
+      schedule[i].slotStartTime = moment(
+        util.formatTimeByOffset(new Date(moment(schedule[i].slotStartTime, "YYYY-MM-DD HH:mm:ss"))),
+        "YYYY-MM-DD HH:mm:ss"
+      ).format("YYYY-MM-DD HH:mm:ss");
+      schedule[i].slotEndTime = moment(
+        util.formatTimeByOffset(new Date(moment(schedule[i].slotEndTime, "YYYY-MM-DD HH:mm:ss"))),
+        "YYYY-MM-DD HH:mm:ss"
+      ).format("YYYY-MM-DD HH:mm:ss")
+    }
     schedule = schedule.filter((s) => s.slotDate === daysOfWeek[dayChosen]);
     schedule.sort(
       (a, b) => new Date(a.slotStartTime) - new Date(b.slotStartTime)

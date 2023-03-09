@@ -12,6 +12,8 @@ export default function GlobalSearch() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state);
   const [loading, setLoading] = useState(false);
+  const [withFavorite, setWithFavorite] = useState(false);
+  const [withFavoriteVal, setWithFavoriteVal] = useState(-1);
   const [sliderPrice, setSliderPrice] = useState({
     min: 20,
     max: 40,
@@ -34,6 +36,7 @@ export default function GlobalSearch() {
     maxDistance: -1,
     minPrice: -1,
     maxPrice: -1,
+    isFavorite: -2,
     myLongitude: -1,
     myLatitude: -1,
     minAvailability: null,
@@ -306,6 +309,37 @@ export default function GlobalSearch() {
               "Enable location to benifit from this feature"
             )}
           </div>
+          {util.isUserAuthorized() && (
+            <div>
+              Include Favorites Condition
+              <input
+                type="checkbox"
+                checked={withFavorite}
+                onClick={() => {
+                  if (withFavorite) {
+                    updateFilters("isFavorite", -2);
+                  }
+                  setWithFavorite(!withFavorite);
+                }}
+              />
+              {withFavorite && (
+                <div className="d-flex">
+                  <input
+                    type="radio"
+                    name="withFavorite"
+                    onClick={() => updateFilters("isFavorite", 1)}
+                  />{" "}
+                  Favorite
+                  <input
+                    type="radio"
+                    name="withFavorite"
+                    onClick={() => updateFilters("isFavorite", -1)}
+                  />{" "}
+                  Not Favorite
+                </div>
+              )}
+            </div>
+          )}
         </div>
         {loading ? (
           "loading..."

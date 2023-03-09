@@ -19,7 +19,31 @@ export const SocketWrapperProvider = ({ ...props }) => {
   const myAppointments = useRef([]);
   const notifications = useRef([]);
   const specialities = useRef([]);
+  useEffect(() => {
+    async function login() {
+      const tempStorage = new window.mega.Storage(
+        {
+          email: "mohammadalialloul@gmail.com",
+          password: "12121212@@AAAaa",
+          userAgent: null,
+        },
+        (error) => {
+          if (error) {
+            console.log("error");
+          } else {
+            console.log("success");
+          }
+        }
+      );
 
+      await tempStorage.ready;
+      dispatch({
+        type: "SET_STORAGE",
+        storage: tempStorage,
+      });
+    }
+    login();
+  }, []);
   useEffect(() => {
     communityPostsRef.current = userData.communityPosts;
   }, [userData.communityPosts]);
@@ -79,6 +103,11 @@ export const SocketWrapperProvider = ({ ...props }) => {
           "/topic/communityPosts/",
           function (payload) {
             var message = JSON.parse(payload.body).communityPost;
+            message.communityPostComments = {
+              pageNumber: -1,
+              totalNumberOfPages: 1,
+              comments: [],
+            };
             let allCommunityPosts = [
               message,
               ...communityPostsRef.current.posts,
@@ -90,6 +119,30 @@ export const SocketWrapperProvider = ({ ...props }) => {
                 totalNumberOfPages:
                   communityPostsRef.current.totalNumberOfPages,
                 posts: allCommunityPosts,
+              },
+            });
+          }
+        );
+
+        stompClientRef.current.subscribe(
+          "/topic/communityPostComment/",
+          function (payload) {
+            var message = JSON.parse(payload.body);
+            let indexOfPost = communityPostsRef.current.posts.findIndex(
+              (p) => (p.postId = message.postId)
+            );
+            communityPostsRef.current.posts[indexOfPost].commentCount =
+              communityPostsRef.current.posts[indexOfPost].commentCount + 1;
+            communityPostsRef.current.posts[
+              indexOfPost
+            ].communityPostComments.comments.unshift(message);
+            dispatch({
+              type: "SET_COMMUNITY_POSTS",
+              communityPosts: {
+                pageNumber: communityPostsRef.current.pageNumber,
+                totalNumberOfPages:
+                  communityPostsRef.current.totalNumberOfPages,
+                posts: communityPostsRef.current.posts,
               },
             });
           }
@@ -156,8 +209,7 @@ export const SocketWrapperProvider = ({ ...props }) => {
 
         if (userData.businessAccountInfo !== null) {
           stompClientRef.current.subscribe(
-            "/topic/referral/" +
-              userData.businessAccountInfo.businessAccountId,
+            "/topic/referral/" + userData.businessAccountInfo.businessAccountId,
             function (payload) {
               // var appointment = JSON.parse(payload.body).appointment;
               // let allMyAppointments = [appointment, ...myAppointments.current];

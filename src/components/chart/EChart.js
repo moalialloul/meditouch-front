@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { businessAccountController } from "../../controllers/businessAccountController";
 import { useSelector } from "react-redux";
 import { util } from "../../public/util";
+import { userController } from "../../controllers/userController";
 
 function EChart() {
   const { Title, Paragraph } = Typography;
   const chartRef = useRef();
- 
+
   const userData = useSelector((state) => state);
   const eChartOptions = eChart.options;
   const [eChartData, setEChartData] = useState({
@@ -18,6 +19,39 @@ function EChart() {
     NotCancelled: 0,
     NotApproved: 0,
   });
+  function publishChart(res, daysOfWeekDates, keys) {
+    let results = res.data.results;
+    let tempEChartData = { ...eChartData };
+    for (let i = 0; i < results.length; i++) {
+      tempEChartData.Approved =
+        tempEChartData.Approved + results[i].numAppointmentsApproved;
+      tempEChartData.NotApproved =
+        tempEChartData.NotApproved + results[i].numAppointmentsNotApproved;
+      tempEChartData.Cancelled =
+        tempEChartData.Cancelled + results[i].numAppointmentsCancelled;
+      tempEChartData.NotCancelled =
+        tempEChartData.NotCancelled + results[i].numAppointmentsNotCancelled;
+    }
+    setEChartData(tempEChartData);
+    let tempSeries = {
+      series: [
+        {
+          name: "Appointments",
+          data: [],
+          color: "#fff",
+        },
+      ],
+    };
+    for (let i = 0; i < 7; i++) {
+      let dateRecordsIndex = results.findIndex(
+        (d) => d.appointmentDate === daysOfWeekDates[keys[i]]
+      );
+      tempSeries.series[0].data.push(
+        dateRecordsIndex >= 0 ? results[dateRecordsIndex].numAppointments : 0
+      );
+    }
+    setEChartSeries(tempSeries.series);
+  }
 
   const [eChartSeries, setEChartSeries] = useState(eChart.series);
   useEffect(() => {
@@ -29,49 +63,27 @@ function EChart() {
       firstDayDate = daysOfWeekDates[keys[0]];
       lastDayDate = daysOfWeekDates[keys[keys.length - 1]];
 
-      businessAccountController
-        .getBusinessAccountAppointmentsStatistics({
-          businessAccountId: userData.businessAccountInfo.businessAccountId,
-          fromDate: firstDayDate,
-          toDate: lastDayDate,
-        })
-        .then((res) => {
-          let results = res.data.results;
-          let tempEChartData = { ...eChartData };
-          for (let i = 0; i < results.length; i++) {
-            tempEChartData.Approved =
-              tempEChartData.Approved + results[i].numAppointmentsApproved;
-            tempEChartData.NotApproved =
-              tempEChartData.NotApproved +
-              results[i].numAppointmentsNotApproved;
-            tempEChartData.Cancelled =
-              tempEChartData.Cancelled + results[i].numAppointmentsCancelled;
-            tempEChartData.NotCancelled =
-              tempEChartData.NotCancelled +
-              results[i].numAppointmentsNotCancelled;
-          }
-          setEChartData(tempEChartData);
-          let tempSeries = {
-            series: [
-              {
-                name: "Appointments",
-                data: [],
-                color: "#fff",
-              },
-            ],
-          };
-          for (let i = 0; i < 7; i++) {
-            let dateRecordsIndex = results.findIndex(
-              (d) => d.appointmentDate === daysOfWeekDates[keys[i]]
-            );
-            tempSeries.series[0].data.push(
-              dateRecordsIndex >= 0
-                ? results[dateRecordsIndex].numAppointments
-                : 0
-            );
-          }
-          setEChartSeries(tempSeries.series);
-        });
+      if (userData.businessAccountInfo !== -1) {
+        businessAccountController
+          .getBusinessAccountAppointmentsStatistics({
+            businessAccountId: userData.businessAccountInfo.businessAccountId,
+            fromDate: firstDayDate,
+            toDate: lastDayDate,
+          })
+          .then((res) => {
+            publishChart(res, daysOfWeekDates, keys);
+          });
+      } else {
+        userController
+          .getUserAppointmentsStatistics({
+            userFk: userData.userInfo.userId,
+            fromDate: firstDayDate,
+            toDate: lastDayDate,
+          })
+          .then((res) => {
+            publishChart(res, daysOfWeekDates, keys);
+          });
+      }
     }
   }, [userData.businessAccountInfo]);
   return (

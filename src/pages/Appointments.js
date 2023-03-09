@@ -11,6 +11,8 @@ import { userController } from "../controllers/userController";
 import Calendar from "../icons/calendar";
 import Dollor from "../icons/dollor";
 import { useNavigate } from "react-router-dom";
+import { util } from "../public/util";
+import moment from "moment";
 
 function Appointments() {
   const dispatch = useDispatch();
@@ -86,6 +88,16 @@ function Appointments() {
           })
           .then((response) => {
             let appointmentsData = response.data.appointments;
+            for(let i = 0 ; i < appointmentsData.length ; i++){
+              appointmentsData[i].appointmentActualStartTime = moment(
+                util.formatTimeByOffset(new Date(moment(appointmentsData[i].appointmentActualStartTime, "YYYY-MM-DD HH:mm:ss"))),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+              appointmentsData[i].appointmentActualEndTime = moment(
+                util.formatTimeByOffset(new Date(moment(appointmentsData[i].appointmentActualEndTime, "YYYY-MM-DD HH:mm:ss"))),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss")
+            }
             setUpcomingAppointments((app) => [...app, ...appointmentsData]);
 
             setTotalNumberOfPages(response.data.totalNumberOfPages);

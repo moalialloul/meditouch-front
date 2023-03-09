@@ -1,5 +1,7 @@
 import { EncryptStorage } from "encrypt-storage";
-import { func } from "prop-types";
+import momentTz from "moment-timezone";
+import moment from "moment/moment";
+
 const encryptStorage1 = new EncryptStorage("secret-key", {
   prefix: "@instance1",
 });
@@ -47,7 +49,32 @@ function getUser() {
   let user = encryptStorage1.getItem("meditouch_user");
   return user;
 }
+const convertTZ = (date, tzString) => {
+  if (date !== null && date.toString() !== "Invalid date") {
+    let m = momentTz(date, "YYYY/MM/DD HH:mm:ss");
+    m.tz(tzString);
+    return m;
+  }
+  return null;
+};
+const formatTimeByOffset = (dateString) => {
+  let localTime = momentTz.tz(new Date(), momentTz.tz.guess());
+  var serverTime = localTime.clone().tz("Europe/Paris");
+  serverTime = serverTime.format("YYYY/MM/DD HH:mm:ss").toString();
+
+  localTime.tz(momentTz.tz.guess());
+  localTime = localTime.format("YYYY/MM/DD HH:mm:ss").toString();
+
+  var duration = moment.duration(moment(localTime).diff(moment(serverTime)));
+
+  var dateLocal = moment(dateString);
+  dateLocal.add(duration.asMilliseconds(), "milliseconds");
+  var newDate = new Date(dateLocal);
+  return newDate;
+};
 export const util = {
+  formatTimeByOffset,
+  convertTZ,
   getUser,
   isUserAuthorized,
   getDaysOfWeekDates,

@@ -23,6 +23,7 @@ import Layout from "../components/Layout";
 import LayoutWrapper from "../components/Layout";
 import { useNavigate } from "react-router";
 import moment from "moment";
+import { useSelector } from "react-redux";
 export default function Landing() {
   const navigate = useNavigate();
   const [generalStatisticsData, setGeneralStatisticsData] = useState({
@@ -36,19 +37,50 @@ export default function Landing() {
     //   setGeneralStatisticsData(response.data.statistics);
     // });
   }, []);
-  const encryptStorage1 = new EncryptStorage("secret-key", {
-    prefix: "@instance1",
-  });
-  const isLoggedIn = encryptStorage1.getItem("meditouch_user") !== null;
-  function addDate() {
-    userController.addDate({
-      body: {
-        date: moment(new Date()).format("YYYY-MM-DDTHH:mm:ss"),
-      },
-    });
+ 
+  const [storage, setStorage] = useState("");
+  const userData = useSelector(state => state);
+  
+  const [file, setFile] = useState("");
+  const [myFile, setMyFile] = useState("");
+  const [myFileStorage, setMyFileStorage] = useState("");
+
+ 
+  async function upload() {
+    const pic = file.target.files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const buffer = Buffer.from(event.target.result);
+      completeupload(buffer);
+    };
+
+    reader.readAsArrayBuffer(pic);
   }
-  function getDate() {
-    userController.getDate();
+  async function completeupload(buffer) {
+    const files = await userData.storage.upload(
+      {
+        name: "pic2",
+        allowUploadBuffering: true,
+      },
+      buffer
+    ).complete;
+    console.log("The file was uploaded!", files);
+  }
+  async function get() {
+    const getFile = userData.storage.root.children.find((file) => file.name === "pic2");
+    setMyFileStorage(getFile);
+    getFile.downloadBuffer((error, data) => {
+      if (error) console.error(error)
+      setMyFile(data);
+    })
+  }
+  function deletepic() {
+    myFileStorage.delete((error, link) => {
+      if (error) console.error(error);
+      console.log(link);
+    });
   }
   return (
     <LayoutWrapper style={{ position: "relative" }} withFooter={true}>
@@ -101,7 +133,13 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
+      <input type="file" onChange={(e) => setFile(e)} />
+      <button onClick={() => upload()}>upload</button>
+      <button onClick={() => get()}>get</button>
+      <button onClick={() => deletepic()}>deletepic</button>
+      {myFile !== "" && (
+        <img src={`data:image/png;base64,${myFile.toString("base64")}`} />
+      )}
       <section id="about" className="about-section pt-150">
         <div className="container">
           <div className="row ">
@@ -210,7 +248,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-     
+
       <section
         id="service"
         className="service-section img-bg pt-100 pb-100 mt-150"

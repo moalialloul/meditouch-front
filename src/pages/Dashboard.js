@@ -1,16 +1,7 @@
 import { useEffect, useState } from "react";
 
-import {
-  Card,
-  Col,
-  Row,
-  Typography,
-
-} from "antd";
-import {
- 
-  RightOutlined,
-} from "@ant-design/icons";
+import { Card, Col, Row, Typography } from "antd";
+import { RightOutlined } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 
 import Echart from "../components/chart/EChart";
@@ -24,6 +15,9 @@ import Dollor from "../icons/dollor";
 import Profile from "../icons/profile";
 import Heart from "../icons/heart";
 import Cart from "../icons/cart";
+import { util } from "../public/util";
+import moment from "moment";
+import { userController } from "../controllers/userController";
 
 export default function Dashboard() {
   const count = [
@@ -56,26 +50,69 @@ export default function Dashboard() {
       key: "totalReferrals",
     },
   ];
+
+  const count2 = [
+    {
+      today: "Total Appointments",
+      title: "$53,000",
+      icon: <Dollor />,
+      bnb: "bnb2",
+      key: "totalAppointments",
+    },
+    {
+      today: "Total Done Appointments",
+      title: "3,200",
+      icon: <Profile />,
+      bnb: "bnb2",
+      key: "totalDoneAppointments",
+    },
+    {
+      today: "Total Accepted Appointments",
+      title: "+1,200",
+      icon: <Heart />,
+      bnb: "bnb2",
+      key: "totalAcceptedAppointments",
+    },
+    {
+      today: "Total Rejected Appointments",
+      title: "$13,200",
+      icon: <Cart />,
+      bnb: "bnb2",
+      key: "totalRejectedAppointments",
+    },
+  ];
   const userData = useSelector((state) => state);
   const [cardsStatistics, setCardsStatisitcs] = useState({
     totalReferrals: 0,
     totalBlockedUsers: 0,
     totalPatients: 0,
     totalAppointments: 0,
+    totalAcceptedAppointments: 0,
+    totalRejectedAppointments: 0,
+    totalDoneAppointments: 0,
   });
   const { Title, Text } = Typography;
-
 
   const [appointmentsData, setAppointmentsData] = useState({});
   useEffect(() => {
     if (userData.businessAccountInfo) {
-      businessAccountController
-        .getBusinessAccountStatistics({
-          businessAccountId: userData.businessAccountInfo.businessAccountId,
-        })
-        .then((response) => {
-          setCardsStatisitcs(response.data.result);
-        });
+      if (userData.businessAccountInfo !== -1) {
+        businessAccountController
+          .getBusinessAccountStatistics({
+            businessAccountId: userData.businessAccountInfo.businessAccountId,
+          })
+          .then((response) => {
+            setCardsStatisitcs(response.data.result);
+          });
+      } else {
+        if (userData.userInfo) {
+          userController
+            .getUserStatistics({ userFk: userData.userInfo.userId })
+            .then((response) => {
+              setCardsStatisitcs(response.data.result);
+            });
+        }
+      }
       if (userData.userInfo) {
         businessAccountController
           .getAppointments({
@@ -93,44 +130,69 @@ export default function Dashboard() {
             },
           })
           .then((response) => {
-            setAppointmentsData(response.data);
+            let data = response.data;
+            for (let i = 0; i < data.length; i++) {
+              data[i].appointmentActualStartTime = moment(
+                util.formatTimeByOffset(
+                  new Date(
+                    moment(
+                      data[i].appointmentActualStartTime,
+                      "YYYY-MM-DD HH:mm:ss"
+                    )
+                  )
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+              data[i].appointmentActualEndTime = moment(
+                util.formatTimeByOffset(
+                  new Date(
+                    moment(
+                      data[i].appointmentActualEndTime,
+                      "YYYY-MM-DD HH:mm:ss"
+                    )
+                  )
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+            }
+            setAppointmentsData(data);
           });
       }
     } else {
     }
   }, [userData.businessAccountInfo, userData.userInfo]);
 
-
-
   return (
     <Main>
       <div className="layout-content">
         <Row className="rowgap-vbox" gutter={[24, 0]}>
-          {count.map((c, index) => (
-            <Col
-              key={index}
-              xs={24}
-              sm={24}
-              md={12}
-              lg={6}
-              xl={6}
-              className="mb-24"
-            >
-              <Card bordered={false} className="criclebox ">
-                <div className="number">
-                  <Row align="middle" gutter={[24, 0]}>
-                    <Col xs={18}>
-                      <span>{c.today}</span>
-                      <Title level={3}>{cardsStatistics[c.key]}</Title>
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box">{c.icon}</div>
-                    </Col>
-                  </Row>
-                </div>
-              </Card>
-            </Col>
-          ))}
+          {Array.from(userData.businessAccountInfo === -1 ? count2 : count).map(
+            (c, index) => (
+              <Col
+                key={index}
+                xs={24}
+                sm={24}
+                md={12}
+                lg={6}
+                xl={6}
+                className="mb-24"
+              >
+                <Card bordered={false} className="criclebox ">
+                  <div className="number">
+                    <Row align="middle" gutter={[24, 0]}>
+                      <Col xs={18}>
+                        <span>{c.today}</span>
+                        <Title level={3}>{cardsStatistics[c.key]}</Title>
+                      </Col>
+                      <Col xs={6}>
+                        <div className="icon-box">{c.icon}</div>
+                      </Col>
+                    </Row>
+                  </div>
+                </Card>
+              </Col>
+            )
+          )}
         </Row>
 
         <Row gutter={[24, 0]}>
@@ -247,7 +309,7 @@ export default function Dashboard() {
           </Col> */}
         </Row>
 
-        <Row gutter={[24, 0]}>
+        {/* <Row gutter={[24, 0]}>
           <Col xs={24} md={12} sm={24} lg={12} xl={14} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
               <Row gutter>
@@ -311,7 +373,7 @@ export default function Dashboard() {
               </div>
             </Card>
           </Col>
-        </Row>
+        </Row> */}
       </div>
     </Main>
   );

@@ -11,6 +11,7 @@ const data = {
   myAppointments: [],
   notifications: [],
   specialities: [],
+  storage: null,
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -18,6 +19,11 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         userInfo: action.userInfo,
+      };
+    case "SET_STORAGE":
+      return {
+        ...state,
+        storage: action.storage,
       };
     case "SET_BUSINESS_ACCOUNT_INFO":
       return {

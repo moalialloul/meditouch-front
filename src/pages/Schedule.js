@@ -48,13 +48,22 @@ export default function Schedule() {
                 index: i,
                 text: "",
                 startDate: moment(
-                  schedule[i].slotStartTime,
+                  util.formatTimeByOffset(
+                    new Date(
+                      moment(schedule[i].slotStartTime, "YYYY-MM-DD HH:mm:ss")
+                    )
+                  ),
                   "YYYY-MM-DD HH:mm:ss"
-                ).toString(),
+                ).format("YYYY-MM-DD HH:mm:ss"),
+
                 endDate: moment(
-                  schedule[i].slotEndTime,
+                  util.formatTimeByOffset(
+                    new Date(
+                      moment(schedule[i].slotEndTime, "YYYY-MM-DD HH:mm:ss")
+                    )
+                  ),
                   "YYYY-MM-DD HH:mm:ss"
-                ).toString(),
+                ).format("YYYY-MM-DD HH:mm:ss"),
                 allDay: false,
               };
               tempSchedule.push(json);
@@ -134,7 +143,10 @@ export default function Schedule() {
     setTimes(temptimes);
   }
   const isOverlapping = (startDate1, endDate1, startDate2, endDate2) => {
-    return startDate1.isBefore(endDate2) && startDate2.isBefore(endDate1);
+    return (
+      (startDate1.isBefore(endDate2) && startDate2.isBefore(endDate1)) ||
+      (startDate1.isSame(startDate2) && endDate1.isSame(endDate2))
+    );
   };
   function fetchSlots() {
     if (daysChosen.length === 0) {
@@ -207,11 +219,18 @@ export default function Schedule() {
     for (let i = 0; i < mySlots.length; i++) {
       body.push({
         slotDate: moment(mySlots[i].startTime).format("YYYY-MM-DD").toString(),
-        slotStartTime: moment(mySlots[i].startDate)
-          .format("YYYY-MM-DDTHH:mm:ss")
+        slotStartTime: moment(
+          util.formatTimeByOffset(new Date(moment(mySlots[i].startDate))),
+          "YYYY-MM-DD HH:mm:ss"
+        )
+          .format("YYYY-MM-DD HH:mm:ss")
           .toString(),
-        slotEndTime: moment(mySlots[i].endDate)
-          .format("YYYY-MM-DDTHH:mm:ss")
+
+        slotEndTime: moment(
+          util.formatTimeByOffset(new Date(moment(mySlots[i].endDate))),
+          "YYYY-MM-DD HH:mm:ss"
+        )
+          .format("YYYY-MM-DD HH:mm:ss")
           .toString(),
         serviceFk: 5,
       });

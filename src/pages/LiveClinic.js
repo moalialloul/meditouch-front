@@ -9,6 +9,7 @@ import "../assets/styles/schedule.css";
 import Main from "../components/layout/Main";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { userController } from "../controllers/userController";
+import { util } from "../public/util";
 
 export default function LiveClinic() {
   const { Title, Text } = Typography;
@@ -30,6 +31,34 @@ export default function LiveClinic() {
         .then((response) => {
           let data = response.data.appointments;
           for (let i = 0; i < data.length; i++) {
+            data[i].appointmentActualStartTime =
+              data[i].appointmentActualStartTime !== -1
+                ? moment(
+                    util.formatTimeByOffset(
+                      new Date(
+                        moment(
+                          data[i].appointmentActualStartTime,
+                          "YYYY-MM-DD HH:mm:ss"
+                        )
+                      )
+                    ),
+                    "YYYY-MM-DD HH:mm:ss"
+                  ).format("YYYY-MM-DD HH:mm:ss")
+                : -1;
+            data[i].appointmentActualEndTime =
+              data[i].appointmentActualEndTime !== -1
+                ? moment(
+                    util.formatTimeByOffset(
+                      new Date(
+                        moment(
+                          data[i].appointmentActualEndTime,
+                          "YYYY-MM-DD HH:mm:ss"
+                        )
+                      )
+                    ),
+                    "YYYY-MM-DD HH:mm:ss"
+                  ).format("YYYY-MM-DD HH:mm:ss")
+                : -1;
             data[i].started =
               data[i].appointmentActualStartTime !== -1 ? true : false;
             data[i].ended =
@@ -72,9 +101,14 @@ export default function LiveClinic() {
     );
     setSecondsRemaining(59);
     if (key === "started") {
-      tempAppointments[index]["appointmentActualStartTime"] = moment(new Date())
+      tempAppointments[index]["appointmentActualStartTime"] = util
+        .convertTZ(
+          moment(moment(new Date())).format("YYYY/MM/DD HH:mm:ss").toString(),
+          "Europe/Paris"
+        )
         .format("YYYY-MM-DDTHH:mm:ss")
         .toString();
+
       userController
         .updateAppointment({
           body: {
@@ -95,9 +129,13 @@ export default function LiveClinic() {
       if (index === appointments.length - 1) {
         setMessage("You're done for today");
       }
-      tempAppointments[index]["appointmentActualEndTime"] = moment(new Date())
-        .format("YYYY-MM-DDTHH:mm:ss")
-        .toString();
+      tempAppointments[index]["appointmentActualEndTime"] = util
+      .convertTZ(
+        moment(moment(new Date())).format("YYYY/MM/DD HH:mm:ss").toString(),
+        "Europe/Paris"
+      )
+      .format("YYYY-MM-DDTHH:mm:ss")
+      .toString();
       userController
         .updateAppointment({
           body: {

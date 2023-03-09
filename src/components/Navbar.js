@@ -46,7 +46,7 @@ const Navbar = (props) => {
                 <nav className="navbar d-flex justify-content-between navbar-expand-lg">
                   <a
                     className="navbar-brand"
-                    href="index.html"
+                    href="/"
                     style={{ fontWeight: "bold", color: "#4E6EF1" }}
                   >
                     <img src={img5} alt="" />
