@@ -302,7 +302,7 @@ function Appointments() {
                         </div>
                         <div className="d-flex flex-column justify-content-center">
                           {ap.firstName + " " + ap.lastName}
-                          {ap.serviceName}
+                         <div> {ap.serviceName}</div>
                           <div className="appointment-status">
                             {ap.appointmentStatus}
                           </div>

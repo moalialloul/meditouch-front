@@ -18,8 +18,15 @@ import { SocketWrapperProvider } from "./public/SocketWrapper";
 import CommunityPosts from "./pages/CommunityPosts";
 import GlobalSearch from "./pages/GlobalSearch";
 import Referral from "./pages/Referral";
+import UserProfile from "./pages/UserProfile";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    window.process = {
+      ...window.process,
+    };
+  }, []);
   return (
     <HashRouter basename="/" history={createHashHistory()}>
       <SocketWrapperProvider>
@@ -32,6 +39,8 @@ function App() {
           <Route exact path="/billing" element={<Billing />} />
           <Route exact path="/rtl" element={<Rtl />} />
           <Route exact path="/profile" element={<Profile />} />
+          <Route exact path="/user-profile" element={<UserProfile />} />
+
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route exact path="/schedule" element={<Schedule />} />
           <Route exact path="/live-clinic" element={<LiveClinic />} />

@@ -38,50 +38,9 @@ export default function Landing() {
     // });
   }, []);
  
-  const [storage, setStorage] = useState("");
   const userData = useSelector(state => state);
   
-  const [file, setFile] = useState("");
-  const [myFile, setMyFile] = useState("");
-  const [myFileStorage, setMyFileStorage] = useState("");
-
- 
-  async function upload() {
-    const pic = file.target.files[0];
-
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      const buffer = Buffer.from(event.target.result);
-      completeupload(buffer);
-    };
-
-    reader.readAsArrayBuffer(pic);
-  }
-  async function completeupload(buffer) {
-    const files = await userData.storage.upload(
-      {
-        name: "pic2",
-        allowUploadBuffering: true,
-      },
-      buffer
-    ).complete;
-    console.log("The file was uploaded!", files);
-  }
-  async function get() {
-    const getFile = userData.storage.root.children.find((file) => file.name === "pic2");
-    setMyFileStorage(getFile);
-    getFile.downloadBuffer((error, data) => {
-      if (error) console.error(error)
-      setMyFile(data);
-    })
-  }
-  function deletepic() {
-    myFileStorage.delete((error, link) => {
-      if (error) console.error(error);
-      console.log(link);
-    });
-  }
+  
   return (
     <LayoutWrapper style={{ position: "relative" }} withFooter={true}>
       <section id="home" className="hero-section">
@@ -133,13 +92,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-      <input type="file" onChange={(e) => setFile(e)} />
-      <button onClick={() => upload()}>upload</button>
-      <button onClick={() => get()}>get</button>
-      <button onClick={() => deletepic()}>deletepic</button>
-      {myFile !== "" && (
-        <img src={`data:image/png;base64,${myFile.toString("base64")}`} />
-      )}
+    
       <section id="about" className="about-section pt-150">
         <div className="container">
           <div className="row ">

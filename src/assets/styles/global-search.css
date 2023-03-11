@@ -1,3 +1,6 @@
 .global-search-slider{
-    width: 200px;
+    width: 100%;
+}
+.global-search-datetime{
+    width: 50%;
 }

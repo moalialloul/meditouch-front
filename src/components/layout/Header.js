@@ -25,6 +25,7 @@ import {
 import { NavLink, Link } from "react-router-dom";
 import styled from "styled-components";
 import avtar from "../../assets/images/team-2.jpg";
+import Notifications from "../Notifications";
 
 const ButtonContainer = styled.div`
   .ant-btn-primary {
@@ -219,7 +220,6 @@ const toggler = [
   </svg>,
 ];
 
-
 function Header({
   placement,
   name,
@@ -241,7 +241,6 @@ function Header({
 
   return (
     <>
-    
       <Row gutter={[24, 0]}>
         <Col span={24} md={6}>
           <Breadcrumb>
@@ -262,20 +261,10 @@ function Header({
           </div>
         </Col>
         <Col span={24} md={18} className="header-control">
-          <Badge size="small" count={4}>
-            <Dropdown overlay={menu} trigger={["click"]}>
-              <a
-                href="#pablo"
-                className="ant-dropdown-link"
-                onClick={(e) => e.preventDefault()}
-              >
-                {bell}
-              </a>
-            </Dropdown>
-          </Badge>
-          <Button type="link" onClick={showDrawer}>
+          <Notifications />
+          {/* <Button type="link" onClick={showDrawer}>
             {logsetting}
-          </Button>
+          </Button> */}
           <Button
             type="link"
             className="sidebar-toggler"
@@ -390,8 +379,7 @@ function Header({
               </div>
             </div>
           </Drawer>
-         
-       
+
           <Input
             className="header-search"
             placeholder="Type here..."

@@ -40,7 +40,7 @@ const Navbar = (props) => {
     <>
       <header className="header">
         <div className="navbar navbar-expand-lg navbar-light fixed-top py-3 d-block bg-light shadow-transition">
-          <div className="container">
+          <div className="" style={{paddingRight: "50px" , paddingLeft: "50px"}}>
             <div className="row w-100 align-items-center">
               <div className="col-lg-12">
                 <nav className="navbar d-flex justify-content-between navbar-expand-lg">

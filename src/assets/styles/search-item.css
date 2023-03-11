@@ -1,4 +1,44 @@
-.search-item-slot svg{
-    width: 10px;
-    height: 10px;
+.search-item-slot svg {
+  width: 10px;
+  height: 10px;
+}
+.global-search-card-body {
+  padding: 0 24px;
+}
+.global-search-card-titles {
+  font-size: 14px;
+  font-weight: 500;
+}
+.global-search-card-schedule-days {
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.global-search-card-schedule-days.global-search-card-selected-schedule-days {
+  background-color: blue;
+  color: white;
+  cursor: pointer;
+}
+.global-search-card-schedule-slots {
+  width: 100px;
+  font-size: 14px;
+  border: 1px solid black;
+  cursor: pointer;
+  opacity: 1;
+  display: flex;
+  justify-content: center;
+}
+.global-search-card-schedule-slots.global-search-card-locked-schedule-slot,
+.global-search-card-schedule-slots.global-search-card-reserved-schedule-slot {
+  opacity: 0.5;
+}
+.global-search-card-schedule-slots.global-search-card-selected-schedule-slot {
+  background-color: blue;
+  color: white;
+
 }

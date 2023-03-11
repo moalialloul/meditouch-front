@@ -63,26 +63,28 @@ function EChart() {
       firstDayDate = daysOfWeekDates[keys[0]];
       lastDayDate = daysOfWeekDates[keys[keys.length - 1]];
 
-      if (userData.businessAccountInfo !== -1) {
-        businessAccountController
-          .getBusinessAccountAppointmentsStatistics({
-            businessAccountId: userData.businessAccountInfo.businessAccountId,
-            fromDate: firstDayDate,
-            toDate: lastDayDate,
-          })
-          .then((res) => {
-            publishChart(res, daysOfWeekDates, keys);
-          });
-      } else {
-        userController
-          .getUserAppointmentsStatistics({
-            userFk: userData.userInfo.userId,
-            fromDate: firstDayDate,
-            toDate: lastDayDate,
-          })
-          .then((res) => {
-            publishChart(res, daysOfWeekDates, keys);
-          });
+      if (userData.businessAccountInfo !== -2) {
+        if (userData.businessAccountInfo !== -1) {
+          businessAccountController
+            .getBusinessAccountAppointmentsStatistics({
+              businessAccountId: userData.businessAccountInfo.businessAccountId,
+              fromDate: firstDayDate,
+              toDate: lastDayDate,
+            })
+            .then((res) => {
+              publishChart(res, daysOfWeekDates, keys);
+            });
+        } else {
+          userController
+            .getUserAppointmentsStatistics({
+              userFk: userData.userInfo.userId,
+              fromDate: firstDayDate,
+              toDate: lastDayDate,
+            })
+            .then((res) => {
+              publishChart(res, daysOfWeekDates, keys);
+            });
+        }
       }
     }
   }, [userData.businessAccountInfo]);

@@ -208,7 +208,50 @@ const getBusinessAccountAppointmentsStatistics = ({
       toDate,
   });
 };
+const getAllHealthProfessionals = ({
+  searchText,
+  pageNumber,
+  recordsByPage,
+  isApproved,
+}) => {
+  return axios({
+    method: "GET",
+    url:
+      url +
+      "getAllHealthProfessionals/" +
+      pageNumber +
+      "/" +
+      recordsByPage +
+      "/" +
+      searchText +
+      "/" +
+      isApproved,
+  });
+};
+const getAdminStatistics = () => {
+  return axios({
+    method: "GET",
+    url: url + "getAdminStatistics",
+  });
+};
+const updateNotificationsSettings = ({ body, userFk }) => {
+  return axios({
+    method: "POST",
+    url: url + "updateNotificationsSettings/" + userFk,
+    data: body,
+  });
+};
+const getNotificationsSettings = ({ userFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "getNotificationsSettings/" + userFk,
+  });
+};
 export const businessAccountController = {
+  getNotificationsSettings,
+  updateNotificationsSettings,
+  getAdminStatistics,
+  getAllHealthProfessionals,
   updateAppointmentPrescription,
   getBusinessAccountPatients,
   getTodaysAppointments,

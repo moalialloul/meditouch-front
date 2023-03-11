@@ -19,6 +19,7 @@ export const SocketWrapperProvider = ({ ...props }) => {
   const myAppointments = useRef([]);
   const notifications = useRef([]);
   const specialities = useRef([]);
+  const [loggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
     async function login() {
       const tempStorage = new window.mega.Storage(
@@ -41,9 +42,35 @@ export const SocketWrapperProvider = ({ ...props }) => {
         type: "SET_STORAGE",
         storage: tempStorage,
       });
+      setLoggedIn(true);
+
+      const getFile = tempStorage.root.children.find(
+        (file) => file.name === "profile" + userData.userInfo.userId
+      );
+
+      if (getFile) {
+        dispatch({
+          type: "SET_USER_PROFILE_STORAGE_OBJECT",
+          userProfileStorageObject: getFile,
+        });
+        getFile.downloadBuffer((error, data) => {
+          if (error) console.error(error);
+          let userInfo = { ...userData.userInfo };
+          userInfo.profilePicture = data;
+          dispatch({
+            type: "SET_USER_INFO",
+            userInfo: userInfo,
+          });
+        });
+      }
     }
-    login();
-  }, []);
+    if (userData.userInfo) {
+      if (!loggedIn) {
+        login();
+      }
+    }
+  }, [userData.userInfo]);
+
   useEffect(() => {
     communityPostsRef.current = userData.communityPosts;
   }, [userData.communityPosts]);
@@ -193,7 +220,11 @@ export const SocketWrapperProvider = ({ ...props }) => {
         }
       );
 
-      if (userData.businessAccountInfo !== null) {
+      if (
+        userData.businessAccountInfo !== -1 &&
+        userData.businessAccountInfo !== -2 &&
+        userData.businessAccountInfo !== null
+      ) {
         stompClientRef.current.subscribe(
           "/topic/appointment/" +
             userData.businessAccountInfo.businessAccountId,
@@ -207,7 +238,11 @@ export const SocketWrapperProvider = ({ ...props }) => {
           }
         );
 
-        if (userData.businessAccountInfo !== null) {
+        if (
+          userData.businessAccountInfo !== -1 &&
+          userData.businessAccountInfo !== -2 &&
+          userData.businessAccountInfo !== null
+        ) {
           stompClientRef.current.subscribe(
             "/topic/referral/" + userData.businessAccountInfo.businessAccountId,
             function (payload) {

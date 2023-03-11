@@ -1,5 +1,5 @@
-import React, {  useEffect, useState } from "react";
-import {  useNavigate,  Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Layout,
   Menu,
@@ -131,11 +131,13 @@ export default function SignIn() {
   }, []);
   return (
     <LayoutWrapper style={{ position: "relative" }} withFooter={true}>
-      <Layout className="layout-default layout-signin"style={{marginTop:"100px",padding:"100px"}} >
+      <Layout
+        className="layout-default layout-signin"
+        style={{ marginTop: "100px", padding: "100px" }}
+      >
         <Content className="signin">
-          <Row  justify="center">
-         
-          <Col
+          <Row justify="center">
+            <Col
               className="sign-img"
               style={{ padding: 12 }}
               xs={{ span: 24 }}
@@ -150,11 +152,8 @@ export default function SignIn() {
               md={{ span: 12 }}
               className="signin-wrapper"
             >
-             
-              <Title className="text-center signin-txt" >
-               Login
-              </Title>
-             
+              <Title className="text-center signin-txt">Login</Title>
+
               <Form layout="vertical" className="row-col">
                 <Form.Item
                   className="username"
@@ -215,6 +214,10 @@ export default function SignIn() {
                           })
                           .then((response) => {
                             let data = response.data;
+                            if (data.responseCode === -1) {
+                              alert(data.message);
+                              return;
+                            }
                             dispatch({
                               type: "SET_USER_INFO",
                               userInfo: data.user,
@@ -242,7 +245,8 @@ export default function SignIn() {
                             } else {
                               encryptStorage1.setItem("meditouch_user", {
                                 userInfo: data.user,
-                                businessAccountInfo: -1
+                                businessAccountInfo:
+                                  data.user.userRole === "ADMIN" ? -2 : -1,
                               });
                               navigate("/dashboard");
                             }
@@ -261,14 +265,10 @@ export default function SignIn() {
                   </Link>
                 </p>
               </Form>
-           
             </Col>
-          
           </Row>
-        
         </Content>
-       
-    </Layout>
+      </Layout>
     </LayoutWrapper>
   );
 }

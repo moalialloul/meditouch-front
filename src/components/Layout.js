@@ -6,7 +6,11 @@ const LayoutWrapper = ({ ...props }) => {
   return (
     <div>
       <Navbar />
-      <div className="layout-children">{props.children}</div>
+      <div
+        className="layout-children"
+      >
+        {props.children}
+      </div>
       <div className="footer m-0">{props.withFooter && <Footer />}</div>
     </div>
   );

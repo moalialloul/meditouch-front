@@ -6,6 +6,7 @@ import Header from "./Header";
 
 import { useDispatch, useSelector } from "react-redux";
 import { EncryptStorage } from "encrypt-storage";
+import { businessAccountController } from "../../controllers/businessAccountController";
 
 const { Header: AntHeader, Content, Sider } = Layout;
 
@@ -60,7 +61,24 @@ function Main({ children }) {
       navigate("/sign-in");
     }
   }, []);
- 
+  useEffect(() => {
+    if (userData.userInfo) {
+      if (
+        userData.userInfo.userRole !== "ADMIN" &&
+        userData.notificationSettings.onReferral === -1
+      ) {
+        businessAccountController
+          .getNotificationsSettings({ userFk: userData.userInfo.userId })
+          .then((response) => {
+            let data = response.data.notificationsSettings;
+            dispatch({
+              type: "SET_NOTIFCATION_SETTINGS",
+              notificationSettings: data,
+            });
+          });
+      }
+    }
+  }, [userData.userInfo]);
 
   return userData.userInfo === null ? (
     "loading..."

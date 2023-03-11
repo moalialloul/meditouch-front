@@ -171,32 +171,22 @@ function Sidenav({ color }) {
             <span className="label">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2">
-          <NavLink to="/appointments">
-            <span
-              className="icon"
-              style={{
-                background: page === "appointments" ? color : "",
-              }}
-            >
-              {tables}
-            </span>
-            <span className="label">Appointments</span>
-          </NavLink>
-        </Menu.Item>
-        {/* <Menu.Item key="3">
-          <NavLink to="/billing">
-            <span
-              className="icon"
-              style={{
-                background: page === "billing" ? color : "",
-              }}
-            >
-              {billing}
-            </span>
-            <span className="label">Billing</span>
-          </NavLink>
-        </Menu.Item> */}
+        {userData.userInfo?.userRole !== "ADMIN" && (
+          <Menu.Item key="2">
+            <NavLink to="/appointments">
+              <span
+                className="icon"
+                style={{
+                  background: page === "appointments" ? color : "",
+                }}
+              >
+                {tables}
+              </span>
+              <span className="label">Appointments</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+
         <Menu.Item key="11">
           <NavLink to="/community-posts">
             <span
@@ -223,7 +213,7 @@ function Sidenav({ color }) {
             <span className="label">RTL</span>
           </NavLink>
         </Menu.Item> */}
-        {userData.userInfo?.userRole !== "PATIENT" && (
+        {userData.userInfo?.userRole === "HEALTH_PROFESSIONAL" && (
           <Menu.Item key="4">
             <NavLink to="/patients">
               <span
@@ -239,23 +229,34 @@ function Sidenav({ color }) {
           </Menu.Item>
         )}
 
-        <Menu.Item className="menu-item-header" key="5">
-          Account Settings
-        </Menu.Item>
-        <Menu.Item key="6">
-          <NavLink to="/profile">
-            <span
-              className="icon"
-              style={{
-                background: page === "profile" ? color : "",
-              }}
+        {userData.userInfo?.userRole !== "ADMIN" && (
+          <Menu.Item className="menu-item-header" key="5">
+            Account Settings
+          </Menu.Item>
+        )}
+        {userData.userInfo?.userRole !== "ADMIN" && (
+          <Menu.Item key="6">
+            <NavLink
+              to={
+                userData.userInfo.userRole === "PATIENT"
+                  ? "/user-profile"
+                  : "/profile"
+              }
             >
-              {profile}
-            </span>
-            <span className="label">Profile</span>
-          </NavLink>
-        </Menu.Item>
-        {userData.userInfo?.userRole !== "PATIENT" && (
+              <span
+                className="icon"
+                style={{
+                  background: page === "profile" ? color : "",
+                }}
+              >
+                {profile}
+              </span>
+              <span className="label">Profile</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+
+        {userData.userInfo?.userRole === "HEALTH_PROFESSIONAL" && (
           <Menu.Item key="7">
             <NavLink to="/schedule">
               <span className="icon">{signin}</span>
@@ -268,7 +269,7 @@ function Sidenav({ color }) {
           Live Settings
         </Menu.Item>
 
-        {userData.userInfo?.userRole !== "PATIENT" && (
+        {userData.userInfo?.userRole === "HEALTH_PROFESSIONAL" && (
           <Menu.Item key="9">
             <NavLink to="/live-clinic">
               <span

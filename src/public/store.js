@@ -12,6 +12,15 @@ const data = {
   notifications: [],
   specialities: [],
   storage: null,
+  userProfileStorageObject: null,
+  notificationSettings: {
+    onReferral: -1,
+    onFavorite: -1,
+    onScheduleReminder: -1,
+    onAppointmentReservation: -1,
+    onAddFeatureEmail: -1,
+    onAppointmentReminder:-1,
+  },
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -25,6 +34,11 @@ const reducer = (state = data, action) => {
         ...state,
         storage: action.storage,
       };
+    case "SET_USER_PROFILE_STORAGE_OBJECT":
+      return {
+        ...state,
+        userProfileStorageObject: action.userProfileStorageObject,
+      };
     case "SET_BUSINESS_ACCOUNT_INFO":
       return {
         ...state,
@@ -34,6 +48,11 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         communityPosts: action.communityPosts,
+      };
+    case "SET_NOTIFCATION_SETTINGS":
+      return {
+        ...state,
+        notificationSettings: action.notificationSettings,
       };
     case "SET_RESERVED_SLOTS":
       return {
