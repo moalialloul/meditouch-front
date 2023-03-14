@@ -13,7 +13,7 @@ const Navbar = (props) => {
   });
   const userData = useSelector((state) => state);
   const dispatch = useDispatch();
-  const isLoggedIn = encryptStorage1.getItem("meditouch_user") !== null;
+  const isLoggedIn = encryptStorage1.getItem("meditouch_user") !== null && encryptStorage1.getItem("meditouch_user") !== undefined;
   useEffect(() => {
     let user = encryptStorage1.getItem("meditouch_user");
     if (user) {

@@ -249,7 +249,7 @@ function UserProfile() {
           <Card
             bordered={false}
             className="header-solid h-full"
-            title={<h6 className="font-semibold m-0">Platform Settings</h6>}
+            title={<h6 className="font-semibold m-0">User Notifications</h6>}
           >
             <ul className="list settings-list">
             

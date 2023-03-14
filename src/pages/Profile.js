@@ -250,7 +250,7 @@ function Profile() {
                 {userData.userInfo?.userEmail}
               </Descriptions.Item>
               <Descriptions.Item label="Clinic Location" span={3}>
-                {userData.userInfo?.clinicLocation}
+                {userData.businessAccountInfo?.clinicLocation}
               </Descriptions.Item>
             </Descriptions>
           </Card>
@@ -259,7 +259,7 @@ function Profile() {
           <Card
             bordered={false}
             className="header-solid h-full"
-            title={<h6 className="font-semibold m-0">Platform Settings</h6>}
+            title={<h6 className="font-semibold m-0">User Notifications</h6>}
           >
             <ul className="list settings-list">
               <li>
