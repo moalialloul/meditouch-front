@@ -19,8 +19,9 @@ const data = {
     onScheduleReminder: -1,
     onAppointmentReservation: -1,
     onAddFeatureEmail: -1,
-    onAppointmentReminder:-1,
+    onAppointmentReminder: -1,
   },
+  userMedicalInfo: {},
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -28,6 +29,11 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         userInfo: action.userInfo,
+      };
+    case "SET_MEDICAL_INFO":
+      return {
+        ...state,
+        userMedicalInfo: action.userMedicalInfo,
       };
     case "SET_STORAGE":
       return {

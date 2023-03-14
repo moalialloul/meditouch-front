@@ -20,6 +20,10 @@ import GlobalSearch from "./pages/GlobalSearch";
 import Referral from "./pages/Referral";
 import UserProfile from "./pages/UserProfile";
 import { useEffect } from "react";
+import VerifyUser from "./pages/VerifyUser";
+import ForgetPassword from "./pages/ForgetPassword";
+import PatientDetails from "./pages/PatientDetails";
+import HealthProfessionalDetails from "./pages/HealthProfessionalDetails";
 
 function App() {
   useEffect(() => {
@@ -40,6 +44,8 @@ function App() {
           <Route exact path="/rtl" element={<Rtl />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route exact path="/user-profile" element={<UserProfile />} />
+          <Route exact path="/verify" element={<VerifyUser />} />
+          <Route exact path="/forget-password" element={<ForgetPassword />} />
 
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route exact path="/schedule" element={<Schedule />} />
@@ -48,6 +54,8 @@ function App() {
           <Route exact path="/community-posts" element={<CommunityPosts />} />
           <Route exact path="/global-search" element={<GlobalSearch />} />
           <Route exact path="/referral" element={<Referral />} />
+          <Route exact path="/patient-details" element={<PatientDetails />} />
+          <Route exact path="/hp-details" element={<HealthProfessionalDetails />} />
 
         </Routes>
       </SocketWrapperProvider>

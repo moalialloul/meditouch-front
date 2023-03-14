@@ -1,4 +1,4 @@
-import { Row, Col, Card, Button, Select, Tag } from "antd";
+import { Row, Col, Card, Button, Select, Tag, Modal } from "antd";
 
 import "../assets/styles/appointments.css";
 
@@ -13,20 +13,236 @@ import Dollor from "../icons/dollor";
 import { useNavigate } from "react-router-dom";
 import { util } from "../public/util";
 import moment from "moment";
+import classNames from "classnames";
+import Lock from "../icons/lock";
 
 function Appointments() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(1);
   const [pageNumber, setPageNumber] = useState(1);
+  const [doctorSelected, setDoctorSelected] = useState("");
+  const [scheduleModal, setScheduleModal] = useState(false);
+  const [doctorSchedule, setDoctorSchedule] = useState([]);
+  const [loadingSchedule, setLoadingSchedule] = useState(false);
   const [loading, setLoading] = useState(false);
   const userData = useSelector((state) => state);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [daysOfWeek, setDaysOfWeek] = useState([]);
+  const [dayChosen, setDayChosen] = useState(-1);
+  const [slotIndexChosen, setSlotIndexChosen] = useState(0);
+  const [slots, setSlots] = useState([]);
+  const [appointmentSelected, setAppointmentSelected] = useState("");
+  useEffect(() => {
+    let daysOfWeek = util.getDaysOfWeekDates();
+    let days = [];
+    let keys = Object.keys(daysOfWeek);
+    for (let i = 0; i < keys.length; i++) {
+      days.push(daysOfWeek[keys[i]]);
+    }
+    setDaysOfWeek(days);
+  }, []);
   const [filters, setFilters] = useState({
     appointmentStatus: "",
     appointmentType: "ALL",
     isCancelled: -1,
   });
+  useEffect(() => {
+    if (doctorSelected.businessAccountId) {
+      setLoadingSchedule(true);
+      businessAccountController
+        .getBusinessAccountSchedule({
+          businessAccountId: doctorSelected.businessAccountId,
+          pageNumber: -1,
+          recordsByPage: -1,
+        })
+        .then((response) => {
+          let data = response.data;
+          if (data.responseCode !== -1) {
+            let schedule = data.body.businessAccountSchedule;
+            for (let i = 0; i < schedule.length; i++) {
+              schedule[i].slotStartTime = moment(
+                util.formatTimeByOffset(
+                  new Date(
+                    moment(schedule[i].slotStartTime, "YYYY-MM-DD HH:mm:ss")
+                  )
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+              schedule[i].slotEndTime = moment(
+                util.formatTimeByOffset(
+                  new Date(
+                    moment(schedule[i].slotEndTime, "YYYY-MM-DD HH:mm:ss")
+                  )
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+            }
+
+            setDoctorSchedule(schedule);
+            setDayChosen(0);
+          }
+        })
+        .then(() => {
+          setLoadingSchedule(false);
+        });
+    }
+  }, [doctorSelected]);
+  useEffect(() => {
+    if (dayChosen !== -1) {
+      let tempSchedule = [...doctorSchedule];
+      tempSchedule = tempSchedule.filter(
+        (s) => s.slotDate === daysOfWeek[dayChosen]
+      );
+      tempSchedule.sort(
+        (a, b) => new Date(a.slotStartTime) - new Date(b.slotStartTime)
+      );
+      let indexOfNotLockedSlot = tempSchedule.findIndex(
+        (s) => s.isLocked === false && s.isReserved === false
+      );
+      if (indexOfNotLockedSlot < 0) {
+        setSlotIndexChosen(-1);
+      } else {
+        setSlotIndexChosen(indexOfNotLockedSlot);
+      }
+      setSlots(tempSchedule);
+    }
+  }, [dayChosen]);
+  useEffect(() => {
+    if (!scheduleModal) {
+      setDayChosen(-1);
+      setSlots([]);
+      setDoctorSelected("");
+      setSlotIndexChosen(-1);
+    }
+  }, [scheduleModal]);
+  const handleOk = (e) => {
+    setScheduleModal(false);
+  };
+  const handleCancel = (e) => {
+    setScheduleModal(false);
+  };
+  function postponeAppointment() {
+    userController
+      .postponeAppointment({
+        body: {
+          newSlotFk: slots[slotIndexChosen].slotId,
+          oldSlotFk: appointmentSelected.slotId,
+          appointmentId: appointmentSelected.appointmentId,
+        },
+      })
+      .then((response) => {
+        let data = response.data;
+        alert(data.message);
+        let tempAppointments = [...userData.myAppointments];
+
+        let indexOfApp = tempAppointments.findIndex(
+          (ap) => ap.appointmentId === appointmentSelected.appointmentId
+        );
+        tempAppointments[indexOfApp].slotStartTime =
+          slots[slotIndexChosen].slotStartTime;
+        dispatch({
+          type: "SET_MY_APPOINTMENTS",
+          myAppointments: tempAppointments,
+        });
+        setScheduleModal(false)
+      });
+  }
+  const modal = (
+    <Modal
+      open={scheduleModal}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      okButtonProps={{
+        disabled: true,
+        hidden: true,
+      }}
+      cancelButtonProps={{
+        disabled: true,
+        hidden: true,
+      }}
+    >
+      {loadingSchedule ? (
+        "loading..."
+      ) : (
+        <div>
+          <div className="global-search-card-titles">
+            Schedule between {moment(daysOfWeek[0]).format("YYYY-MM-DD")} and{" "}
+            {moment(daysOfWeek[daysOfWeek.length - 1]).format("YYYY-MM-DD")}
+          </div>
+          <Row className="rowgap-vbox mt-3" gutter={[24, 0]}>
+            {daysOfWeek.map((day, index) => {
+              return (
+                <Col
+                  xs={3}
+                  sm={3}
+                  md={3}
+                  lg={3}
+                  xl={3}
+                  title={moment(day).format("YYYY-MM-DD")}
+                  onClick={() => setDayChosen(index)}
+                  key={"day" + doctorSelected?.businessAccountId + "" + index}
+                >
+                  <div
+                    className={classNames("global-search-card-schedule-days", {
+                      "global-search-card-selected-schedule-days":
+                        dayChosen === index,
+                    })}
+                  >
+                    {moment(day).format("dd")}
+                  </div>
+                </Col>
+              );
+            })}
+          </Row>
+          <div className="d-flex flex-wrap mt-3">
+            {slots.length === 0
+              ? "No slots"
+              : slots.map((slot, index) => {
+                  return (
+                    <div
+                      className={classNames(
+                        "d-flex search-item-slot align-items-center global-search-card-schedule-slots",
+                        {
+                          "global-search-card-locked-schedule-slot":
+                            slot.isLocked,
+                          "global-search-card-reserved-schedule-slot":
+                            slot.isReserved,
+                          "global-search-card-selected-schedule-slot":
+                            slotIndexChosen === index,
+                        }
+                      )}
+                      onClick={() => {
+                        if (slot.isLocked === false && !slot.isReserved) {
+                          setSlotIndexChosen(index);
+                        }
+                      }}
+                      key={
+                        "slot" + doctorSelected?.businessAccountId + "" + index
+                      }
+                    >
+                      {slot.isLocked && <Lock />}
+                      {moment(slot.slotStartTime).format("HH:mm")} -
+                      {moment(slot.slotEndTime).format("HH:mm")}
+                    </div>
+                  );
+                })}
+          </div>
+          <div className="w-100 justify-content-center d-flex mt-3">
+            <Button
+              type={slotIndexChosen !== -1 ? "primary" : ""}
+              // disabled={slotIndexChosen === -1 || userData.userInfo.userId === item.userDetails.userId}
+              disabled={slotIndexChosen === -1}
+              onClick={() => postponeAppointment()}
+            >
+              Postpone Appointment
+            </Button>
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+
   function acceptAppointment(i) {
     let newData = [...upcomingAppointments];
     userController
@@ -88,15 +304,33 @@ function Appointments() {
           })
           .then((response) => {
             let appointmentsData = response.data.appointments;
-            for(let i = 0 ; i < appointmentsData.length ; i++){
-              appointmentsData[i].appointmentActualStartTime = moment(
-                util.formatTimeByOffset(new Date(moment(appointmentsData[i].appointmentActualStartTime, "YYYY-MM-DD HH:mm:ss"))),
-                "YYYY-MM-DD HH:mm:ss"
-              ).format("YYYY-MM-DD HH:mm:ss");
-              appointmentsData[i].appointmentActualEndTime = moment(
-                util.formatTimeByOffset(new Date(moment(appointmentsData[i].appointmentActualEndTime, "YYYY-MM-DD HH:mm:ss"))),
-                "YYYY-MM-DD HH:mm:ss"
-              ).format("YYYY-MM-DD HH:mm:ss")
+            for (let i = 0; i < appointmentsData.length; i++) {
+              appointmentsData[i].appointmentActualStartTime =
+                appointmentsData[i].appointmentActualStartTime &&
+                moment(
+                  util.formatTimeByOffset(
+                    new Date(
+                      moment(
+                        appointmentsData[i].appointmentActualStartTime,
+                        "YYYY-MM-DD HH:mm:ss"
+                      )
+                    )
+                  ),
+                  "YYYY-MM-DD HH:mm:ss"
+                ).format("YYYY-MM-DD HH:mm:ss");
+              appointmentsData[i].appointmentActualEndTime =
+                appointmentsData[i].appointmentActualEndTime &&
+                moment(
+                  util.formatTimeByOffset(
+                    new Date(
+                      moment(
+                        appointmentsData[i].appointmentActualEndTime,
+                        "YYYY-MM-DD HH:mm:ss"
+                      )
+                    )
+                  ),
+                  "YYYY-MM-DD HH:mm:ss"
+                ).format("YYYY-MM-DD HH:mm:ss");
             }
             setUpcomingAppointments((app) => [...app, ...appointmentsData]);
 
@@ -270,6 +504,7 @@ function Appointments() {
   }
   return (
     <Main>
+      {modal}
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24}>
@@ -290,93 +525,115 @@ function Appointments() {
               }
             >
               <div className="appointments-wrapper row d-flex flex-wrap justify-content-between">
-                {userData.myAppointments.map((ap, index) => (
-                  <div
-                    key={index}
-                    className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1"
-                  >
-                    <div className="d-flex flex-column ">
-                      <div className="d-flex align-items-center">
-                        <div className="appointment-profile">
-                          <img src={avatar} className="" alt="" />
-                        </div>
-                        <div className="d-flex flex-column justify-content-center">
-                          {ap.firstName + " " + ap.lastName}
-                         <div> {ap.serviceName}</div>
-                          <div className="appointment-status">
-                            {ap.appointmentStatus}
+                {userData.myAppointments.map((ap, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1"
+                    >
+                      <div className="d-flex flex-column ">
+                        <div className="d-flex align-items-center">
+                          <div className="appointment-profile">
+                            <img src={avatar} className="" alt="" />
+                          </div>
+                          <div className="d-flex flex-column justify-content-center">
+                            {ap.firstName + " " + ap.lastName}
+                            <div> {ap.serviceName}</div>
+                            <div className="appointment-status">
+                              {ap.appointmentStatus}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="d-flex flex-column">
-                        <div>Service Name</div>
-                        <div>{ap.serviceName}</div>
-                      </div>
-                      <div className="d-flex justify-content-between w-100">
-                        <div className="d-flex align-items-center appointment-datetime">
-                          <Calendar />
-                          {ap.slotStartTime}
+                        <div className="d-flex flex-column">
+                          <div>Service Name</div>
+                          <div>{ap.serviceName}</div>
                         </div>
-                        <div className="d-flex align-items-center appointment-datetime">
-                          <Dollor color={"black"} />
-                          {ap.servicePrice + "" + ap.currencyUnit}
+                        <div className="d-flex justify-content-between w-100">
+                          <div className="d-flex align-items-center appointment-datetime">
+                            <Calendar />
+                            {ap.slotStartTime}
+                          </div>
+                          <div className="d-flex align-items-center appointment-datetime">
+                            <Dollor color={"black"} />
+                            {ap.servicePrice + "" + ap.currencyUnit}
+                          </div>
                         </div>
-                      </div>
-                      {userData.userInfo?.userRole !== "PATIENT" && (
-                        <div className="mt-3">
-                          {ap.appointmentStatus === "PENDING" ? (
-                            <div className="d-flex  w-100 justify-content-between">
-                              <Button
-                                type="primary"
-                                className="w-50"
-                                onClick={() => acceptAppointment(index)}
-                              >
-                                Accept
+                        {userData.userInfo?.userRole !== "PATIENT" && (
+                          <div className="mt-3">
+                            {ap.appointmentStatus === "PENDING" ? (
+                              <div className="d-flex  w-100 justify-content-between">
+                                <Button
+                                  type="primary"
+                                  className="w-50"
+                                  onClick={() => acceptAppointment(index)}
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  className="w-50 mx-2"
+                                  danger
+                                  onClick={() => rejectAppointment(index)}
+                                >
+                                  Reject
+                                </Button>
+                              </div>
+                            ) : ap.appointmentStatus === "ACCEPTED" ? (
+                              <Button type="primary" disabled className="w-100">
+                                Accepted
                               </Button>
-                              <Button
-                                className="w-50 mx-2"
-                                danger
-                                onClick={() => rejectAppointment(index)}
-                              >
-                                Reject
+                            ) : (
+                              <Button danger className="w-100">
+                                Rejected
                               </Button>
-                            </div>
-                          ) : ap.appointmentStatus === "ACCEPTED" ? (
-                            <Button type="primary" disabled className="w-100">
-                              Accepted
-                            </Button>
-                          ) : (
-                            <Button danger className="w-100">
-                              Rejected
-                            </Button>
-                          )}
-                          {ap.appointmentActualEndTime !== null &&
-                            ap.appointmentActualStartTime !== null && (
+                            )}
+                            {ap.appointmentActualEndTime !== undefined &&
+                              ap.appointmentActualStartTime !== undefined && (
+                                <Button
+                                  type="primary"
+                                  className="w-100"
+                                  onClick={() => {
+                                    navigate("/referral", {
+                                      state: {
+                                        appointment: ap,
+                                      },
+                                    });
+                                  }}
+                                >
+                                  Refer Doctor
+                                </Button>
+                              )}
+                          </div>
+                        )}
+                        {userData.userInfo?.userRole === "PATIENT" &&
+                          (ap.prescriptionId === -1 ? (
+                            ap.appointmentActualStartTime === undefined &&
+                            ap.appointmentActualEndTime === undefined ? (
                               <Button
                                 type="primary"
                                 className="w-100"
                                 onClick={() => {
-                                  navigate("/referral", {
-                                    state: {
-                                      appointment: ap,
-                                    },
+                                  setAppointmentSelected(ap);
+                                  setDoctorSelected({
+                                    businessAccountId: ap.businessAccountFk,
                                   });
+                                  setScheduleModal(true);
                                 }}
                               >
-                                Refer Doctor
+                                Postpone Appointment
                               </Button>
-                            )}
-                        </div>
-                      )}
-                      {userData.userInfo?.userRole === "PATIENT" &&
-                        (ap.prescriptionId === -1 ? (
-                          "Prescription In Progress"
-                        ) : (
-                          <Button type="primary">View Prescription</Button>
-                        ))}
+                            ) : ap.appointmentActualStartTime !== undefined &&
+                              ap.appointmentActualEndTime === undefined ? (
+                              "In Progress..."
+                            ) : (
+                              "Prescription In Progress"
+                            )
+                          ) : (
+                            <Button type="primary">View Prescription</Button>
+                          ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {!loading && upcomingAppointments.length === 0 && (
                   <div
                     style={{

@@ -22,11 +22,11 @@ const approveUser = ({ userId }) => {
     data: {},
   });
 };
-const verifyUser = ({ userId }) => {
+const verifyUser = ({ body }) => {
   return axios({
     method: "PUT",
-    url: url + "verifyUser/" + userId,
-    data: {},
+    url: url + "verifyUser",
+    data: body,
   });
 };
 const generateToken = ({ tokenType, body }) => {
@@ -420,7 +420,22 @@ const getUserAppointmentsStatistics = ({ userFk, fromDate, toDate }) => {
       toDate,
   });
 };
+const getMedicalInformation = ({ userFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "getMedicalInformation/" + userFk,
+  });
+};
+const setMedicalInformation = ({ body }) => {
+  return axios({
+    method: "PUT",
+    url: url + "setMedicalInformation",
+    data: body,
+  });
+};
 export const userController = {
+  setMedicalInformation,
+  getMedicalInformation,
   getUserAppointmentsStatistics,
   getUserStatistics,
   getHealthProfessionals,

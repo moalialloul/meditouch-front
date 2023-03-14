@@ -15,6 +15,25 @@ export default function SearchItem({ item }) {
   const [daysOfWeek, setDaysOfWeek] = useState([]);
   const userData = useSelector((state) => state);
   const [dayChosen, setDayChosen] = useState(0);
+  const [doctorSchedule, setDoctorSchedule] = useState([]);
+  useEffect(() => {
+    let schedule = item.userSchedule;
+    for (let i = 0; i < schedule.length; i++) {
+      schedule[i].slotStartTime = moment(
+        util.formatTimeByOffset(
+          new Date(moment(schedule[i].slotStartTime, "YYYY-MM-DD HH:mm:ss"))
+        ),
+        "YYYY-MM-DD HH:mm:ss"
+      ).format("YYYY-MM-DD HH:mm:ss");
+      schedule[i].slotEndTime = moment(
+        util.formatTimeByOffset(
+          new Date(moment(schedule[i].slotEndTime, "YYYY-MM-DD HH:mm:ss"))
+        ),
+        "YYYY-MM-DD HH:mm:ss"
+      ).format("YYYY-MM-DD HH:mm:ss");
+    }
+    setDoctorSchedule(schedule);
+  }, [item]);
   const [slotIndexChosen, setSlotIndexChosen] = useState(0);
   const [slots, setSlots] = useState([]);
   const [userProfle, setUserProfile] = useState("");
@@ -42,21 +61,8 @@ export default function SearchItem({ item }) {
     setDaysOfWeek(days);
   }, []);
   useEffect(() => {
-    let schedule = item.userSchedule;
-    for (let i = 0; i < schedule.length; i++) {
-      schedule[i].slotStartTime = moment(
-        util.formatTimeByOffset(
-          new Date(moment(schedule[i].slotStartTime, "YYYY-MM-DD HH:mm:ss"))
-        ),
-        "YYYY-MM-DD HH:mm:ss"
-      ).format("YYYY-MM-DD HH:mm:ss");
-      schedule[i].slotEndTime = moment(
-        util.formatTimeByOffset(
-          new Date(moment(schedule[i].slotEndTime, "YYYY-MM-DD HH:mm:ss"))
-        ),
-        "YYYY-MM-DD HH:mm:ss"
-      ).format("YYYY-MM-DD HH:mm:ss");
-    }
+    let schedule = [...doctorSchedule];
+
     schedule = schedule.filter((s) => s.slotDate === daysOfWeek[dayChosen]);
     schedule.sort(
       (a, b) => new Date(a.slotStartTime) - new Date(b.slotStartTime)
@@ -146,26 +152,28 @@ export default function SearchItem({ item }) {
                 <p>{item.userDetails.specialityName}</p>
               </div>
             </Avatar.Group>
-            <div
-              title={
-                userData.favoriteDoctors.findIndex(
+            {util.isUserAuthorized() && (
+              <div
+                title={
+                  userData.favoriteDoctors.findIndex(
+                    (d) =>
+                      d.businessAccountFk === item.userDetails.businessAccountId
+                  ) >= 0
+                    ? "Remove Favorite"
+                    : "Add Favorite"
+                }
+                onClick={() => modifyFavorite()}
+              >
+                {userData.favoriteDoctors.findIndex(
                   (d) =>
                     d.businessAccountFk === item.userDetails.businessAccountId
-                ) >= 0
-                  ? "Remove Favorite"
-                  : "Add Favorite"
-              }
-              onClick={() => modifyFavorite()}
-            >
-              {userData.favoriteDoctors.findIndex(
-                (d) =>
-                  d.businessAccountFk === item.userDetails.businessAccountId
-              ) >= 0 ? (
-                <HeartFilled />
-              ) : (
-                <HeartOutlined />
-              )}
-            </div>
+                ) >= 0 ? (
+                  <HeartFilled />
+                ) : (
+                  <HeartOutlined />
+                )}
+              </div>
+            )}
           </div>
         }
       >

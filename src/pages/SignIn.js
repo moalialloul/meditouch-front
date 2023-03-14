@@ -133,23 +133,23 @@ export default function SignIn() {
     <LayoutWrapper style={{ position: "relative" }} withFooter={true}>
       <Layout
         className="layout-default layout-signin"
-        style={{ marginTop: "100px", padding: "100px" }}
+        style={{ padding: "100px" }}
       >
         <Content className="signin">
           <Row justify="center">
-            <Col
+            {/* <Col
               className="sign-img"
               style={{ padding: 12 }}
               xs={{ span: 24 }}
-              lg={{ span: 12 }}
-              md={{ span: 12 }}
+              lg={{ span: 24 }}
+              md={{ span: 24 }}
             >
               <img src={signinbg} alt="" />
-            </Col>
+            </Col> */}
             <Col
-              xs={{ span: 24, offset: 0 }}
-              lg={{ span: 6, offset: 2 }}
-              md={{ span: 12 }}
+              xs={{ span: 18  }}
+              lg={{ span: 18  }}
+              md={{ span: 18 }}
               className="signin-wrapper"
             >
               <Title className="text-center signin-txt">Login</Title>
@@ -258,12 +258,23 @@ export default function SignIn() {
                     SIGN IN
                   </Button>
                 </Form.Item>
-                <p className="font-semibold text-muted">
+              <div className="d-flex justify-content-between">
+              <p className="font-semibold text-muted">
                   Don't have an account?{" "}
                   <Link to="/sign-up" className="text-dark font-bold ">
                     Sign Up
                   </Link>
                 </p>
+                <p className="font-semibold text-muted">
+                 
+                  <Link to="/forget-password" className="text-dark font-bold ">
+                    Forget Password
+                  </Link>
+                  <Link to="/verify" className="text-dark font-bold ">
+                    Verify Account
+                  </Link>
+                </p>
+              </div>
               </Form>
             </Col>
           </Row>

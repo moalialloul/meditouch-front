@@ -36,10 +36,11 @@ import Main from "../components/layout/Main";
 import avatar from "../assets/images/avatar.jpg";
 import { UploadOutlined } from "@ant-design/icons";
 import { businessAccountController } from "../controllers/businessAccountController";
+import { useNavigate } from "react-router-dom";
 function Profile() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state);
-
+  const navigate = useNavigate();
   async function upload(file) {
     const pic = file.target.files[0];
 
@@ -127,7 +128,6 @@ function Profile() {
         userFk: userData.userInfo.userId,
       })
       .then(() => {
-       
         alert("done");
       });
   }
@@ -212,6 +212,13 @@ function Profile() {
                   userData.userInfo?.profilePicture !== "" &&
                   userData.userInfo.profilePicture !== -1 && (
                     <Button onClick={() => deletepic()}>DELETE</Button>
+                  )}
+                {userData.userInfo &&
+                  userData.userInfo.businessAccountInfo !== -1 &&
+                  userData.userInfo.businessAccountInfo !== -2 && (
+                    <Button onClick={() => navigate("/hp-details")} type="primary" icon={<UploadOutlined />}>
+                      Edit Profile
+                    </Button>
                   )}
               </div>
             </Col>

@@ -104,10 +104,18 @@ const addService = ({ body }) => {
     data: body,
   });
 };
-const deleteService = ({ serviceId }) => {
+const deleteService = ({ body }) => {
   return axios({
     method: "DELETE",
-    url: url + "deleteService/" + serviceId,
+    url: url + "deleteService",
+    data: body,
+
+  });
+};
+const getServices = ({ businessAccountFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "getServices/" + businessAccountFk,
   });
 };
 const addAppointmentPrescription = ({ body }) => {
@@ -248,6 +256,7 @@ const getNotificationsSettings = ({ userFk }) => {
   });
 };
 export const businessAccountController = {
+  getServices,
   getNotificationsSettings,
   updateNotificationsSettings,
   getAdminStatistics,

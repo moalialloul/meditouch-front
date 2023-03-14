@@ -50,6 +50,7 @@ export default function GlobalSearch() {
     favorites: false,
     availability: false,
   });
+  const [locationEnabled, setLocationEnabled] = useState(false);
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.permissions
@@ -64,6 +65,7 @@ export default function GlobalSearch() {
                 tempFilters.myLongitude = position.coords.longitude;
 
                 setFiltersData(tempFilters);
+                setLocationEnabled(true);
               },
               (error) => {}
             );
