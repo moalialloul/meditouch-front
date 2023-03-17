@@ -13,7 +13,7 @@ export default function Patients() {
 
   const [patientsData, setPatientsData] = useState([]);
   useEffect(() => {
-    if (userData.businessAccountInfo) {
+    if (!userData.loadingApp) {
       businessAccountController
         .getBusinessAccountPatients({
           businessAccountId: userData.businessAccountInfo.businessAccountId,
@@ -22,7 +22,7 @@ export default function Patients() {
           setPatientsData(response.data.patients);
         });
     }
-  }, [userData.businessAccountInfo]);
+  }, [userData.loadingApp]);
   function blockUser(userId, index) {
     businessAccountController
       .blockUser({

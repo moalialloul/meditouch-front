@@ -13,34 +13,18 @@ const Navbar = (props) => {
   });
   const userData = useSelector((state) => state);
   const dispatch = useDispatch();
-  const isLoggedIn = encryptStorage1.getItem("meditouch_user") !== null && encryptStorage1.getItem("meditouch_user") !== undefined;
-  useEffect(() => {
-    let user = encryptStorage1.getItem("meditouch_user");
-    if (user) {
-      if (userData.userInfo === null) {
-        dispatch({
-          type: "SET_USER_INFO",
-          userInfo: encryptStorage1.getItem("meditouch_user").userInfo,
-        });
-      }
-
-      if (user.businessAccountInfo) {
-        if (userData.businessAccountInfo === null) {
-          dispatch({
-            type: "SET_BUSINESS_ACCOUNT_INFO",
-            businessAccountInfo:
-              encryptStorage1.getItem("meditouch_user").businessAccountInfo,
-          });
-        }
-      }
-    }
-  }, []);
+  const isLoggedIn =
+    encryptStorage1.getItem("meditouch_user") !== null &&
+    encryptStorage1.getItem("meditouch_user") !== undefined;
 
   return (
     <>
       <header className="header">
         <div className="navbar navbar-expand-lg navbar-light fixed-top py-3 d-block bg-light shadow-transition">
-          <div className="" style={{paddingRight: "50px" , paddingLeft: "50px"}}>
+          <div
+            className=""
+            style={{ paddingRight: "50px", paddingLeft: "50px" }}
+          >
             <div className="row w-100 align-items-center">
               <div className="col-lg-12">
                 <nav className="navbar d-flex justify-content-between navbar-expand-lg">

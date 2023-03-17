@@ -1,5 +1,6 @@
 const data = {
   userInfo: null,
+  loadingApp: true,
   businessAccountInfo: null,
   communityPosts: {
     pageNumber: -1,
@@ -21,7 +22,18 @@ const data = {
     onAddFeatureEmail: -1,
     onAppointmentReminder: -1,
   },
-  userMedicalInfo: {},
+  userMedicalInfo: {
+    height: 0,
+    weight: 0,
+    diseasesDescription: 0,
+    vaccinationDescription: 0,
+    loaded: false,
+  },
+  myReservedSlots: {
+    loaded: false,
+    slots: [],
+  },
+  myReferrals: [],
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -30,10 +42,25 @@ const reducer = (state = data, action) => {
         ...state,
         userInfo: action.userInfo,
       };
+    case "SET_REFERRALS":
+      return {
+        ...state,
+        myReferrals: action.myReferrals,
+      };
+    case "SET_LOADING_APP":
+      return {
+        ...state,
+        loadingApp: action.loadingApp,
+      };
     case "SET_MEDICAL_INFO":
       return {
         ...state,
         userMedicalInfo: action.userMedicalInfo,
+      };
+    case "SET_MY_RESERVED_SLOTS":
+      return {
+        ...state,
+        myReservedSlots: action.myReservedSlots,
       };
     case "SET_STORAGE":
       return {

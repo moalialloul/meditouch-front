@@ -24,6 +24,10 @@
   color: white;
   cursor: pointer;
 }
+.global-search-card-schedule-all-slots{
+  height: 150px;
+  overflow-y: auto;
+}
 .global-search-card-schedule-slots {
   width: 100px;
   font-size: 14px;
@@ -32,11 +36,22 @@
   opacity: 1;
   display: flex;
   justify-content: center;
+ 
+}
+.global-search-card-disabled-schedule-slot{
+  opacity: 0.3;
+  text-decoration: line-through;
 }
 .global-search-card-schedule-slots.global-search-card-locked-schedule-slot,
 .global-search-card-schedule-slots.global-search-card-reserved-schedule-slot {
   opacity: 0.5;
 }
+.global-search-card-schedule-slots.global-search-card-reserved-schedule-slot.global-search-card-can-reserve-schedule-slot{
+  background-color: #8c8c8c;
+  color: white;
+  opacity: 1;
+}
+
 .global-search-card-schedule-slots.global-search-card-selected-schedule-slot {
   background-color: blue;
   color: white;

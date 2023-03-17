@@ -24,6 +24,7 @@ import VerifyUser from "./pages/VerifyUser";
 import ForgetPassword from "./pages/ForgetPassword";
 import PatientDetails from "./pages/PatientDetails";
 import HealthProfessionalDetails from "./pages/HealthProfessionalDetails";
+import ReservationSlots from "./pages/ReservationSlots";
 
 function App() {
   useEffect(() => {
@@ -56,6 +57,7 @@ function App() {
           <Route exact path="/referral" element={<Referral />} />
           <Route exact path="/patient-details" element={<PatientDetails />} />
           <Route exact path="/hp-details" element={<HealthProfessionalDetails />} />
+          <Route exact path="/reservation-slots" element={<ReservationSlots />} />
 
         </Routes>
       </SocketWrapperProvider>

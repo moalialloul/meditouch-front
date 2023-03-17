@@ -2,12 +2,12 @@ const lineChart = {
   series: [
     {
       name: "Mobile apps",
-      data: [350, 40, 300, 220, 500, 250, 400, 230, 500],
+      data: [],
       offsetY: 0,
     },
     {
       name: "Websites",
-      data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+      data: [],
       offsetY: 0,
     },
   ],
@@ -23,7 +23,7 @@ const lineChart = {
     },
 
     legend: {
-      show: false,
+      show: true,
     },
 
     dataLabels: {
@@ -58,10 +58,14 @@ const lineChart = {
             "#8c8c8c",
             "#8c8c8c",
             "#8c8c8c",
+            "#8c8c8c",
+            "#8c8c8c",
+            "#8c8c8c",
           ],
         },
       },
       categories: [
+        "Jan",
         "Feb",
         "Mar",
         "Apr",
@@ -71,6 +75,9 @@ const lineChart = {
         "Aug",
         "Sep",
         "Oct",
+        "Nov",
+        "Dec"
+
       ],
     },
 

@@ -104,21 +104,7 @@ function UserProfile() {
         alert("done");
       });
   }
-  useEffect(() => {
-    if (userData.userInfo) {
-      if (userData.userInfo.userRole === "PATIENT") {
-        userController
-          .getMedicalInformation({ userFk: userData.userInfo.userId })
-          .then((response) => {
-            let data = response.data.medical_information;
-            dispatch({
-              type: "SET_MEDICAL_INFO",
-              userMedicalInfo: data,
-            });
-          });
-      }
-    }
-  }, [userData.userInfo]);
+ 
   return (
     <Main>
       <div

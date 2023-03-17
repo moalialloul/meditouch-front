@@ -7,6 +7,7 @@ import Header from "./Header";
 import { useDispatch, useSelector } from "react-redux";
 import { EncryptStorage } from "encrypt-storage";
 import { businessAccountController } from "../../controllers/businessAccountController";
+import AuthenticationWrapper from "../AuthenticationWrapper";
 
 const { Header: AntHeader, Content, Sider } = Layout;
 
@@ -80,66 +81,74 @@ function Main({ children }) {
     }
   }, [userData.userInfo]);
 
-  return userData.userInfo === null ? (
-    "loading..."
-  ) : userData.userInfo.userRole === "HEALTH_PROFESSIONAL" &&
-    userData.businessAccountInfo === null ? (
-    "loading..."
-  ) : (
-    <Layout
-      className={`layout-dashboard ${
-        pathname === "profile" ? "layout-profile" : ""
-      } ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}
-    >
-      <Drawer
-        title={false}
-        placement={placement === "right" ? "left" : "right"}
-        closable={false}
-        onClose={() => setVisible(false)}
-        visible={visible}
-        key={placement === "right" ? "left" : "right"}
-        width={250}
-        className={`drawer-sidebar ${
-          pathname === "rtl" ? "drawer-sidebar-rtl" : ""
-        } `}
+  return (
+    <AuthenticationWrapper>
+      <Layout
+        className={`layout-dashboard ${
+          pathname === "profile" ? "layout-profile" : ""
+        } ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}
       >
-        <Layout
-          className={`layout-dashboard ${
-            pathname === "rtl" ? "layout-dashboard-rtl" : ""
-          }`}
+        <Drawer
+          title={false}
+          placement={placement === "right" ? "left" : "right"}
+          closable={false}
+          onClose={() => setVisible(false)}
+          visible={visible}
+          key={placement === "right" ? "left" : "right"}
+          width={250}
+          className={`drawer-sidebar ${
+            pathname === "rtl" ? "drawer-sidebar-rtl" : ""
+          } `}
         >
-          <Sider
-            trigger={null}
-            width={250}
-            theme="light"
-            className={`sider-primary ant-layout-sider-primary ${
-              sidenavType === "#fff" ? "active-route" : ""
+          <Layout
+            className={`layout-dashboard ${
+              pathname === "rtl" ? "layout-dashboard-rtl" : ""
             }`}
-            style={{ background: sidenavType }}
           >
-            <Sidenav color={sidenavColor} />
-          </Sider>
-        </Layout>
-      </Drawer>
-      <Sider
-        breakpoint="lg"
-        collapsedWidth="0"
-        onCollapse={(collapsed, type) => {
-          // console.log(collapsed, type);
-        }}
-        trigger={null}
-        width={250}
-        theme="light"
-        className={`sider-primary ant-layout-sider-primary ${
-          sidenavType === "#fff" ? "active-route" : ""
-        }`}
-        style={{ background: sidenavType }}
-      >
-        <Sidenav color={sidenavColor} />
-      </Sider>
-      <Layout>
-        {fixed ? (
-          <Affix>
+            <Sider
+              trigger={null}
+              width={250}
+              theme="light"
+              className={`sider-primary ant-layout-sider-primary ${
+                sidenavType === "#fff" ? "active-route" : ""
+              }`}
+              style={{ background: sidenavType }}
+            >
+              <Sidenav color={sidenavColor} />
+            </Sider>
+          </Layout>
+        </Drawer>
+        <Sider
+          breakpoint="lg"
+          collapsedWidth="0"
+          onCollapse={(collapsed, type) => {
+            // console.log(collapsed, type);
+          }}
+          trigger={null}
+          width={250}
+          theme="light"
+          className={`sider-primary ant-layout-sider-primary ${
+            sidenavType === "#fff" ? "active-route" : ""
+          }`}
+          style={{ background: sidenavType }}
+        >
+          <Sidenav color={sidenavColor} />
+        </Sider>
+        <Layout>
+          {fixed ? (
+            <Affix>
+              <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+                <Header
+                  onPress={openDrawer}
+                  name={pathname}
+                  subName={pathname}
+                  handleSidenavColor={handleSidenavColor}
+                  handleSidenavType={handleSidenavType}
+                  handleFixedNavbar={handleFixedNavbar}
+                />
+              </AntHeader>
+            </Affix>
+          ) : (
             <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
               <Header
                 onPress={openDrawer}
@@ -150,22 +159,11 @@ function Main({ children }) {
                 handleFixedNavbar={handleFixedNavbar}
               />
             </AntHeader>
-          </Affix>
-        ) : (
-          <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
-            <Header
-              onPress={openDrawer}
-              name={pathname}
-              subName={pathname}
-              handleSidenavColor={handleSidenavColor}
-              handleSidenavType={handleSidenavType}
-              handleFixedNavbar={handleFixedNavbar}
-            />
-          </AntHeader>
-        )}
-        <Content className="content-ant">{children}</Content>
+          )}
+          <Content className="content-ant">{children}</Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </AuthenticationWrapper>
   );
 }
 

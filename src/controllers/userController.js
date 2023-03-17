@@ -63,16 +63,28 @@ const getReservationSlots = ({ userId }) => {
     url: url + "getReservationSlots/" + userId,
   });
 };
+const isSlotReservedByUser = ({ userId, slotFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "isSlotReservedByUser/" + userId + "/" + slotFk,
+  });
+};
 const getGeneralStatistics = () => {
   return axios({
     method: "GET",
     url: url + "getGeneralStatistics",
   });
 };
-const deleteReservationSlot = ({ reservationId }) => {
+const deleteReservationSlotByReservationId = ({ reservationId, userFk }) => {
   return axios({
     method: "DELETE",
-    url: url + "deleteReservationSlot/" + reservationId,
+    url: url + "deleteReservationSlotByReservationId/" + reservationId + "/" + userFk,
+  });
+};
+const deleteReservationSlotBySlot = ({ userFk, slotFk }) => {
+  return axios({
+    method: "DELETE",
+    url: url + "deleteReservationSlotBySlot/" + slotFk + "/" + userFk,
   });
 };
 const addReservationSlot = ({ body }) => {
@@ -434,6 +446,8 @@ const setMedicalInformation = ({ body }) => {
   });
 };
 export const userController = {
+  deleteReservationSlotBySlot,
+  isSlotReservedByUser,
   setMedicalInformation,
   getMedicalInformation,
   getUserAppointmentsStatistics,
@@ -452,7 +466,7 @@ export const userController = {
   updatePassword,
   forgetPassword,
   getReservationSlots,
-  deleteReservationSlot,
+  deleteReservationSlotByReservationId,
   addReservationSlot,
   getUserFeedbacks,
   getAllFeedbacks,

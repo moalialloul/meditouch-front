@@ -238,7 +238,7 @@ function Sidenav({ color }) {
           <Menu.Item key="6">
             <NavLink
               to={
-                userData.userInfo.userRole === "PATIENT"
+                userData.userInfo?.userRole === "PATIENT"
                   ? "/user-profile"
                   : "/profile"
               }
@@ -252,6 +252,14 @@ function Sidenav({ color }) {
                 {profile}
               </span>
               <span className="label">Profile</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+          {userData.userInfo?.userRole === "PATIENT" && (
+          <Menu.Item key="7">
+            <NavLink to="/reservation-slots">
+              <span className="icon">{signin}</span>
+              <span className="label">Reservation Slots</span>
             </NavLink>
           </Menu.Item>
         )}

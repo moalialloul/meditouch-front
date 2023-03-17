@@ -1,5 +1,5 @@
 import { MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Typography, Timeline } from "antd";
+import { Button, Card, Col, Typography, Timeline, Modal } from "antd";
 import Title from "antd/lib/skeleton/Title";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
@@ -20,8 +20,10 @@ export default function LiveClinic() {
   const [minutesRemaining, setMinutesRemaining] = useState(0);
   const [secondsRemaining, setSecondsRemaining] = useState(0);
   const [message, setMessage] = useState("Work in progress...");
+  const [medicalInfoModal, setMedicalInfoModal] = useState(false);
+  const [viewMedicalInfoIndex, setViewMedicalInfoIndex] = useState(-1);
   useEffect(() => {
-    if (userData.businessAccountInfo) {
+    if (!userData.loadingApp) {
       let tempCurrentAppointmentIndex = -1;
 
       businessAccountController
@@ -88,7 +90,7 @@ export default function LiveClinic() {
           setLoading(false);
         });
     }
-  }, [userData.businessAccountInfo]);
+  }, [userData.loadingApp]);
   function modifyAppointment(key, index) {
     let tempAppointments = [...appointments];
     tempAppointments[index][key] = true;
@@ -130,12 +132,12 @@ export default function LiveClinic() {
         setMessage("You're done for today");
       }
       tempAppointments[index]["appointmentActualEndTime"] = util
-      .convertTZ(
-        moment(moment(new Date())).format("YYYY/MM/DD HH:mm:ss").toString(),
-        "Europe/Paris"
-      )
-      .format("YYYY-MM-DDTHH:mm:ss")
-      .toString();
+        .convertTZ(
+          moment(moment(new Date())).format("YYYY/MM/DD HH:mm:ss").toString(),
+          "Europe/Paris"
+        )
+        .format("YYYY-MM-DDTHH:mm:ss")
+        .toString();
       userController
         .updateAppointment({
           body: {
@@ -206,10 +208,38 @@ export default function LiveClinic() {
       });
     }
   }
-  console.log(appointments);
+  const handleOk = (e) => {
+    setMedicalInfoModal(false);
+  };
+  const handleCancel = (e) => {
+    setMedicalInfoModal(false);
+  };
+  const modal = (
+    <Modal
+      open={medicalInfoModal}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      okButtonProps={{
+        disabled: false,
+        hidden: false,
+      }}
+      cancelButtonProps={{
+        disabled: true,
+        hidden: true,
+      }}
+    >
+      <div>Height : {appointments[viewMedicalInfoIndex]?.height + " cm"}</div>
+      <div>Weight : {appointments[viewMedicalInfoIndex]?.weight + " Kg"}</div>
+      <div>Diseases : {appointments[viewMedicalInfoIndex]?.diseasesDescription}</div>
+      <div>Vacination : {appointments[viewMedicalInfoIndex]?.vaccinationDescription}</div>
+
+    </Modal>
+  );
+
   return (
     <Main>
       <Col xs={24} sm={24} md={24} lg={24} xl={24} className="mb-24">
+        {modal}
         <Card bordered={false} className="criclebox h-full">
           <div className="timeline-box">
             {loading ? (
@@ -273,6 +303,15 @@ export default function LiveClinic() {
                             danger
                           >
                             End
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setViewMedicalInfoIndex(index);
+                              setMedicalInfoModal(true);
+                            }}
+                            type="primary"
+                          >
+                            Medical Info
                           </Button>
                           {t.started === true && t.ended === true && (
                             <Button

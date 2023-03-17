@@ -84,54 +84,56 @@ export default function HealthProfessionalDetails() {
   }
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.permissions
-        .query({ name: "geolocation" })
-        .then(function (result) {
-          if (result.state === "granted" || result.state === "prompt") {
-            //If granted then you can directly call your function here
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                let tempUserData = { ...userForm };
-                userForm.clinicLocationLatitude = position.coords.latitude;
-                userForm.clinicLocationLongitude = position.coords.longitude;
+    if (!userData.loadingApp) {
+      if (navigator.geolocation) {
+        navigator.permissions
+          .query({ name: "geolocation" })
+          .then(function (result) {
+            if (result.state === "granted" || result.state === "prompt") {
+              //If granted then you can directly call your function here
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  let tempUserData = { ...userForm };
+                  userForm.clinicLocationLatitude = position.coords.latitude;
+                  userForm.clinicLocationLongitude = position.coords.longitude;
 
-                setUserForm(tempUserData);
-                setLocationEnabled(true);
-              },
-              (error) => {}
-            );
-          } else if (result.state === "denied") {
-            //If denied then you have to show instructions to enable location
-          }
-          result.onchange = function () {
-            console.log(result.state);
-          };
-        });
-    } else {
-      alert("Sorry Not available!");
+                  setUserForm(tempUserData);
+                  setLocationEnabled(true);
+                },
+                (error) => {}
+              );
+            } else if (result.state === "denied") {
+              //If denied then you have to show instructions to enable location
+            }
+            result.onchange = function () {
+              console.log(result.state);
+            };
+          });
+      } else {
+        alert("Sorry Not available!");
+      }
+      if (
+        userData.businessAccountInfo &&
+        userData.businessAccountInfo !== -1 &&
+        userData.businessAccountInfo !== -2 &&
+        userData.userInfo &&
+        !dataLoaded
+      ) {
+        let tempUserForm = { ...userForm };
+        businessAccountController
+          .getBusinessAccount({ userId: userData.userInfo.userId })
+          .then((response) => {
+            let data = response.data.businessAccount;
+            tempUserForm.speciality = data.specialityFk;
+            tempUserForm.clinicLocation = data.clinicLocation;
+            tempUserForm.biography = data.biography;
+            tempUserForm.clinicLocationLatitude = data.clinicLocationLatitude;
+            tempUserForm.clinicLocationLongitude = data.clinicLocationLongitude;
+            getServices(tempUserForm);
+          });
+      }
     }
-    if (
-      userData.businessAccountInfo &&
-      userData.businessAccountInfo !== -1 &&
-      userData.businessAccountInfo !== -2 &&
-      userData.userInfo &&
-      !dataLoaded
-    ) {
-      let tempUserForm = { ...userForm };
-      businessAccountController
-        .getBusinessAccount({ userId: userData.userInfo.userId })
-        .then((response) => {
-          let data = response.data.businessAccount;
-          tempUserForm.speciality = data.specialityFk;
-          tempUserForm.clinicLocation = data.clinicLocation;
-          tempUserForm.biography = data.biography;
-          tempUserForm.clinicLocationLatitude = data.clinicLocationLatitude;
-          tempUserForm.clinicLocationLongitude = data.clinicLocationLongitude;
-          getServices(tempUserForm);
-        });
-    }
-  }, [userData.businessAccountInfo, userData.userInfo]);
+  }, [userData.loadingApp]);
   function submit() {
     if (
       userForm.speciality === -1 ||

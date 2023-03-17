@@ -109,13 +109,18 @@ const deleteService = ({ body }) => {
     method: "DELETE",
     url: url + "deleteService",
     data: body,
-
   });
 };
 const getServices = ({ businessAccountFk }) => {
   return axios({
     method: "GET",
     url: url + "getServices/" + businessAccountFk,
+  });
+};
+const getRevenueOfYear = ({ businessAccountFk, userFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "getRevenueOfYear/" + businessAccountFk + "/" + userFk,
   });
 };
 const addAppointmentPrescription = ({ body }) => {
@@ -256,6 +261,7 @@ const getNotificationsSettings = ({ userFk }) => {
   });
 };
 export const businessAccountController = {
+  getRevenueOfYear,
   getServices,
   getNotificationsSettings,
   updateNotificationsSettings,

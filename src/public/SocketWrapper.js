@@ -15,6 +15,9 @@ export const SocketWrapperProvider = ({ ...props }) => {
     posts: [],
   });
   const reservedSlots = useRef([]);
+  const myReservedSlots = useRef([]);
+  const myReferrals = useRef([]);
+
   const favoriteDoctors = useRef([]);
   const myAppointments = useRef([]);
   const notifications = useRef([]);
@@ -83,6 +86,12 @@ export const SocketWrapperProvider = ({ ...props }) => {
   useEffect(() => {
     notifications.current = userData.notifications;
   }, [userData.notifications]);
+  useEffect(() => {
+    myReservedSlots.current = userData.myReservedSlots;
+  }, [userData.myReservedSlots]);
+  useEffect(() => {
+    myReferrals.current = userData.myReferrals;
+  }, [userData.myReferrals]);
   useEffect(() => {
     if (userData.specialities.length === 0) {
       userController.getSpecialities().then((response) => {
@@ -200,7 +209,7 @@ export const SocketWrapperProvider = ({ ...props }) => {
       );
 
       stompClientRef.current.subscribe(
-        "/topic/appointmentsReminder/" + userData.userInfo.userId,
+        "/topic/notifications/" + userData.userInfo.userId,
         function (payload) {
           var newNotification = JSON.parse(payload.body);
 
@@ -209,6 +218,39 @@ export const SocketWrapperProvider = ({ ...props }) => {
             type: "SET_MY_NOTIFICATIONS",
             notifications: allNotifications,
           });
+        }
+      );
+
+      stompClientRef.current.subscribe(
+        "/topic/myReservedSlots/" + userData.userInfo.userId,
+        function (payload) {
+          var newMyReservedSlots = JSON.parse(payload.body);
+          if (newMyReservedSlots.message === "ADD") {
+            let allMyReservedSlots = [
+              newMyReservedSlots.reservation,
+              ...myReservedSlots.current.slots,
+            ];
+            dispatch({
+              type: "SET_MY_RESERVED_SLOTS",
+              myReservedSlots: {
+                loaded: userData.myReservedSlots.loaded,
+                slots: allMyReservedSlots,
+              },
+            });
+          } else {
+            let allMyReservedSlots = [...myReservedSlots.current.slots];
+            let index = allMyReservedSlots.findIndex(
+              (rs) => rs.reservationId === newMyReservedSlots.reservationId
+            );
+            allMyReservedSlots.splice(index, 1);
+            dispatch({
+              type: "SET_MY_RESERVED_SLOTS",
+              myReservedSlots: {
+                loaded: userData.myReservedSlots.loaded,
+                slots: allMyReservedSlots,
+              },
+            });
+          }
         }
       );
 
@@ -246,12 +288,12 @@ export const SocketWrapperProvider = ({ ...props }) => {
           stompClientRef.current.subscribe(
             "/topic/referral/" + userData.businessAccountInfo.businessAccountId,
             function (payload) {
-              // var appointment = JSON.parse(payload.body).appointment;
-              // let allMyAppointments = [appointment, ...myAppointments.current];
-              // dispatch({
-              //   type: "SET_MY_APPOINTMENTS",
-              //   myAppointments: allMyAppointments,
-              // });
+              var referral = JSON.parse(payload.body);
+              let allMyReferral = [referral, ...myReferrals.current];
+              dispatch({
+                type: "SET_REFERRALS",
+                myAppointments: allMyReferral,
+              });
             }
           );
         }

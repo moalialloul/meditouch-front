@@ -129,6 +129,7 @@ function Appointments() {
           newSlotFk: slots[slotIndexChosen].slotId,
           oldSlotFk: appointmentSelected.slotId,
           appointmentId: appointmentSelected.appointmentId,
+          userFk: userData.userInfo.userId,
         },
       })
       .then((response) => {
@@ -145,7 +146,7 @@ function Appointments() {
           type: "SET_MY_APPOINTMENTS",
           myAppointments: tempAppointments,
         });
-        setScheduleModal(false)
+        setScheduleModal(false);
       });
   }
   const modal = (
@@ -288,60 +289,62 @@ function Appointments() {
       });
   }
   useEffect(() => {
-    if (userData.userInfo) {
-      if (userData.businessAccountInfo) {
-        setLoading(true);
-        businessAccountController
-          .getAppointments({
-            userType: userData.userInfo.userRole,
-            id:
-              userData.userInfo.userRole === "PATIENT"
-                ? userData.userInfo.userId
-                : userData.businessAccountInfo.businessAccountId,
-            pageNumber: pageNumber,
-            recordsByPage: 2,
-            body: filters,
-          })
-          .then((response) => {
-            let appointmentsData = response.data.appointments;
-            for (let i = 0; i < appointmentsData.length; i++) {
-              appointmentsData[i].appointmentActualStartTime =
-                appointmentsData[i].appointmentActualStartTime &&
-                moment(
-                  util.formatTimeByOffset(
-                    new Date(
-                      moment(
-                        appointmentsData[i].appointmentActualStartTime,
-                        "YYYY-MM-DD HH:mm:ss"
+    if (!userData.loadingApp) {
+      if (userData.userInfo) {
+        if (userData.businessAccountInfo) {
+          setLoading(true);
+          businessAccountController
+            .getAppointments({
+              userType: userData.userInfo.userRole,
+              id:
+                userData.userInfo.userRole === "PATIENT"
+                  ? userData.userInfo.userId
+                  : userData.businessAccountInfo.businessAccountId,
+              pageNumber: pageNumber,
+              recordsByPage: 2,
+              body: filters,
+            })
+            .then((response) => {
+              let appointmentsData = response.data.appointments;
+              for (let i = 0; i < appointmentsData.length; i++) {
+                appointmentsData[i].appointmentActualStartTime =
+                  appointmentsData[i].appointmentActualStartTime &&
+                  moment(
+                    util.formatTimeByOffset(
+                      new Date(
+                        moment(
+                          appointmentsData[i].appointmentActualStartTime,
+                          "YYYY-MM-DD HH:mm:ss"
+                        )
                       )
-                    )
-                  ),
-                  "YYYY-MM-DD HH:mm:ss"
-                ).format("YYYY-MM-DD HH:mm:ss");
-              appointmentsData[i].appointmentActualEndTime =
-                appointmentsData[i].appointmentActualEndTime &&
-                moment(
-                  util.formatTimeByOffset(
-                    new Date(
-                      moment(
-                        appointmentsData[i].appointmentActualEndTime,
-                        "YYYY-MM-DD HH:mm:ss"
+                    ),
+                    "YYYY-MM-DD HH:mm:ss"
+                  ).format("YYYY-MM-DD HH:mm:ss");
+                appointmentsData[i].appointmentActualEndTime =
+                  appointmentsData[i].appointmentActualEndTime &&
+                  moment(
+                    util.formatTimeByOffset(
+                      new Date(
+                        moment(
+                          appointmentsData[i].appointmentActualEndTime,
+                          "YYYY-MM-DD HH:mm:ss"
+                        )
                       )
-                    )
-                  ),
-                  "YYYY-MM-DD HH:mm:ss"
-                ).format("YYYY-MM-DD HH:mm:ss");
-            }
-            setUpcomingAppointments((app) => [...app, ...appointmentsData]);
+                    ),
+                    "YYYY-MM-DD HH:mm:ss"
+                  ).format("YYYY-MM-DD HH:mm:ss");
+              }
+              setUpcomingAppointments((app) => [...app, ...appointmentsData]);
 
-            setTotalNumberOfPages(response.data.totalNumberOfPages);
-          })
-          .then(() => {
-            setLoading(false);
-          });
+              setTotalNumberOfPages(response.data.totalNumberOfPages);
+            })
+            .then(() => {
+              setLoading(false);
+            });
+        }
       }
     }
-  }, [userData.businessAccountInfo, userData.userInfo, pageNumber, filters]);
+  }, [userData.loadingApp, pageNumber, filters]);
   useEffect(() => {
     let allMyAppointments = [...upcomingAppointments];
     dispatch({
@@ -502,6 +505,28 @@ function Appointments() {
     setFilters(tempFilters);
     setOptions(tempOptions);
   }
+  function cancelAppointment(index) {
+    userController
+      .updateAppointment({
+        body: {
+          appointmentActualStartTime: null,
+          appointmentActualEndTime: null,
+          appointmentStatus: userData.myAppointments[index].appointmentStatus,
+          isApproved: userData.myAppointments[index].isApproved,
+          isCancelled: 1,
+          cancelledBy: userData.userInfo.userRole,
+          appointmentId: userData.myAppointments[index].appointmentId,
+        },
+      })
+      .then(() => {
+        let tempAppointments = [...userData.myAppointments];
+        tempAppointments[index].isCancelled = true;
+        dispatch({
+          type: "SET_MY_APPOINTMENTS",
+          myAppointments: tempAppointments,
+        });
+      });
+  }
   return (
     <Main>
       {modal}
@@ -558,7 +583,13 @@ function Appointments() {
                             {ap.servicePrice + "" + ap.currencyUnit}
                           </div>
                         </div>
-                        {userData.userInfo?.userRole !== "PATIENT" && (
+                        {ap.isCancelled ? (
+                          <div className="d-flex  w-100 justify-content-center">
+                            <Button type="primary" disabled className="w-100">
+                              Cancelled
+                            </Button>
+                          </div>
+                        ) : userData.userInfo?.userRole !== "PATIENT" ? (
                           <div className="mt-3">
                             {ap.appointmentStatus === "PENDING" ? (
                               <div className="d-flex  w-100 justify-content-between">
@@ -603,11 +634,19 @@ function Appointments() {
                                 </Button>
                               )}
                           </div>
-                        )}
-                        {userData.userInfo?.userRole === "PATIENT" &&
-                          (ap.prescriptionId === -1 ? (
-                            ap.appointmentActualStartTime === undefined &&
-                            ap.appointmentActualEndTime === undefined ? (
+                        ) : userData.userInfo?.userRole === "PATIENT" ? (
+                          moment(ap.slotStartTime).isBefore(
+                            moment(new Date())
+                          ) &&
+                          ap.appointmentActualStartTime === undefined &&
+                          ap.appointmentActualEndTime === undefined ? (
+                            "You didnot attend the appointment"
+                          ) : ap.appointmentActualStartTime === undefined &&
+                            ap.appointmentActualEndTime === undefined &&
+                            moment(ap.slotStartTime).isAfter(
+                              moment(moment(new Date()).subtract(1, "days"))
+                            ) ? (
+                            <div className="d-flex">
                               <Button
                                 type="primary"
                                 className="w-100"
@@ -621,15 +660,32 @@ function Appointments() {
                               >
                                 Postpone Appointment
                               </Button>
-                            ) : ap.appointmentActualStartTime !== undefined &&
-                              ap.appointmentActualEndTime === undefined ? (
+                              <Button
+                                type="primary"
+                                className="w-100"
+                                onClick={() => {
+                                  cancelAppointment(index);
+                                }}
+                              >
+                                Cancel Appointment
+                              </Button>
+                            </div>
+                          ) : ap.prescriptionId === -1 ? (
+                            ap.appointmentActualStartTime !== undefined &&
+                            ap.appointmentActualEndTime === undefined ? (
                               "In Progress..."
-                            ) : (
+                            ) : ap.appointmentActualStartTime !== undefined &&
+                              ap.appointmentActualEndTime !== undefined ? (
                               "Prescription In Progress"
+                            ) : (
+                              ""
                             )
                           ) : (
                             <Button type="primary">View Prescription</Button>
-                          ))}
+                          )
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
                   );

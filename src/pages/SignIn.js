@@ -11,6 +11,7 @@ import {
   Input,
   Switch,
   Card,
+  Spin,
 } from "antd";
 import signinbg from "../assets/images/signIn.jpg";
 import {
@@ -112,6 +113,7 @@ export default function SignIn() {
   const encryptStorage1 = new EncryptStorage("secret-key", {
     prefix: "@instance1",
   });
+  const [signingIn, setSigningIn] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [userForm, setUserForm] = useState({
@@ -129,156 +131,172 @@ export default function SignIn() {
       navigate("/dashboard");
     }
   }, []);
+  const content = (
+    <Content className="signin">
+      <Row justify="center">
+        {/* <Col
+  className="sign-img"
+  style={{ padding: 12 }}
+  xs={{ span: 24 }}
+  lg={{ span: 24 }}
+  md={{ span: 24 }}
+>
+  <img src={signinbg} alt="" />
+</Col> */}
+        <Col
+          xs={{ span: 18 }}
+          lg={{ span: 18 }}
+          md={{ span: 18 }}
+          className="signin-wrapper"
+        >
+          <Title className="text-center signin-txt">Login</Title>
+
+          <Form layout="vertical" className="row-col">
+            <Form.Item
+              className="username"
+              label="Email"
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your email!",
+                },
+              ]}
+            >
+              <Input
+                onChange={(e) => updateUser("userEmail", e.target.value)}
+                placeholder="Email"
+              />
+            </Form.Item>
+
+            <Form.Item
+              className="username"
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your password!",
+                },
+              ]}
+            >
+              <Input
+                onChange={(e) => updateUser("password", e.target.value)}
+                type="password"
+                placeholder="Password"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="remember"
+              className="aligin-center"
+              valuePropName="checked"
+            >
+              <Switch defaultChecked />
+              Remember me
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={() => {
+                  if (
+                    userForm.userEmail.replace(/\s+/g, "") !== "" &&
+                    userForm.password.replace(/\s+/g, "") !== ""
+                  ) {
+                    setSigningIn(true);
+                    userController
+                      .loginUser({
+                        body: userForm,
+                      })
+                      .then((response) => {
+                        let data = response.data;
+                        if (data.responseCode === -1) {
+                          alert(data.message);
+                          setSigningIn(false);
+
+                          return;
+                        }
+                        dispatch({
+                          type: "SET_USER_INFO",
+                          userInfo: data.user,
+                        });
+
+                        if (data.user.userRole === "HEALTH_PROFESSIONAL") {
+                          businessAccountController
+                            .getBusinessAccount({
+                              userId: data.user.userId,
+                            })
+                            .then((res) => {
+                              let businessData = res.data;
+                              dispatch({
+                                type: "SET_BUSINESS_ACCOUNT_INFO",
+                                businessAccountInfo:
+                                  businessData.businessAccount,
+                              });
+                              encryptStorage1.setItem("meditouch_user", {
+                                userInfo: data.user,
+                                businessAccountInfo:
+                                  businessData.businessAccount,
+                              });
+                              setSigningIn(false);
+                              navigate("/dashboard");
+                            });
+                        } else {
+                          userController
+                            .getMedicalInformation({ userFk: data.user.userId })
+                            .then((response) => {
+                              dispatch({
+                                type: "SET_MEDICAL_INFO",
+                                userMedicalInfo:
+                                  response.data.medical_information,
+                              });
+                            });
+                          encryptStorage1.setItem("meditouch_user", {
+                            userInfo: data.user,
+                            businessAccountInfo:
+                              data.user.userRole === "ADMIN" ? -2 : -1,
+                          });
+                          setSigningIn(false);
+                          navigate("/dashboard");
+                        }
+                      });
+                  }
+                }}
+                style={{ width: "100%" }}
+              >
+                SIGN IN
+              </Button>
+            </Form.Item>
+            <div className="d-flex justify-content-between">
+              <p className="font-semibold text-muted">
+                Don't have an account?{" "}
+                <Link to="/sign-up" className="text-dark font-bold ">
+                  Sign Up
+                </Link>
+              </p>
+              <p className="font-semibold text-muted">
+                <Link to="/forget-password" className="text-dark font-bold ">
+                  Forget Password
+                </Link>
+                <Link to="/verify" className="text-dark font-bold ">
+                  Verify Account
+                </Link>
+              </p>
+            </div>
+          </Form>
+        </Col>
+      </Row>
+    </Content>
+  );
   return (
     <LayoutWrapper style={{ position: "relative" }} withFooter={true}>
       <Layout
         className="layout-default layout-signin"
         style={{ padding: "100px" }}
       >
-        <Content className="signin">
-          <Row justify="center">
-            {/* <Col
-              className="sign-img"
-              style={{ padding: 12 }}
-              xs={{ span: 24 }}
-              lg={{ span: 24 }}
-              md={{ span: 24 }}
-            >
-              <img src={signinbg} alt="" />
-            </Col> */}
-            <Col
-              xs={{ span: 18  }}
-              lg={{ span: 18  }}
-              md={{ span: 18 }}
-              className="signin-wrapper"
-            >
-              <Title className="text-center signin-txt">Login</Title>
-
-              <Form layout="vertical" className="row-col">
-                <Form.Item
-                  className="username"
-                  label="Email"
-                  name="email"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input your email!",
-                    },
-                  ]}
-                >
-                  <Input
-                    onChange={(e) => updateUser("userEmail", e.target.value)}
-                    placeholder="Email"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  className="username"
-                  label="Password"
-                  name="password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input your password!",
-                    },
-                  ]}
-                >
-                  <Input
-                    onChange={(e) => updateUser("password", e.target.value)}
-                    type="password"
-                    placeholder="Password"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="remember"
-                  className="aligin-center"
-                  valuePropName="checked"
-                >
-                  <Switch defaultChecked />
-                  Remember me
-                </Form.Item>
-
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    onClick={() => {
-                      if (
-                        userForm.userEmail.replace(/\s+/g, "") !== "" &&
-                        userForm.password.replace(/\s+/g, "") !== ""
-                      ) {
-                        userController
-                          .loginUser({
-                            body: userForm,
-                          })
-                          .then((response) => {
-                            let data = response.data;
-                            if (data.responseCode === -1) {
-                              alert(data.message);
-                              return;
-                            }
-                            dispatch({
-                              type: "SET_USER_INFO",
-                              userInfo: data.user,
-                            });
-
-                            if (data.user.userRole === "HEALTH_PROFESSIONAL") {
-                              businessAccountController
-                                .getBusinessAccount({
-                                  userId: data.user.userId,
-                                })
-                                .then((res) => {
-                                  let businessData = res.data;
-                                  dispatch({
-                                    type: "SET_BUSINESS_ACCOUNT_INFO",
-                                    businessAccountInfo:
-                                      businessData.businessAccount,
-                                  });
-                                  encryptStorage1.setItem("meditouch_user", {
-                                    userInfo: data.user,
-                                    businessAccountInfo:
-                                      businessData.businessAccount,
-                                  });
-                                  navigate("/dashboard");
-                                });
-                            } else {
-                              encryptStorage1.setItem("meditouch_user", {
-                                userInfo: data.user,
-                                businessAccountInfo:
-                                  data.user.userRole === "ADMIN" ? -2 : -1,
-                              });
-                              navigate("/dashboard");
-                            }
-                          });
-                      }
-                    }}
-                    style={{ width: "100%" }}
-                  >
-                    SIGN IN
-                  </Button>
-                </Form.Item>
-              <div className="d-flex justify-content-between">
-              <p className="font-semibold text-muted">
-                  Don't have an account?{" "}
-                  <Link to="/sign-up" className="text-dark font-bold ">
-                    Sign Up
-                  </Link>
-                </p>
-                <p className="font-semibold text-muted">
-                 
-                  <Link to="/forget-password" className="text-dark font-bold ">
-                    Forget Password
-                  </Link>
-                  <Link to="/verify" className="text-dark font-bold ">
-                    Verify Account
-                  </Link>
-                </p>
-              </div>
-              </Form>
-            </Col>
-          </Row>
-        </Content>
+        {signingIn ? <Spin tip="Loading...">{content}</Spin> : content}
       </Layout>
     </LayoutWrapper>
   );

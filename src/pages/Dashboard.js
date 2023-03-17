@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { Button, Card, Col, Row, Typography } from "antd";
+import { Button, Card, Col, Row, Spin, Typography } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 
 import Echart from "../components/chart/EChart";
 import LineChart from "../components/chart/LineChart";
+import { Empty } from "antd";
 
 import card from "../assets/images/info-card-1.jpg";
 import Main from "../components/layout/Main";
@@ -61,21 +62,21 @@ export default function Dashboard() {
       key: "totalAppointments",
     },
     {
-      today: "Total Done Appointments",
+      today: "Done Appointments",
       title: "3,200",
       icon: <Profile />,
       bnb: "bnb2",
       key: "totalDoneAppointments",
     },
     {
-      today: "Total Accepted Appointments",
+      today: "Accepted Appointments",
       title: "+1,200",
       icon: <Heart />,
       bnb: "bnb2",
       key: "totalAcceptedAppointments",
     },
     {
-      today: "Total Rejected Appointments",
+      today: "Rejected Appointments",
       title: "$13,200",
       icon: <Cart />,
       bnb: "bnb2",
@@ -120,6 +121,7 @@ export default function Dashboard() {
     pageNumber: -1,
     totalNumberOfPages: 1,
   });
+  const [loadingAppointments, setLoadingAppointments] = useState(true);
   const [loadMore, setLoadMore] = useState(true);
   const [isWithApprove, setIsWithApprove] = useState(false);
   const [withApproveVal, setWithApproveVal] = useState(-2);
@@ -141,113 +143,122 @@ export default function Dashboard() {
 
   const [appointmentsData, setAppointmentsData] = useState({});
   useEffect(() => {
-   
-    if (userData.businessAccountInfo) {
-      if (
-        userData.businessAccountInfo !== -1 &&
-        userData.businessAccountInfo !== -2
-      ) {
-        businessAccountController
-          .getBusinessAccountStatistics({
-            businessAccountId: userData.businessAccountInfo.businessAccountId,
-          })
-          .then((response) => {
-            setCardsStatisitcs(response.data.result);
-          });
-      } else {
-        if (userData.userInfo) {
-          if (userData.businessAccountInfo === -2) {
-            businessAccountController.getAdminStatistics().then((response) => {
+    if (!userData.loadingApp) {
+      if (userData.businessAccountInfo) {
+        if (
+          userData.businessAccountInfo !== -1 &&
+          userData.businessAccountInfo !== -2
+        ) {
+          businessAccountController
+            .getBusinessAccountStatistics({
+              businessAccountId: userData.businessAccountInfo.businessAccountId,
+            })
+            .then((response) => {
               setCardsStatisitcs(response.data.result);
             });
-          } else {
-            userController
-              .getUserStatistics({ userFk: userData.userInfo.userId })
-              .then((response) => {
-                setCardsStatisitcs(response.data.result);
-              });
+        } else {
+          if (userData.userInfo) {
+            if (userData.businessAccountInfo === -2) {
+              businessAccountController
+                .getAdminStatistics()
+                .then((response) => {
+                  setCardsStatisitcs(response.data.result);
+                });
+            } else {
+              userController
+                .getUserStatistics({ userFk: userData.userInfo.userId })
+                .then((response) => {
+                  setCardsStatisitcs(response.data.result);
+                });
+            }
           }
         }
+        if (userData.userInfo && userData.businessAccountInfo !== -2) {
+          businessAccountController
+            .getAppointments({
+              userType: userData.userInfo.userRole,
+              id:
+                userData.userInfo.userRole === "PATIENT"
+                  ? userData.userInfo.userId
+                  : userData.businessAccountInfo.businessAccountId,
+              pageNumber: 1,
+              recordsByPage: 4,
+              body: {
+                appointmentStatus: "",
+                appointmentType: "ALL",
+                isCancelled: -1,
+              },
+            })
+            .then((response) => {
+              let data = response.data;
+              for (let i = 0; i < data.length; i++) {
+                data[i].appointmentActualStartTime = moment(
+                  util.formatTimeByOffset(
+                    new Date(
+                      moment(
+                        data[i].appointmentActualStartTime,
+                        "YYYY-MM-DD HH:mm:ss"
+                      )
+                    )
+                  ),
+                  "YYYY-MM-DD HH:mm:ss"
+                ).format("YYYY-MM-DD HH:mm:ss");
+                data[i].appointmentActualEndTime = moment(
+                  util.formatTimeByOffset(
+                    new Date(
+                      moment(
+                        data[i].appointmentActualEndTime,
+                        "YYYY-MM-DD HH:mm:ss"
+                      )
+                    )
+                  ),
+                  "YYYY-MM-DD HH:mm:ss"
+                ).format("YYYY-MM-DD HH:mm:ss");
+              }
+              setAppointmentsData(data);
+              setLoadingAppointments(false);
+            })
+            .then(() => {});
+        }
+      } else {
       }
-      if (userData.userInfo && userData.businessAccountInfo !== -2) {
+    }
+  }, [userData.loadingApp]);
+
+  useEffect(() => {
+    if (!userData.loadingApp) {
+      if (
+        userData.businessAccountInfo === -2 &&
+        loadMore &&
+        paginationProps.pageNumber <= paginationProps.totalNumberOfPages
+      ) {
         businessAccountController
-          .getAppointments({
-            userType: userData.userInfo.userRole,
-            id:
-              userData.userInfo.userRole === "PATIENT"
-                ? userData.userInfo.userId
-                : userData.businessAccountInfo.businessAccountId,
-            pageNumber: 1,
+          .getAllHealthProfessionals({
+            searchText: searchHpText === "" ? "null" : searchHpText,
+            pageNumber:
+              paginationProps.pageNumber === -1
+                ? 1
+                : paginationProps.pageNumber,
             recordsByPage: 4,
-            body: {
-              appointmentStatus: "",
-              appointmentType: "ALL",
-              isCancelled: -1,
-            },
+            isApproved: withApproveVal,
           })
           .then((response) => {
             let data = response.data;
-            for (let i = 0; i < data.length; i++) {
-              data[i].appointmentActualStartTime = moment(
-                util.formatTimeByOffset(
-                  new Date(
-                    moment(
-                      data[i].appointmentActualStartTime,
-                      "YYYY-MM-DD HH:mm:ss"
-                    )
-                  )
-                ),
-                "YYYY-MM-DD HH:mm:ss"
-              ).format("YYYY-MM-DD HH:mm:ss");
-              data[i].appointmentActualEndTime = moment(
-                util.formatTimeByOffset(
-                  new Date(
-                    moment(
-                      data[i].appointmentActualEndTime,
-                      "YYYY-MM-DD HH:mm:ss"
-                    )
-                  )
-                ),
-                "YYYY-MM-DD HH:mm:ss"
-              ).format("YYYY-MM-DD HH:mm:ss");
-            }
-            setAppointmentsData(data);
+            let tempPaginationProps = { ...paginationProps };
+            tempPaginationProps.totalNumberOfPages = data.totalNumberOfPages;
+            tempPaginationProps.pageNumber =
+              tempPaginationProps.pageNumber === -1
+                ? 2
+                : tempPaginationProps.pageNumber + 1;
+            setPaginationProps(tempPaginationProps);
+            setHealthProfessionalList(data.hps);
+          })
+          .then(() => {
+            setLoadMore(false);
           });
       }
-    } else {
     }
-  }, [userData.businessAccountInfo, userData.userInfo]);
-
-  useEffect(() => {
-    if (
-      userData.businessAccountInfo === -2 &&
-      loadMore &&
-      paginationProps.pageNumber <= paginationProps.totalNumberOfPages
-    ) {
-      businessAccountController
-        .getAllHealthProfessionals({
-          searchText: searchHpText === "" ? "null" : searchHpText,
-          pageNumber:
-            paginationProps.pageNumber === -1 ? 1 : paginationProps.pageNumber,
-          recordsByPage: 4,
-          isApproved: withApproveVal,
-        })
-        .then((response) => {
-          let data = response.data;
-          let tempPaginationProps = { ...paginationProps };
-          tempPaginationProps.totalNumberOfPages = data.totalNumberOfPages;
-          tempPaginationProps.pageNumber =
-            tempPaginationProps.pageNumber === -1
-              ? 2
-              : tempPaginationProps.pageNumber + 1;
-          setPaginationProps(tempPaginationProps);
-          setHealthProfessionalList(data.hps);
-        })
-        .then(() => {
-          setLoadMore(false);
-        });
-    }
-  }, [userData.businessAccountInfo, loadMore]);
+  }, [userData.loadingApp, loadMore]);
   function approveHp(index) {
     userController
       .approveUser({ userId: healthProfessionalList[index].userId })
@@ -323,40 +334,48 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="ant-list-box table-responsive">
-                  <table className="width-100">
-                    <thead>
-                      <tr>
-                        <th>
-                          {userData.userInfo?.userRole === "PATIENT"
-                            ? "DOCTOR NAME"
-                            : "PATIENT NAME"}
-                        </th>
-                        <th>SERVICE NAME</th>
-                        <th>BUDGET</th>
-                        <th>DATETIME</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {appointmentsData.appointments?.map((ap, index) => (
-                        <tr key={index}>
-                          <td>
-                            <h6>{ap.firstName + " " + ap.lastName}</h6>
-                          </td>
-                          <td>{ap.serviceName}</td>
-                          <td>
-                            <span className="text-xs font-weight-bold">
-                              {ap.servicePrice + "" + ap.currencyUnit}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="percent-progress">
-                              {ap.slotStartTime}
-                            </div>
-                          </td>
+                  {loadingAppointments ? (
+                    <Spin tip="Loading" size="large">
+                      <div className="content" />
+                    </Spin>
+                  ) : appointmentsData.appointments.length === 0 ? (
+                    <Empty />
+                  ) : (
+                    <table className="width-100">
+                      <thead>
+                        <tr>
+                          <th>
+                            {userData.userInfo?.userRole === "PATIENT"
+                              ? "DOCTOR NAME"
+                              : "PATIENT NAME"}
+                          </th>
+                          <th>SERVICE NAME</th>
+                          <th>BUDGET</th>
+                          <th>DATETIME</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {appointmentsData.appointments?.map((ap, index) => (
+                          <tr key={index}>
+                            <td>
+                              <h6>{ap.firstName + " " + ap.lastName}</h6>
+                            </td>
+                            <td>{ap.serviceName}</td>
+                            <td>
+                              <span className="text-xs font-weight-bold">
+                                {ap.servicePrice + "" + ap.currencyUnit}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="percent-progress">
+                                {ap.slotStartTime}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               </Card>
             </Col>

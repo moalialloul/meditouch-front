@@ -18,7 +18,7 @@ export default function Referral() {
   const [selectedHps, setSelectedHps] = useState([]);
   const [referralDescription, setReferralDescription] = useState("");
   useEffect(() => {
-    if (userData.userInfo) {
+    if (!userData.loadingApp) {
       if (loadMore && pageNumber <= totalNumberOfPages) {
         setLoading(true);
         userController
@@ -40,7 +40,7 @@ export default function Referral() {
           });
       }
     }
-  }, [loadMore, userData.userInfo]);
+  }, [loadMore, userData.loadingApp]);
   function modifySelectedHps(hp) {
     let tempSelectedHps = [...selectedHps];
     let hpIndex = tempSelectedHps.findIndex((hps) => hps.userId === hp.userId);

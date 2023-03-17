@@ -1,10 +1,12 @@
 import React from "react";
+import AuthenticationWrapper from "./AuthenticationWrapper";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
 const LayoutWrapper = ({ ...props }) => {
+  
   return (
-    <div>
+    <AuthenticationWrapper>
       <Navbar />
       <div
         className="layout-children"
@@ -12,7 +14,7 @@ const LayoutWrapper = ({ ...props }) => {
         {props.children}
       </div>
       <div className="footer m-0">{props.withFooter && <Footer />}</div>
-    </div>
+    </AuthenticationWrapper>
   );
 };
 

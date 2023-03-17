@@ -32,7 +32,7 @@ export default function Schedule() {
     endTime: "10:00",
   });
   useEffect(() => {
-    if (userData.businessAccountInfo !== null) {
+    if (!userData.loadingApp) {
       businessAccountController
         .getBusinessAccountSchedule({
           businessAccountId: userData.businessAccountInfo.businessAccountId,
@@ -77,7 +77,7 @@ export default function Schedule() {
           }
         });
     }
-  }, [userData.businessAccountInfo]);
+  }, [userData.loadingApp]);
   useEffect(() => {
     let days = [];
     let keys = Object.keys(tempDaysOfWeek);

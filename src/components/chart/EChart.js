@@ -55,7 +55,11 @@ function EChart() {
 
   const [eChartSeries, setEChartSeries] = useState(eChart.series);
   useEffect(() => {
-    if (userData.businessAccountInfo) {
+    if (
+      userData.businessAccountInfo !== -1 &&
+      userData.businessAccountInfo !== -2 &&
+      userData.businessAccountInfo
+    ) {
       let daysOfWeekDates = util.getDaysOfWeekDates();
       let firstDayDate = "";
       let lastDayDate = "";
