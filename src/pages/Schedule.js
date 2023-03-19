@@ -68,11 +68,14 @@ export default function Schedule() {
               };
               tempSchedule.push(json);
             }
-            let tempSlotDuration = moment(tempSchedule[0].endDate).diff(
-              moment(tempSchedule[0].startDate),
-              "minutes"
-            );
-            setSlotDuration(tempSlotDuration);
+            if(tempSchedule.length > 0){
+              let tempSlotDuration = moment(tempSchedule[0].endDate).diff(
+                moment(tempSchedule[0].startDate),
+                "minutes"
+              );
+              setSlotDuration(tempSlotDuration);
+            }
+          
             setMySlots(tempSchedule);
           }
         });
@@ -215,23 +218,28 @@ export default function Schedule() {
     }
   }
   function addSlots() {
+
     let body = [];
     for (let i = 0; i < mySlots.length; i++) {
       body.push({
-        slotDate: moment(mySlots[i].startTime).format("YYYY-MM-DD").toString(),
-        slotStartTime: moment(
-          util.formatTimeByOffset(new Date(moment(mySlots[i].startDate))),
-          "YYYY-MM-DD HH:mm:ss"
-        )
-          .format("YYYY-MM-DD HH:mm:ss")
-          .toString(),
+        slotDate: moment(mySlots[i].startDate).format("YYYY-MM-DD").toString(),
+        slotStartTime: util
+          .convertTZ(
+            moment(mySlots[i].startDate)
+              .format("YYYY/MM/DD HH:mm:ss")
+              .toString(),
+            "Europe/Paris"
+          )
+          .format("YYYY-MM-DDTHH:mm:ss"),
 
-        slotEndTime: moment(
-          util.formatTimeByOffset(new Date(moment(mySlots[i].endDate))),
-          "YYYY-MM-DD HH:mm:ss"
-        )
-          .format("YYYY-MM-DD HH:mm:ss")
-          .toString(),
+          slotEndTime: util
+          .convertTZ(
+            moment(mySlots[i].endDate)
+              .format("YYYY/MM/DD HH:mm:ss")
+              .toString(),
+            "Europe/Paris"
+          )
+          .format("YYYY-MM-DDTHH:mm:ss"),
         serviceFk: 5,
       });
     }
@@ -283,6 +291,7 @@ export default function Schedule() {
           {daysOfWeek.map((day, index) => {
             return (
               <div
+                title={moment(day).format("YYYY-MM-DD")}
                 key={"day" + index}
                 onClick={() => {
                   let tempDaysChosen = [...daysChosen];

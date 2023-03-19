@@ -22,6 +22,8 @@ export const SocketWrapperProvider = ({ ...props }) => {
   const myAppointments = useRef([]);
   const notifications = useRef([]);
   const specialities = useRef([]);
+  const schedules = useRef([]);
+  const appointmentModifications = useRef();
   const [loggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
     async function login() {
@@ -73,10 +75,15 @@ export const SocketWrapperProvider = ({ ...props }) => {
       }
     }
   }, [userData.userInfo]);
-
+  useEffect(() => {
+    appointmentModifications.current = userData.appointmentModifications;
+  }, [userData.appointmentModifications]);
   useEffect(() => {
     communityPostsRef.current = userData.communityPosts;
   }, [userData.communityPosts]);
+  useEffect(() => {
+    schedules.current = userData.schedules;
+  }, [userData.schedules]);
   useEffect(() => {
     reservedSlots.current = userData.reservedSlots;
   }, [userData.reservedSlots]);
@@ -126,11 +133,37 @@ export const SocketWrapperProvider = ({ ...props }) => {
         stompClientRef.current.subscribe(
           "/topic/reservedSlots/",
           function (payload) {
-            var reservedSlotId = JSON.parse(payload.body).reservedSlot;
-            let allReservedSlots = [reservedSlotId, ...reservedSlots.current];
+            var reservedSlot = JSON.parse(payload.body);
+            let allReservedSlots = [...reservedSlots.current, reservedSlot];
+
             dispatch({
               type: "SET_RESERVED_SLOTS",
               reservedSlots: allReservedSlots,
+            });
+          }
+        );
+
+        stompClientRef.current.subscribe(
+          "/topic/schedules",
+          function (payload) {
+            var body = JSON.parse(payload.body);
+            let businessAccountFk = body.businessAccountFk;
+            let tempSchedules = [...schedules.current];
+            let indexOfBusinessAccountFk = tempSchedules.findIndex(
+              (s) => s?.businessAccountFk === businessAccountFk
+            );
+            if (indexOfBusinessAccountFk < 0) {
+              tempSchedules.push({
+                businessAccountFk: businessAccountFk,
+                schedule: body.schedule,
+              });
+            } else {
+              tempSchedules[indexOfBusinessAccountFk] = body.schedule;
+            }
+
+            dispatch({
+              type: "SET_SCHEDULES",
+              schedules: tempSchedules,
             });
           }
         );
@@ -187,7 +220,32 @@ export const SocketWrapperProvider = ({ ...props }) => {
     }
   }
   useEffect(() => {
-    if (userData.userInfo !== null && stompClientRef.current && connected) {
+    if (!userData.loadingApp && stompClientRef.current && connected) {
+      stompClientRef.current.subscribe(
+        "/topic/notifications/" + userData.userInfo.userId,
+        function (payload) {
+          var newNotification = JSON.parse(payload.body);
+
+          let allNotifications = [newNotification, ...notifications.current];
+          dispatch({
+            type: "SET_MY_NOTIFICATIONS",
+            notifications: allNotifications,
+          });
+        }
+      );
+
+      // stompClientRef.current.subscribe(
+      //   "/topic/addAppointment/" + userData.userInfo.userId,
+      //   function (payload) {
+      //     var appointment = JSON.parse(payload.body).appointment;
+      //     let allMyAppointments = [appointment, ...myAppointments.current];
+      //     dispatch({
+      //       type: "SET_MY_APPOINTMENTS",
+      //       myAppointments: allMyAppointments,
+      //     });
+      //   }
+      // );
+
       stompClientRef.current.subscribe(
         "/topic/favoriteDoctors/" + userData.userInfo.userId,
         function (payload) {
@@ -204,19 +262,6 @@ export const SocketWrapperProvider = ({ ...props }) => {
           dispatch({
             type: "SET_FAVORITE_DOCTORS",
             favoriteDoctors: allFavoriteDoctors,
-          });
-        }
-      );
-
-      stompClientRef.current.subscribe(
-        "/topic/notifications/" + userData.userInfo.userId,
-        function (payload) {
-          var newNotification = JSON.parse(payload.body);
-
-          let allNotifications = [newNotification, ...notifications.current];
-          dispatch({
-            type: "SET_MY_NOTIFICATIONS",
-            notifications: allNotifications,
           });
         }
       );
@@ -262,44 +307,48 @@ export const SocketWrapperProvider = ({ ...props }) => {
         }
       );
 
-      if (
-        userData.businessAccountInfo !== -1 &&
-        userData.businessAccountInfo !== -2 &&
-        userData.businessAccountInfo !== null
-      ) {
-        stompClientRef.current.subscribe(
-          "/topic/appointment/" +
-            userData.businessAccountInfo.businessAccountId,
-          function (payload) {
-            var appointment = JSON.parse(payload.body).appointment;
-            let allMyAppointments = [appointment, ...myAppointments.current];
-            dispatch({
-              type: "SET_MY_APPOINTMENTS",
-              myAppointments: allMyAppointments,
-            });
-          }
-        );
-
-        if (
-          userData.businessAccountInfo !== -1 &&
-          userData.businessAccountInfo !== -2 &&
-          userData.businessAccountInfo !== null
-        ) {
-          stompClientRef.current.subscribe(
-            "/topic/referral/" + userData.businessAccountInfo.businessAccountId,
-            function (payload) {
-              var referral = JSON.parse(payload.body);
-              let allMyReferral = [referral, ...myReferrals.current];
-              dispatch({
-                type: "SET_REFERRALS",
-                myAppointments: allMyReferral,
-              });
-            }
-          );
+      stompClientRef.current.subscribe(
+        "/topic/appointmentModifications/" + userData.userInfo.userId,
+        function (payload) {
+          var appointment = JSON.parse(payload.body);
+          let allMyAppointmentsModifications = [
+            appointment,
+            ...appointmentModifications.current,
+          ];
+          dispatch({
+            type: "SET_APPOINTMENT_MODIFICATIONS",
+            appointmentModifications: allMyAppointmentsModifications,
+          });
         }
-      }
+      );
+
+      stompClientRef.current.subscribe(
+        "/topic/referral/" + userData.userInfo.userId,
+        function (payload) {
+          var referral = JSON.parse(payload.body);
+          let allMyReferral = [referral, ...myReferrals.current];
+          dispatch({
+            type: "SET_REFERRALS",
+            myAppointments: allMyReferral,
+          });
+        }
+      );
+      stompClientRef.current.subscribe(
+        "/topic/appointmentModifications/" + userData.userInfo.userId,
+        function (payload) {
+          var appointment = JSON.parse(payload.body);
+          let allMyAppointmentsModifications = [
+            appointment,
+            ...appointmentModifications.current,
+          ];
+          dispatch({
+            type: "SET_APPOINTMENT_MODIFICATIONS",
+            appointmentModifications: allMyAppointmentsModifications,
+          });
+        }
+      );
     }
-  }, [userData.userInfo, connected, userData.businessAccountInfo]);
+  }, [userData.loadingApp, connected]);
   useEffect(() => {
     if (connected) {
       stompClientRef.current.send(

@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 
 export default function SearchItem({ item }) {
   const [daysOfWeek, setDaysOfWeek] = useState([]);
+  const [loadingSchedule, setLoadingSchedule] = useState(true);
   const [slotLocked, setSlotLocked] = useState(-1);
   const [isSlotReserved, setIsSlotReserved] = useState(false);
   const [loadingIsReservedSlot, setLoadingIsReservedSlot] = useState(false);
@@ -26,8 +27,7 @@ export default function SearchItem({ item }) {
   const [dayChosen, setDayChosen] = useState(0);
   const [doctorSchedule, setDoctorSchedule] = useState([]);
   const [appointmentModal, setAppointmentModal] = useState(false);
-  useEffect(() => {
-    let schedule = item.userSchedule;
+  function formatSchedule(schedule) {
     for (let i = 0; i < schedule.length; i++) {
       schedule[i].slotStartTime = moment(
         util.formatTimeByOffset(
@@ -50,7 +50,26 @@ export default function SearchItem({ item }) {
       }
     }
     setDoctorSchedule(schedule);
-  }, [item]);
+    setLoadingSchedule(false);
+  }
+  useEffect(() => {
+    let indexOfBusinessAccountFk = userData.schedules.findIndex(
+      (s) => s?.businessAccountFk === item.userDetails.businessAccountId
+    );
+    if (indexOfBusinessAccountFk >= 0) {
+      setLoadingSchedule(true);
+
+      let tempSchedule = userData.schedules[indexOfBusinessAccountFk].schedule;
+
+      formatSchedule(tempSchedule);
+    }
+  }, [userData.schedules]);
+  useEffect(() => {
+    let schedule = item.userSchedule;
+
+    formatSchedule(schedule);
+  }, []);
+
   const [slotIndexChosen, setSlotIndexChosen] = useState(0);
   const [slots, setSlots] = useState([]);
   const [userProfle, setUserProfile] = useState("");
@@ -78,23 +97,25 @@ export default function SearchItem({ item }) {
     setDaysOfWeek(days);
   }, []);
   useEffect(() => {
-    let schedule = [...doctorSchedule];
+    if (!loadingSchedule) {
+      let schedule = [...doctorSchedule];
 
-    schedule = schedule.filter((s) => s.slotDate === daysOfWeek[dayChosen]);
-    schedule.sort(
-      (a, b) => new Date(a.slotStartTime) - new Date(b.slotStartTime)
-    );
-    let indexOfNotLockedSlot = schedule.findIndex(
-      (s) =>
-        s.isLocked === false && s.isReserved === false && s.disabled === false
-    );
-    if (indexOfNotLockedSlot < 0) {
-      setSlotIndexChosen(-1);
-    } else {
-      setSlotIndexChosen(indexOfNotLockedSlot);
+      schedule = schedule.filter((s) => s.slotDate === daysOfWeek[dayChosen]);
+      schedule.sort(
+        (a, b) => new Date(a.slotStartTime) - new Date(b.slotStartTime)
+      );
+      let indexOfNotLockedSlot = schedule.findIndex(
+        (s) =>
+          s.isLocked === false && s.isReserved === false && s.disabled === false
+      );
+      if (indexOfNotLockedSlot < 0) {
+        setSlotIndexChosen(-1);
+      } else {
+        setSlotIndexChosen(indexOfNotLockedSlot);
+      }
+      setSlots(schedule);
     }
-    setSlots(schedule);
-  }, [dayChosen, daysOfWeek]);
+  }, [dayChosen, daysOfWeek, doctorSchedule]);
   function reserveAppointment() {
     if (util.isUserAuthorized()) {
       userController
@@ -102,6 +123,7 @@ export default function SearchItem({ item }) {
           body: {
             slotFk: slots[slotIndexChosen].slotId,
             businessAccountFk: item.userDetails.businessAccountId,
+            businessAccountUserId: item.userDetails.userId,
             userFk: userData.userInfo.userId,
             serviceFk: slots[slotIndexChosen].serviceId,
           },
@@ -116,20 +138,41 @@ export default function SearchItem({ item }) {
   }
   useEffect(() => {
     let tempSlots = [...slots];
-    let indexOfSlot = tempSlots.findIndex(
-      (s) => s.slotId === userData.reservedSlots[0]
-    );
-    if (indexOfSlot >= 0) {
-      tempSlots[indexOfSlot].isReserved = true;
-      let indexOfNotLockedSlot = tempSlots.findIndex(
-        (s) => s.isLocked === false && s.isReserved === false
-      );
-      if (indexOfNotLockedSlot < 0) {
-        setSlotIndexChosen(-1);
+    for (let i = 0; i < userData.reservedSlots.length; i++) {
+      let reservedSlot = userData.reservedSlots[i];
+      if (reservedSlot.type === "ADD") {
+        let indexOfSlot = tempSlots.findIndex(
+          (s) => s.slotId === reservedSlot.reservedSlotId
+        );
+        if (indexOfSlot >= 0) {
+          tempSlots[indexOfSlot].isReserved = true;
+          let indexOfNotLockedSlot = tempSlots.findIndex(
+            (s) => s.isLocked === false && s.isReserved === false
+          );
+          if (indexOfNotLockedSlot < 0) {
+            setSlotIndexChosen(-1);
+          } else {
+            setSlotIndexChosen(indexOfNotLockedSlot);
+          }
+          setSlots(tempSlots);
+        }
       } else {
-        setSlotIndexChosen(indexOfNotLockedSlot);
+        let indexOfSlot = tempSlots.findIndex(
+          (s) => s.slotId === reservedSlot.reservedSlotId
+        );
+        if (indexOfSlot >= 0) {
+          tempSlots[indexOfSlot].isReserved = false;
+          let indexOfNotLockedSlot = tempSlots.findIndex(
+            (s) => s.isLocked === false && s.isReserved === false
+          );
+          if (indexOfNotLockedSlot < 0) {
+            setSlotIndexChosen(-1);
+          } else {
+            setSlotIndexChosen(indexOfNotLockedSlot);
+          }
+          setSlots(tempSlots);
+        }
       }
-      setSlots(tempSlots);
     }
   }, [userData.reservedSlots]);
   function modifyFavorite() {

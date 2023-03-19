@@ -130,6 +130,7 @@ function Appointments() {
           oldSlotFk: appointmentSelected.slotId,
           appointmentId: appointmentSelected.appointmentId,
           userFk: userData.userInfo.userId,
+          businessAccountUserId: appointmentSelected.businessAccountUserId,
         },
       })
       .then((response) => {
@@ -257,7 +258,10 @@ function Appointments() {
           ),
           appointmentStatus: "ACCEPTED",
           isApproved: 1,
+          slotFk: newData[i].slotId,
           isCancelled: 0,
+          userFk: newData[i].currentUserId,
+          businessAccountUserId: userData.userInfo.userId,
           appointmentId: newData[i].appointmentId,
         },
       })
@@ -277,7 +281,10 @@ function Appointments() {
           appointmentActualEndTime: newData[i].appointmentActualEndTime,
           appointmentStatus: "REJECTED",
           isApproved: 1,
+          slotFk: newData[i].slotId,
           isCancelled: 0,
+          userFk: newData[i].currentUserId,
+          businessAccountUserId: userData.userInfo.userId,
           appointmentId: newData[i].appointmentId,
         },
       })
@@ -352,6 +359,31 @@ function Appointments() {
       myAppointments: allMyAppointments,
     });
   }, [upcomingAppointments]);
+  useEffect(() => {
+    let tempAppointments = [...userData.appointmentModifications];
+    let allMyAppointments = [...userData.myAppointments];
+
+    for (let i = 0; i < tempAppointments.length; i++) {
+      let indexOfAppointment = allMyAppointments.findIndex(
+        (a) => a.appointmentId === tempAppointments[i].appointmentId
+      );
+      if (indexOfAppointment >= 0) {
+        allMyAppointments[indexOfAppointment][tempAppointments[i].key] =
+        tempAppointments[i].key === "slotStartTime"
+            ? moment(
+                util.formatTimeByOffset(
+                  new Date(moment(tempAppointments[i].value, "YYYY-MM-DD HH:mm:ss"))
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss")
+            : tempAppointments[i].value;
+      }
+    }
+    dispatch({
+      type: "SET_MY_APPOINTMENTS",
+      myAppointments: allMyAppointments,
+    });
+  }, [userData.appointmentModifications]);
   const [options, setOptions] = useState([
     { id: 2, value: "Upcoming" },
     { id: 3, value: "History" },
@@ -514,6 +546,9 @@ function Appointments() {
           appointmentStatus: userData.myAppointments[index].appointmentStatus,
           isApproved: userData.myAppointments[index].isApproved,
           isCancelled: 1,
+          slotFk : userData.myAppointments[index].slotId,
+          userFk: userData.userInfo.userId,
+          businessAccountUserId: userData.myAppointments[index].businessAccountUserId,
           cancelledBy: userData.userInfo.userRole,
           appointmentId: userData.myAppointments[index].appointmentId,
         },
@@ -646,30 +681,32 @@ function Appointments() {
                             moment(ap.slotStartTime).isAfter(
                               moment(moment(new Date()).subtract(1, "days"))
                             ) ? (
-                            <div className="d-flex">
-                              <Button
-                                type="primary"
-                                className="w-100"
-                                onClick={() => {
-                                  setAppointmentSelected(ap);
-                                  setDoctorSelected({
-                                    businessAccountId: ap.businessAccountFk,
-                                  });
-                                  setScheduleModal(true);
-                                }}
-                              >
-                                Postpone Appointment
-                              </Button>
-                              <Button
-                                type="primary"
-                                className="w-100"
-                                onClick={() => {
-                                  cancelAppointment(index);
-                                }}
-                              >
-                                Cancel Appointment
-                              </Button>
-                            </div>
+                            ap.appointmentStatus === "PENDING" && (
+                              <div className="d-flex">
+                                <Button
+                                  type="primary"
+                                  className="w-100"
+                                  onClick={() => {
+                                    setAppointmentSelected(ap);
+                                    setDoctorSelected({
+                                      businessAccountId: ap.businessAccountFk,
+                                    });
+                                    setScheduleModal(true);
+                                  }}
+                                >
+                                  Postpone Appointment
+                                </Button>
+                                <Button
+                                  type="primary"
+                                  className="w-100"
+                                  onClick={() => {
+                                    cancelAppointment(index);
+                                  }}
+                                >
+                                  Cancel Appointment
+                                </Button>
+                              </div>
+                            )
                           ) : ap.prescriptionId === -1 ? (
                             ap.appointmentActualStartTime !== undefined &&
                             ap.appointmentActualEndTime === undefined ? (

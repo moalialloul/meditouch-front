@@ -3057,6 +3057,7 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
   width: 400px;
   top: 30px;
   height: 200px;
+  z-index: 4;
   overflow-y: auto;
 }
 .nav-notification {

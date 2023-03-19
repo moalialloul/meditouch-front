@@ -34,6 +34,8 @@ const data = {
     slots: [],
   },
   myReferrals: [],
+  schedules: [],
+  appointmentModifications: [],
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -46,6 +48,16 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         myReferrals: action.myReferrals,
+      };
+    case "SET_APPOINTMENT_MODIFICATIONS":
+      return {
+        ...state,
+        appointmentModifications: action.appointmentModifications,
+      };
+    case "SET_SCHEDULES":
+      return {
+        ...state,
+        schedules: action.schedules,
       };
     case "SET_LOADING_APP":
       return {
