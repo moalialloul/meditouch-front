@@ -15,6 +15,7 @@ export default function GlobalSearch() {
   const [loading, setLoading] = useState(false);
   const [withFavorite, setWithFavorite] = useState(false);
   const [withFavoriteVal, setWithFavoriteVal] = useState(-1);
+  const [searchText, setSearchText] = useState("");
   const [sliderPrice, setSliderPrice] = useState({
     min: 20,
     max: 40,
@@ -42,6 +43,7 @@ export default function GlobalSearch() {
     myLatitude: -1,
     minAvailability: null,
     maxAvailability: null,
+    searchText: "null",
   });
   const [filtersVisibility, setFiltersVisibility] = useState({
     specialities: false,
@@ -91,6 +93,10 @@ export default function GlobalSearch() {
       if (util.isUserAuthorized()) {
         let user = util.getUser();
         tempFilters["userId"] = user.userInfo.userId;
+        tempFilters["searchText"] =
+          tempFilters["searchText"].replace(/\s+/g, "") === ""
+            ? "null"
+            : tempFilters["searchText"];
       }
       businessAccountController
         .globalSearch({
@@ -159,8 +165,32 @@ export default function GlobalSearch() {
           paddingLeft: "50px",
         }}
       >
+          <div className="d-flex">
+              <input
+                type="text"
+                value={searchText}
+                placeholder="Search by name or clinic location"
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (
+                    searchText.replace(/\s+/g, "") !== "" ||
+                    (searchText.replace(/\s+/g, "") === "" &&
+                      filtersData["searchText"].replace(/\s+/g, "") !== "")
+                  ) {
+                    updateFilters("searchText", searchText);
+                  }
+                }}
+              >
+                Search
+              </Button>
+            </div>
         <Row className="rowgap-vbox" gutter={[24, 0]}>
+          
           <Col xs={24} sm={24} md={6} lg={6} xl={4} className="mb-24">
+          
             <Card className="h-100 w-100">
               <div className="d-flex flex-column">
                 <div className="d-flex justify-content-between">

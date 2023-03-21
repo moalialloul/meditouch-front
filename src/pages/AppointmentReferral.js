@@ -6,7 +6,7 @@ import Main from "../components/layout/Main";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { userController } from "../controllers/userController";
 
-export default function Referral() {
+export default function AppointmentReferral() {
   const { state } = useLocation();
   const userData = useSelector((state) => state);
   const [hpList, setHPList] = useState([]);

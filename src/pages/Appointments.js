@@ -542,7 +542,7 @@ function Appointments() {
       .updateAppointment({
         body: {
           appointmentActualStartTime: null,
-          appointmentActualEndTime: null,
+          appointmentActualEndTime: null, 
           appointmentStatus: userData.myAppointments[index].appointmentStatus,
           isApproved: userData.myAppointments[index].isApproved,
           isCancelled: 1,

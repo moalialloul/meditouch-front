@@ -191,17 +191,23 @@ const addReferrals = ({ body }) => {
     data: body,
   });
 };
-const getReferrals = ({ userId, pageNumber, recordsByPage }) => {
+const getReferrals = ({ businessAccountFk, pageNumber, recordsByPage }) => {
   return axios({
     method: "GET",
     url:
-      url + "getReferrals/" + userId + "/" + pageNumber + "/" + recordsByPage,
+      url + "getReferrals/" + businessAccountFk + "/" + pageNumber + "/" + recordsByPage,
   });
 };
 const getBusinessAccountStatistics = ({ businessAccountId }) => {
   return axios({
     method: "GET",
     url: url + "getBusinessAccountStatistics/" + businessAccountId,
+  });
+};
+const getAppointmentById = ({ appointmentFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "getAppointmentById/" + appointmentFk,
   });
 };
 const getBusinessAccountAppointmentsStatistics = ({
@@ -261,6 +267,7 @@ const getNotificationsSettings = ({ userFk }) => {
   });
 };
 export const businessAccountController = {
+  getAppointmentById,
   getRevenueOfYear,
   getServices,
   getNotificationsSettings,

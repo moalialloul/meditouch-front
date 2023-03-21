@@ -17,7 +17,6 @@ import Patients from "./pages/Patients";
 import { SocketWrapperProvider } from "./public/SocketWrapper";
 import CommunityPosts from "./pages/CommunityPosts";
 import GlobalSearch from "./pages/GlobalSearch";
-import Referral from "./pages/Referral";
 import UserProfile from "./pages/UserProfile";
 import { useEffect } from "react";
 import VerifyUser from "./pages/VerifyUser";
@@ -25,6 +24,9 @@ import ForgetPassword from "./pages/ForgetPassword";
 import PatientDetails from "./pages/PatientDetails";
 import HealthProfessionalDetails from "./pages/HealthProfessionalDetails";
 import ReservationSlots from "./pages/ReservationSlots";
+import AppointmentReferral from "./pages/AppointmentReferral";
+import Referrals from "./pages/Referrals";
+import AppointmentDetails from "./pages/AppointmentDetails";
 
 function App() {
   useEffect(() => {
@@ -54,10 +56,13 @@ function App() {
           <Route exact path="/patients" element={<Patients />} />
           <Route exact path="/community-posts" element={<CommunityPosts />} />
           <Route exact path="/global-search" element={<GlobalSearch />} />
-          <Route exact path="/referral" element={<Referral />} />
+          <Route exact path="/referral" element={<AppointmentReferral />} />
+          <Route exact path="/referrals" element={<Referrals />} />
+
           <Route exact path="/patient-details" element={<PatientDetails />} />
           <Route exact path="/hp-details" element={<HealthProfessionalDetails />} />
           <Route exact path="/reservation-slots" element={<ReservationSlots />} />
+          <Route exact path="/appointment-details" element={<AppointmentDetails />} />
 
         </Routes>
       </SocketWrapperProvider>

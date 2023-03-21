@@ -227,6 +227,25 @@ function Sidenav({ color }) {
               <span className="label">Patients</span>
             </NavLink>
           </Menu.Item>
+
+          
+        )}
+           {userData.userInfo?.userRole === "HEALTH_PROFESSIONAL" && (
+          <Menu.Item key="4">
+            <NavLink to="/referrals">
+              <span
+                className="icon"
+                style={{
+                  background: page === "referrals" || page === "appointment-details" ? color : "",
+                }}
+              >
+                {rtl}
+              </span>
+              <span className="label">Referrals</span>
+            </NavLink>
+          </Menu.Item>
+
+          
         )}
 
         {userData.userInfo?.userRole !== "ADMIN" && (

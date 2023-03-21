@@ -3,6 +3,7 @@ import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import { useDispatch, useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
+import { util } from "./util";
 export const SocketWrapperContext = React.createContext("");
 export const SocketWrapperProvider = ({ ...props }) => {
   const [connected, setConnected] = useState(false);
@@ -220,7 +221,12 @@ export const SocketWrapperProvider = ({ ...props }) => {
     }
   }
   useEffect(() => {
-    if (!userData.loadingApp && stompClientRef.current && connected) {
+    if (
+      !userData.loadingApp &&
+      stompClientRef.current &&
+      connected &&
+      util.isUserAuthorized()
+    ) {
       stompClientRef.current.subscribe(
         "/topic/notifications/" + userData.userInfo.userId,
         function (payload) {
@@ -326,10 +332,11 @@ export const SocketWrapperProvider = ({ ...props }) => {
         "/topic/referral/" + userData.userInfo.userId,
         function (payload) {
           var referral = JSON.parse(payload.body);
+          referral.socket = true;
           let allMyReferral = [referral, ...myReferrals.current];
           dispatch({
             type: "SET_REFERRALS",
-            myAppointments: allMyReferral,
+            myReferrals: allMyReferral,
           });
         }
       );
