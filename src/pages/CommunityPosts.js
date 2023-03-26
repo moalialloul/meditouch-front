@@ -186,10 +186,8 @@ export default function CommunityPosts() {
                         postSelectedIndex === index ? "red" : "white",
                     }}
                     onClick={() => {
-                      if (post.commentCount !== 0) {
                         setPostSelectedIndex(index);
                         setLoadMoreComments(true);
-                      }
                     }}
                     key={"post" + index}
                     className="mt-3"

@@ -10,7 +10,11 @@ const data = {
   reservedSlots: [],
   favoriteDoctors: [],
   myAppointments: [],
-  notifications: [],
+  notifications: {
+    pageNumber: -1,
+    totalNumberOfPages: 1,
+    notifications: [],
+  },
   specialities: [],
   storage: null,
   userProfileStorageObject: null,

@@ -81,7 +81,7 @@ export default function AuthenticationWrapper({ children }) {
         type: "SET_LOADING_APP",
         loadingApp: false,
       });
-      navigate("/sign-in");
+      // navigate("/sign-in");
     }
   }, []);
   return loading ? <Spin tip="Loading...">{children}</Spin> : children;
