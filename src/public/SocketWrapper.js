@@ -4,6 +4,7 @@ import SockJS from "sockjs-client";
 import { useDispatch, useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
 import { util } from "./util";
+import moment from "moment";
 export const SocketWrapperContext = React.createContext("");
 export const SocketWrapperProvider = ({ ...props }) => {
   const [connected, setConnected] = useState(false);
@@ -231,11 +232,30 @@ export const SocketWrapperProvider = ({ ...props }) => {
         "/topic/notifications/" + userData.userInfo.userId,
         function (payload) {
           var newNotification = JSON.parse(payload.body);
+          let notificationText = newNotification.notificationText;
+          let outputString = notificationText.replace(
+            /\[.*?\]/g,
+            function (match, captureGroup) {
+              let date = match.substring(1, match.length - 1);
+              date = moment(
+                util.formatTimeByOffset(
+                  new Date(moment(date, "YYYY-MM-DD HH:mm:ss"))
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+              return date;
+            }
+          );
+          newNotification.notificationText = outputString;
 
           let allNotifications = [newNotification, ...notifications.current];
           dispatch({
             type: "SET_MY_NOTIFICATIONS",
-            notifications: allNotifications,
+            notifications: {
+              notifications: allNotifications,
+              pageNumber: userData.notifications.pageNumber,
+              totalNumberOfPages: userData.notifications.totalNumberOfPages,
+            },
           });
         }
       );

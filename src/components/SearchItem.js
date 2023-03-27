@@ -154,6 +154,7 @@ export default function SearchItem({ item }) {
   }
   useEffect(() => {
     let tempSlots = [...slots];
+    let tempSlotIndexChosen = -1;
     for (let i = 0; i < userData.reservedSlots.length; i++) {
       let reservedSlot = userData.reservedSlots[i];
       if (reservedSlot.type === "ADD") {
@@ -166,9 +167,9 @@ export default function SearchItem({ item }) {
             (s) => s.isLocked === false && s.isReserved === false
           );
           if (indexOfNotLockedSlot < 0) {
-            setSlotIndexChosen(-1);
+            tempSlotIndexChosen = -1;
           } else {
-            setSlotIndexChosen(indexOfNotLockedSlot);
+            tempSlotIndexChosen = indexOfNotLockedSlot;
           }
         }
       } else {
@@ -181,15 +182,15 @@ export default function SearchItem({ item }) {
             (s) => s.isLocked === false && s.isReserved === false
           );
           if (indexOfNotLockedSlot < 0) {
-            setSlotIndexChosen(-1);
+            tempSlotIndexChosen = -1;
           } else {
-            setSlotIndexChosen(indexOfNotLockedSlot);
+            tempSlotIndexChosen = indexOfNotLockedSlot;
           }
         }
       }
     }
+    setSlotIndexChosen(tempSlotIndexChosen);
     setSlots(tempSlots);
-
   }, [userData.reservedSlots]);
   function modifyFavorite() {
     let indexOfFavorite = userData.favoriteDoctors.findIndex(
@@ -373,28 +374,33 @@ export default function SearchItem({ item }) {
                 <p>{item.userDetails.specialityName}</p>
               </div>
             </Avatar.Group>
-            {util.isUserAuthorized() && (
-              <div
-                title={
-                  userData.favoriteDoctors.findIndex(
+            {util.isUserAuthorized() &&
+              (item.userDetails.businessAccountId !==
+              userData.businessAccountInfo.businessAccountId ? (
+                <div
+                  title={
+                    userData.favoriteDoctors.findIndex(
+                      (d) =>
+                        d.businessAccountFk ===
+                        item.userDetails.businessAccountId
+                    ) >= 0
+                      ? "Remove Favorite"
+                      : "Add Favorite"
+                  }
+                  onClick={() => modifyFavorite()}
+                >
+                  {userData.favoriteDoctors.findIndex(
                     (d) =>
                       d.businessAccountFk === item.userDetails.businessAccountId
-                  ) >= 0
-                    ? "Remove Favorite"
-                    : "Add Favorite"
-                }
-                onClick={() => modifyFavorite()}
-              >
-                {userData.favoriteDoctors.findIndex(
-                  (d) =>
-                    d.businessAccountFk === item.userDetails.businessAccountId
-                ) >= 0 ? (
-                  <HeartFilled />
-                ) : (
-                  <HeartOutlined />
-                )}
-              </div>
-            )}
+                  ) >= 0 ? (
+                    <HeartFilled />
+                  ) : (
+                    <HeartOutlined />
+                  )}
+                </div>
+              ) : (
+                <></>
+              ))}
           </div>
         }
       >

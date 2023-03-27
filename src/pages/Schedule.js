@@ -20,6 +20,8 @@ const draggingGroupName = "appointmentsGroup";
 
 export default function Schedule() {
   const [allSlots, setAllSlots] = useState([]);
+  const [services, setServices] = useState([]);
+  const [serviceSelected, setServiceSelected] = useState(-1);
   const [restTime, setRestTime] = useState(0);
   const [mySlots, setMySlots] = useState([]);
   const [slotDuration, setSlotDuration] = useState(20);
@@ -34,6 +36,13 @@ export default function Schedule() {
   });
   useEffect(() => {
     if (!userData.loadingApp) {
+      businessAccountController
+        .getServices({
+          businessAccountFk: userData.businessAccountInfo.businessAccountId,
+        })
+        .then((response) => {
+          setServices(response.data.services);
+        });
       businessAccountController
         .getBusinessAccountSchedule({
           businessAccountId: userData.businessAccountInfo.businessAccountId,
@@ -69,14 +78,14 @@ export default function Schedule() {
               };
               tempSchedule.push(json);
             }
-            if(tempSchedule.length > 0){
+            if (tempSchedule.length > 0) {
               let tempSlotDuration = moment(tempSchedule[0].endDate).diff(
                 moment(tempSchedule[0].startDate),
                 "minutes"
               );
               setSlotDuration(tempSlotDuration);
             }
-          
+
             setMySlots(tempSchedule);
           }
         });
@@ -153,8 +162,8 @@ export default function Schedule() {
     );
   };
   function fetchSlots() {
-    if (daysChosen.length === 0) {
-      toast.warning("Choose days", {
+    if (daysChosen.length === 0 || serviceSelected === -1) {
+      toast.warning("Choose days or service", {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: true,
@@ -179,6 +188,7 @@ export default function Schedule() {
           startDate: "",
           endDate: "",
           allDay: false,
+          serviceFk: serviceSelected,
         };
         json.startDate = moment(startTime, "YYYY-MM-DD HH:mm").toString();
         json.endDate = moment(startTime, "YYYY-MM-DD HH:mm")
@@ -234,7 +244,6 @@ export default function Schedule() {
     }
   }
   function addSlots() {
-
     let body = [];
     for (let i = 0; i < mySlots.length; i++) {
       body.push({
@@ -248,15 +257,13 @@ export default function Schedule() {
           )
           .format("YYYY-MM-DDTHH:mm:ss"),
 
-          slotEndTime: util
+        slotEndTime: util
           .convertTZ(
-            moment(mySlots[i].endDate)
-              .format("YYYY/MM/DD HH:mm:ss")
-              .toString(),
+            moment(mySlots[i].endDate).format("YYYY/MM/DD HH:mm:ss").toString(),
             "Europe/Paris"
           )
           .format("YYYY-MM-DDTHH:mm:ss"),
-        serviceFk: 15,
+        serviceFk: serviceSelected,
       });
     }
     businessAccountController.setSchedule({
@@ -296,8 +303,21 @@ export default function Schedule() {
   }
   return (
     <Main>
-      <div className="d-flex justify-content-between" >
-        <div className="d-flex" style={{gap:"10px"}}>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex"  style={{gap:"10px"}}>
+          <select
+            onChange={(e) => setServiceSelected(e.target.value)}
+            defaultValue={-1}
+          >
+            <option disabled value={-1}>
+              Select Service
+            </option>
+            {services.map((service, index) => {
+              return (
+                <option value={service.serviceId}>{service.serviceName}</option>
+              );
+            })}
+          </select>
           <InputNumber
            className="schedule-time-date"
             size="large"

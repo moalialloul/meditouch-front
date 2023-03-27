@@ -191,10 +191,8 @@ export default function CommunityPosts() {
                     
                     }}
                     onClick={() => {
-                      if (post.commentCount !== 0) {
                         setPostSelectedIndex(index);
                         setLoadMoreComments(true);
-                      }
                     }}
                     key={"post" + index}
                     className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1 mb-2 pt-2 ps-3 pe-3 w-100"
