@@ -2,5 +2,35 @@
     width: 100%;
 }
 .global-search-datetime{
-    width: 50%;
+    width: 100%;
+}
+.doctor-search::-webkit-input-placeholder{
+font-size:12px;
+padding-left:10px;
+}
+.doctor-search{
+    background: linear-gradient(180deg, #F7F7F7 0%, #FFFFFF 100%);
+    padding:10px;
+    border:none;
+    box-shadow: 0px 4px 10px rgba(107, 119, 154, 0.15);
+  
+ 
+}
+
+.ant-card  {
+    box-shadow: 0px 4px 10px rgba(107, 119, 154, 0.15);
+}
+.globalsearch-txt{
+    font-weight: bold;
+}
+.all-specialities{
+ border-color: gainsboro;
+ margin-top:10px;
+}
+.global-search-datetime{
+    border:none;
+    margin-top:10px;
+}
+.global-search-datetime{
+  
 }

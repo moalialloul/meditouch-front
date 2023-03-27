@@ -1,12 +1,15 @@
 import { DeleteOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Result } from "antd";
+import { Button, Card, Col, Descriptions, Layout, Result, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthenticationWrapper from "../components/AuthenticationWrapper";
+import LayoutWrapper from "../components/Layout";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { userController } from "../controllers/userController";
-
+import { util } from "../public/util";
+import doctorImg from "../assets/images/doctorImg.jpg";
+import { toast } from "react-toastify";
 export default function HealthProfessionalDetails() {
   const [specialities, setSpecialities] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -110,7 +113,15 @@ export default function HealthProfessionalDetails() {
             };
           });
       } else {
-        alert("Sorry Not available!");
+       
+        toast.warning("Sorry Not available!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
       }
       if (
         userData.businessAccountInfo &&
@@ -146,7 +157,14 @@ export default function HealthProfessionalDetails() {
       ).length !== 0 ||
       userForm.clinicLocation.toString().replace(/\s+/g, "") === ""
     ) {
-      alert("fields required");
+      toast.error("fields required", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
       return;
     }
     let body = {
@@ -166,13 +184,15 @@ export default function HealthProfessionalDetails() {
         body: body,
       })
       .then(() => {
-        let businessAccountInfo = userData.businessAccountInfo;
-        businessAccountInfo.biography = userForm.biography;
-        businessAccountInfo.clinicLocation = userForm.clinicLocation;
-        dispatch({
-          type: "SET_BUSINESS_ACCOUNT_INFO",
-          businessAccountInfo: businessAccountInfo,
-        });
+        if (util.isUserAuthorized()) {
+          let businessAccountInfo = userData.businessAccountInfo;
+          businessAccountInfo.biography = userForm.biography;
+          businessAccountInfo.clinicLocation = userForm.clinicLocation;
+          dispatch({
+            type: "SET_BUSINESS_ACCOUNT_INFO",
+            businessAccountInfo: businessAccountInfo,
+          });
+        }
         let jsonArrayNew = [];
         let jsonArrayOld = [];
         let jsonArrayToDelete = [];
@@ -220,10 +240,10 @@ export default function HealthProfessionalDetails() {
                   businessAccountController
                     .deleteService({ body: jsonArrayToDelete })
                     .then(() => {
-                      // setCompleted(true);
+                      setCompleted(true);
                     });
                 } else {
-                  // setCompleted(true);
+                  setCompleted(true);
                 }
               });
           });
@@ -232,129 +252,204 @@ export default function HealthProfessionalDetails() {
   return (
     <AuthenticationWrapper>
       {!completed ? (
-        <div>
-          Speciality*
-          <select
-            defaultValue={-1}
-            value={userForm.speciality}
-            onChange={(e) => updateForm("speciality", e.target.value)}
+        <LayoutWrapper withFooter={true}>
+          <Layout
+            className="layout-default layout-signin"
+            style={{ padding: "150px" }}
           >
-            <option value={-1}>All Specialities</option>
-            {specialities.map((sp) => {
-              return (
-                <option value={sp.specialityId}>{sp.specialityName}</option>
-              );
-            })}
-          </select>
-          <div>
-            clinicLocation*{" "}
-            <input
-              type="text"
-              value={userForm.clinicLocation}
-              placeholder="clinicLocation"
-              onChange={(e) => updateForm("clinicLocation", e.target.value)}
-            />
-            biography{" "}
-            <input
-              type="text"
-              placeholder="biography"
-              value={userForm.biography}
-              onChange={(e) => updateForm("biography", e.target.value)}
-            />
-          </div>
-          <div>
-            {locationEnabled ? (
-              <div>
-                Are you in your clinic now?
-                <div className="d-flex">
-                  Yes{" "}
-                  <input
-                    type="radio"
-                    name="clinic"
-                    onClick={(e) => setMyClinicLocation(true)}
-                    checked={myClinicLocation}
-                  />
-                  No{" "}
-                  <input
-                    type="radio"
-                    name="clinic"
-                    onClick={(e) => setMyClinicLocation(false)}
-                    checked={!myClinicLocation}
-                  />
-                </div>
-              </div>
-            ) : (
-              "Enable location to set your clinic position"
-            )}
-          </div>
-          <div>
-            <Button type="primary" onClick={() => addService()}>
-              Add service
-            </Button>
-            {userForm.services.map((service, index) => {
-              return (
-                service.isDeleted === false && (
-                  <div>
-                    <div className="d-flex">
-                      Service {index + 1}
-                      {userForm.services.filter((s) => s.isDeleted === false)
-                        .length > 1 && (
-                        <div onClick={() => deleteService(index)}>
-                          <DeleteOutlined />
-                        </div>
-                      )}
+            <Row gutter={[24, 0]} justify="center">
+              <Col span={24} md={15} className="mb-24">
+                <Card
+                  bordered={false}
+                  title={
+                    <div className="m-0 text-center all-txts">
+                      {" "}
+                      Health Professional Details
                     </div>
-                    <div>
-                      service name{" "}
-                      <input
-                        type="text"
-                        value={service.serviceName}
-                        placeholder="service name"
-                        onChange={(e) =>
-                          updateService(index, "serviceName", e.target.value)
-                        }
-                      />
-                      price{" "}
-                      <input
-                        type="number"
-                        value={service.servicePrice}
-                        placeholder="price"
-                        onChange={(e) =>
-                          updateService(index, "servicePrice", e.target.value)
-                        }
-                      />
-                      currency{" "}
+                  }
+                  className="header-solid h-full card-profile-information "
+                  extra={<Button type="link">{}</Button>}
+                  bodyStyle={{ paddingTop: 0 }}
+                >
+                  <div
+                    className="all-cards-info pe-2 "
+                    style={{ height: "600px", overflowY: "auto" }}
+                  >
+                    <div className="d-flex flex-column" style={{ gap: "10px" }}>
+                      <div className="all-txts">Speciality*</div>
                       <select
+                        className="patient-details-input"
+                        style={{ border: "none !important" }}
                         defaultValue={-1}
-                        value={service.currencyUnit}
+                        value={userForm.speciality}
                         onChange={(e) =>
-                          updateService(index, "currencyUnit", e.target.value)
+                          updateForm("speciality", e.target.value)
                         }
                       >
-                        <option value={-1}>All Currencies</option>
-                        <option value={"USD"}>USD</option>
-                        <option value={"LBP"}>LBP</option>
+                        <option value={-1}>All Specialities</option>
+                        {specialities.map((sp) => {
+                          return (
+                            <option value={sp.specialityId}>
+                              {sp.specialityName}
+                            </option>
+                          );
+                        })}
                       </select>
+                      <div className="all-txts">clinicLocation*</div>
+                      <input
+                        className="patient-details-input"
+                        type="text"
+                        value={userForm.clinicLocation}
+                        placeholder="clinicLocation"
+                        onChange={(e) =>
+                          updateForm("clinicLocation", e.target.value)
+                        }
+                      />
+                      <div className="all-txts">Biography</div>
+                      <input
+                        className="patient-details-input"
+                        type="text"
+                        placeholder="biography"
+                        value={userForm.biography}
+                        onChange={(e) =>
+                          updateForm("biography", e.target.value)
+                        }
+                      />
+                      <div>
+                        {locationEnabled ? (
+                          <div className="all-txts">
+                            Are you in your clinic now?
+                            <div className="d-flex">
+                              <div className="all-txts me-2 mt-3">Yes</div>
+                              <input
+                                className="me-2 mt-3"
+                                type="radio"
+                                name="clinic"
+                                onClick={(e) => setMyClinicLocation(true)}
+                                checked={myClinicLocation}
+                              />
+                              <div className="all-txts me-2 mt-3">No</div>
+                              <input
+                                className="me-2 mt-3"
+                                type="radio"
+                                name="clinic"
+                                onClick={(e) => setMyClinicLocation(false)}
+                                checked={!myClinicLocation}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          "Enable location to set your clinic position"
+                        )}
+                      </div>
+
+                      <Button type="primary" onClick={() => addService()}>
+                        Add service
+                      </Button>
+                      {userForm.services.map((service, index) => {
+                        return (
+                          service.isDeleted === false && (
+                            <div>
+                              <div className="d-flex align-items-center mt-3 mb-3">
+                                <div className="me-3 all-txts">
+                                  {" "}
+                                  Service {index + 1}
+                                </div>
+                                {userForm.services.filter(
+                                  (s) => s.isDeleted === false
+                                ).length > 1 && (
+                                  <div
+                                    className="mb-2"
+                                    onClick={() => deleteService(index)}
+                                  >
+                                    <DeleteOutlined />
+                                  </div>
+                                )}
+                              </div>
+                              <div
+                                className="d-flex flex-column"
+                                style={{ gap: "10px" }}
+                              >
+                                <div className="all-txts">Service Name</div>
+                                <input
+                                  className="patient-details-input"
+                                  type="text"
+                                  value={service.serviceName}
+                                  placeholder="service name"
+                                  onChange={(e) =>
+                                    updateService(
+                                      index,
+                                      "serviceName",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                                <div className="all-txts">Price</div>
+                                <input
+                                  className="patient-details-input"
+                                  type="number"
+                                  value={service.servicePrice}
+                                  placeholder="price"
+                                  onChange={(e) =>
+                                    updateService(
+                                      index,
+                                      "servicePrice",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                                <div className="all-txts">Currency</div>
+                                <select
+                                  className="patient-details-input"
+                                  defaultValue={-1}
+                                  value={service.currencyUnit}
+                                  onChange={(e) =>
+                                    updateService(
+                                      index,
+                                      "currencyUnit",
+                                      e.target.value
+                                    )
+                                  }
+                                >
+                                  <option value={-1}>All Currencies</option>
+                                  <option value={"USD"}>USD</option>
+                                  <option value={"LBP"}>LBP</option>
+                                </select>
+                              </div>
+                            </div>
+                          )
+                        );
+                      })}
+                      <Button type="primary" onClick={() => submit()}>
+                        Continue
+                      </Button>
                     </div>
                   </div>
-                )
-              );
-            })}
-            <Button type="primary" onClick={() => submit()}>
-              Continue
-            </Button>
-          </div>
-        </div>
+                </Card>
+              </Col>
+            </Row>
+          </Layout>
+        </LayoutWrapper>
       ) : (
-        <Result
-          icon={<SmileOutlined />}
-          title="Great, we have done all the operations!"
-          extra={
-            <Button onClick={() => navigate("/dashboard")} type="primary">
-              Next
-            </Button>
-          }
-        />
+        <LayoutWrapper withFooter={true}>
+          <Layout
+            className="layout-default layout-signin"
+            style={{ padding: "200px" }}
+          >
+            <Result
+              icon={<SmileOutlined />}
+              title={
+                "Great, we have done all the operations!." +
+                (util.isUserAuthorized() ? "" : " Wait admin approval")
+              }
+              extra={
+                <Button onClick={() => navigate("/dashboard")} type="primary">
+                  Next
+                </Button>
+              }
+            />
+          </Layout>
+        </LayoutWrapper>
       )}
       ;
     </AuthenticationWrapper>

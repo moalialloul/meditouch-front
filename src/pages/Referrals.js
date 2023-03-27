@@ -49,6 +49,7 @@ export default function Referrals() {
           });
       }
     }
+   
   }, [loadMore, userData.loadingApp]);
   function viewAppointment(appointmentFk) {
     navigate("/appointment-details", {
@@ -57,14 +58,14 @@ export default function Referrals() {
       },
     });
   }
-
+  console.log("ref",userData.myReferrals);
   return (
     <Main>
       <Col xs={24} sm={24} md={24} lg={24} xl={24} className="mb-24">
         <Card bordered={false} className="criclebox cardbody ">
           <div className="project-ant">
             <div>
-              <Title level={5}>Your Referrals</Title>
+              <div className="heading-title">Your Referrals</div>
             </div>
           </div>
           {loading ? (
@@ -90,15 +91,15 @@ export default function Referrals() {
                   {userData.myReferrals?.map((ap, index) => (
                     <tr key={index}>
                       <td>
-                        <h6>
+                        <td className="heading-title">
                           {ap.referredByFirstName + " " + ap.referredByLastName}
-                        </h6>
+                        </td>
                       </td>
                       <td>{ap.referredByUserEmail}</td>
                       <td>
-                        <h6>
+                        <td className="heading-title">
                           {ap.patientFirstName + " " + ap.patientLastName}
-                        </h6>
+                        </td>
                       </td>
                       <td>{ap.patientUserEmail}</td>
                       <td>

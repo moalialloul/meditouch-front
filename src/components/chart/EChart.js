@@ -116,7 +116,7 @@ function EChart() {
           {Object.keys(eChartData).map((key, index) => (
             <Col xs={6} xl={6} sm={6} md={6} key={index}>
               <div className="chart-visitor-count">
-                <Title level={4}>{key}</Title>
+                <div className="stat-txt" level={4}>{key}</div>
                 <span>{eChartData[key]}</span>
               </div>
             </Col>

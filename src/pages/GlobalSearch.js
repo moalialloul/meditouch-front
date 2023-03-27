@@ -8,6 +8,7 @@ import { util } from "../public/util";
 import "../assets/styles/global-search.css";
 import moment from "moment";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 export default function GlobalSearch() {
   const [searchData, setSearchData] = useState([]);
   const dispatch = useDispatch();
@@ -79,7 +80,15 @@ export default function GlobalSearch() {
           };
         });
     } else {
-      alert("Sorry Not available!");
+     
+      toast.warning("Sorry Not available!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
     }
   }, []);
   const [loadMore, setLoadMore] = useState(paginationProps.pageNumber === -1);
@@ -169,11 +178,13 @@ export default function GlobalSearch() {
               <input
                 type="text"
                 value={searchText}
-                placeholder="Search by name or clinic location"
+                placeholder="Search by name/clinic location"
                 onChange={(e) => setSearchText(e.target.value)}
+                className="doctor-search me-2"
               />
               <Button
                 type="primary"
+                className="search-btn mt-2"
                 onClick={() => {
                   if (
                     searchText.replace(/\s+/g, "") !== "" ||
@@ -187,14 +198,14 @@ export default function GlobalSearch() {
                 Search
               </Button>
             </div>
-        <Row className="rowgap-vbox" gutter={[24, 0]}>
+        <Row className="rowgap-vbox mt-4" gutter={[24, 0]}>
           
           <Col xs={24} sm={24} md={6} lg={6} xl={4} className="mb-24">
           
-            <Card className="h-100 w-100">
+            <Card className="h-100 w-100" >
               <div className="d-flex flex-column">
                 <div className="d-flex justify-content-between">
-                  <div>Specialities</div>
+                  <div className="globalsearch-txt">Specialities</div>
                   <div
                     onClick={() =>
                       modifyFiltersVisibility(
@@ -216,8 +227,9 @@ export default function GlobalSearch() {
                     onChange={(e) =>
                       updateFilters("specialityFk", e.target.value)
                     }
+                    className="all-specialities"
                   >
-                    <option value={-1}>All Specialities</option>
+                    <option value={-1} >All Specialities</option>
                     {userData.specialities.map((sp) => {
                       return (
                         <option value={sp.specialityId}>
@@ -230,7 +242,7 @@ export default function GlobalSearch() {
               </div>
               <div className="d-flex flex-column mt-3">
                 <div className="d-flex justify-content-between">
-                  <div>Price Range</div>
+                  <div className="globalsearch-txt">Price Range</div>
                   <div
                     onClick={() =>
                       modifyFiltersVisibility("price", !filtersVisibility.price)
@@ -279,6 +291,7 @@ export default function GlobalSearch() {
                       {filtersData.minPrice !== -1 &&
                         filtersData.maxPrice !== -1 && (
                           <Button
+                          className="ms-3"
                             type="primary"
                             onClick={() => {
                               let tempFilters = { ...filtersData };
@@ -301,7 +314,7 @@ export default function GlobalSearch() {
               </div>
               <div className="d-flex flex-column mt-3">
                 <div className="d-flex justify-content-between">
-                  <div>Availability</div>
+                  <div className="globalsearch-txt">Availability</div>
                   <div
                     onClick={() =>
                       modifyFiltersVisibility(
@@ -319,7 +332,7 @@ export default function GlobalSearch() {
                 </div>
                 {filtersVisibility.availability && (
                   <div className="d-flex flex-column">
-                    <div className="d-flex w-100">
+                    <div className="d-flex w-100 flex-column align-items-center">
                       <input
                         placeholder="select start date time"
                         type="datetime-local"
@@ -330,7 +343,7 @@ export default function GlobalSearch() {
                           setAvailabilityRange(tempAvailabilityRange);
                         }}
                       />
-                      -
+                     
                       <input
                         placeholder="select start date time"
                         className="global-search-datetime"
@@ -344,6 +357,7 @@ export default function GlobalSearch() {
                     </div>
                     <div className="d-flex justify-content-center mt-3">
                       <Button
+                      className="me-3"
                         type="primary"
                         onClick={() => {
                           let m1 = moment(availabilityRange.min);
@@ -352,11 +366,26 @@ export default function GlobalSearch() {
                             availabilityRange.min === "" ||
                             availabilityRange.max === ""
                           ) {
-                            alert("times error");
+                       
+                            toast.error("times error", {
+                              position: "top-center",
+                              autoClose: 5000,
+                              hideProgressBar: true,
+                              closeOnClick: true,
+                              pauseOnHover: false,
+                              draggable: false,
+                            });
                             return;
                           }
                           if (m1.isAfter(m2)) {
-                            alert("times error");
+                            toast.error("times error", {
+                              position: "top-center",
+                              autoClose: 5000,
+                              hideProgressBar: true,
+                              closeOnClick: true,
+                              pauseOnHover: false,
+                              draggable: false,
+                            });
                             return;
                           }
                           let tempFilters = { ...filtersData };
@@ -400,7 +429,7 @@ export default function GlobalSearch() {
 
               <div className="d-flex flex-column mt-3">
                 <div className="d-flex justify-content-between">
-                  <div>Distance in Km</div>
+                  <div className="globalsearch-txt">Distance in Km</div>
                   <div
                     onClick={() =>
                       modifyFiltersVisibility(
@@ -460,7 +489,7 @@ export default function GlobalSearch() {
               {util.isUserAuthorized() && (
                 <div className="d-flex flex-column mt-3">
                   <div className="d-flex justify-content-between">
-                    <div> Favorites </div>
+                    <div className="globalsearch-txt"> Favorites </div>
                     <div
                       onClick={() => {
                         modifyFiltersVisibility(
@@ -482,11 +511,12 @@ export default function GlobalSearch() {
                   </div>
 
                   {filtersVisibility.favorites && (
-                    <div className="d-flex">
+                    <div className="d-flex" style={{gap:"5px"}}>
                       <input
                         type="radio"
                         name="withFavorite"
                         onClick={() => updateFilters("isFavorite", 1)}
+                       
                       />{" "}
                       Favorite
                       <input

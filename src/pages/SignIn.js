@@ -26,7 +26,8 @@ import { businessAccountController } from "../controllers/businessAccountControl
 import { EncryptStorage } from "encrypt-storage";
 import Navbar from "../components/Navbar";
 import LayoutWrapper from "../components/Layout";
-
+import { toast, ToastContainer } from "react-toastify";
+toast.configure();
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
 const template = [
@@ -131,27 +132,28 @@ export default function SignIn() {
       navigate("/dashboard");
     }
   }, []);
+
   const content = (
     <Content className="signin">
       <Row justify="center">
-        {/* <Col
-  className="sign-img"
-  style={{ padding: 12 }}
-  xs={{ span: 24 }}
-  lg={{ span: 24 }}
-  md={{ span: 24 }}
->
-  <img src={signinbg} alt="" />
-</Col> */}
+        <Col xs={{ span: 24 }} lg={{ span: 12 }} md={{ span: 12 }}>
+          <img src={signinbg} alt="" className="signup-image" />
+        </Col>
         <Col
-          xs={{ span: 18 }}
-          lg={{ span: 18 }}
-          md={{ span: 18 }}
+          xs={{ span: 24, offset: 0 }}
+          lg={{ span: 6, offset: 2 }}
+          md={{ span: 12 }}
           className="signin-wrapper"
         >
-          <Title className="text-center signin-txt">Login</Title>
+          <div className="text-center signin-txt-title mb-4">Login</div>
 
-          <Form layout="vertical" className="row-col">
+          <Form
+            onSubmitCapture={(e) => {
+              e.preventDefault();
+            }}
+            layout="vertical"
+            className="row-col"
+          >
             <Form.Item
               className="username"
               label="Email"
@@ -199,8 +201,9 @@ export default function SignIn() {
             <Form.Item>
               <Button
                 type="primary"
-                htmlType="submit"
-                onClick={() => {
+                htmlType="button"
+                onClick={(e) => {
+                  e.preventDefault();
                   if (
                     userForm.userEmail.replace(/\s+/g, "") !== "" &&
                     userForm.password.replace(/\s+/g, "") !== ""
@@ -213,7 +216,15 @@ export default function SignIn() {
                       .then((response) => {
                         let data = response.data;
                         if (data.responseCode === -1) {
-                          alert(data.message);
+                          toast.error(data.message, {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggable: false,
+                          });
+
                           setSigningIn(false);
 
                           return;
@@ -258,6 +269,15 @@ export default function SignIn() {
                             businessAccountInfo:
                               data.user.userRole === "ADMIN" ? -2 : -1,
                           });
+                        
+                          toast.success("You have successfully logged in!", {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggable: false,
+                          });
                           setSigningIn(false);
                           navigate("/dashboard");
                         }
@@ -269,19 +289,31 @@ export default function SignIn() {
                 SIGN IN
               </Button>
             </Form.Item>
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-between flex-column">
+              <div
+                className="d-flex align-items-center"
+                style={{ gap: "10px" }}
+              >
+                <p className="font-semibold text-muted">
+                  <Link to="/forget-password" className="signin-txt">
+                    Forget Password?
+                  </Link>
+                </p>
+
+                <p className="font-semibold text-muted">
+                  <Link to="/verify" className="signin-txt">
+                    Verify Account
+                  </Link>
+                </p>
+              </div>
               <p className="font-semibold text-muted">
                 Don't have an account?{" "}
-                <Link to="/sign-up" className="text-dark font-bold ">
+                <Link
+                  to="/sign-up"
+                  className="signin-txt"
+                  style={{ textDecoration: "underline" }}
+                >
                   Sign Up
-                </Link>
-              </p>
-              <p className="font-semibold text-muted">
-                <Link to="/forget-password" className="text-dark font-bold ">
-                  Forget Password
-                </Link>
-                <Link to="/verify" className="text-dark font-bold ">
-                  Verify Account
                 </Link>
               </p>
             </div>

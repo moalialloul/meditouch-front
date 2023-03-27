@@ -22,7 +22,7 @@ import {
   VerticalAlignTopOutlined,
 } from "@ant-design/icons";
 
-import BgProfile from "../assets/images/bg-profile.jpg";
+import BgProfile from "../assets/images/doctorProfile.jpg";
 import profilavatar from "../assets/images/face-1.jpg";
 import convesionImg from "../assets/images/face-3.jpg";
 import convesionImg2 from "../assets/images/face-4.jpg";
@@ -37,6 +37,7 @@ import avatar from "../assets/images/avatar.jpg";
 import { UploadOutlined } from "@ant-design/icons";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 function Profile() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state);
@@ -128,7 +129,14 @@ function Profile() {
         userFk: userData.userInfo.userId,
       })
       .then(() => {
-        alert("done");
+        toast.success("done", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
       });
   }
   return (
@@ -226,7 +234,7 @@ function Profile() {
         }
       ></Card>
 
-      <Row gutter={[24, 0]}>
+      <Row gutter={[24, 0]} justify="center">
         <Col span={24} md={8} className="mb-24">
           <Card
             bordered={false}
@@ -325,32 +333,6 @@ function Profile() {
           </Card>
         </Col>
 
-        <Col span={24} md={8} className="mb-24">
-          <Card
-            bordered={false}
-            title={<h6 className="font-semibold m-0">Conversations</h6>}
-            className="header-solid h-full"
-            bodyStyle={{ paddingTop: 0, paddingBottom: 16 }}
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={data}
-              split={false}
-              className="conversations-list"
-              renderItem={(item) => (
-                <List.Item actions={[<Button type="link">REPLY</Button>]}>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar shape="square" size={48} src={item.avatar} />
-                    }
-                    title={item.title}
-                    description={item.description}
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
       </Row>
     </Main>
   );

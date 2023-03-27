@@ -27,7 +27,9 @@ import ReservationSlots from "./pages/ReservationSlots";
 import AppointmentReferral from "./pages/AppointmentReferral";
 import Referrals from "./pages/Referrals";
 import AppointmentDetails from "./pages/AppointmentDetails";
-
+import ContactUs from "./pages/ContactUs";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   useEffect(() => {
     window.process = {
@@ -37,6 +39,7 @@ function App() {
   return (
     <HashRouter basename="/" history={createHashHistory()}>
       <SocketWrapperProvider>
+      <ToastContainer />
         <Routes>
           <Route exact path="/sign-up" element={<SignUp />} />
           <Route exact path="/sign-in" element={<SignIn />} />
@@ -58,7 +61,7 @@ function App() {
           <Route exact path="/global-search" element={<GlobalSearch />} />
           <Route exact path="/referral" element={<AppointmentReferral />} />
           <Route exact path="/referrals" element={<Referrals />} />
-
+          <Route exact path="/contactUs" element={<ContactUs/>} />
           <Route exact path="/patient-details" element={<PatientDetails />} />
           <Route exact path="/hp-details" element={<HealthProfessionalDetails />} />
           <Route exact path="/reservation-slots" element={<ReservationSlots />} />

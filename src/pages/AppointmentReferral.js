@@ -1,10 +1,15 @@
-import { Button, Col } from "antd";
+import { Button, Card, Col } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import Main from "../components/layout/Main";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { userController } from "../controllers/userController";
+import referralImage from "../assets/images/referralDoctor.png";
+
+import BgProfile from "../assets/images/doctorProfile.jpg";
+import userImg from "../assets/images/user.png";
+import userMail from "../assets/images/mail.png";
 
 export default function AppointmentReferral() {
   const { state } = useLocation();
@@ -68,15 +73,24 @@ export default function AppointmentReferral() {
   }
   return (
     <Main>
+      <div
+        className="profile-nav-bg"
+        style={{
+          backgroundImage: "url(" + BgProfile + ")",
+          height: "400px",
+          backgroundSize: "cover",
+        }}
+      ></div>
       <Col xs={24} sm={24} md={24} lg={24} xl={24} className="mb-24">
-        <div>
+        <div className="all-txts mt-3 text-center">
           {" "}
           Please refer{" "}
           {state.appointment.firstName + " " + state.appointment.lastName} into
           another doctor
         </div>
-        <div className="d-flex">
+        <div className="d-flex mt-3 justify-content-center align-items-center">
           <input
+            className="referral-search-doctor "
             type="text"
             placeholder="Search doctor"
             value={searchText}
@@ -84,6 +98,7 @@ export default function AppointmentReferral() {
           />
           <Button
             type="primary"
+            className="referral-search-btn"
             onClick={() => {
               setHPList([]);
               setPageNumber(-1);
@@ -94,47 +109,72 @@ export default function AppointmentReferral() {
             Search
           </Button>
         </div>
-        <div>
+        <div style={{position:"relative"}}>
+        <div className="d-flex mt-4" style={{gap:"10px"}}>
           {hpList.map((hp) => {
             return (
-              <div
+       
+              <Card
                 style={{
                   cursor: "pointer",
                   backgroundColor:
                     selectedHps.findIndex((hps) => hps.userId === hp.userId) >=
                     0
-                      ? "red"
+                      ? "#f5f7ff"
                       : "",
                 }}
                 onClick={() => modifySelectedHps(hp)}
-                className="mt-3"
+                className="mt-3 referral-selected-information"
               >
-                <div>{hp.firstName}</div>
-                <div>{hp.lastName}</div>
-                <div>{hp.userEmail}</div>
-              </div>
+                <div style={{ textAlign: "center" }} className="referral-doc pb-3">
+                  <img src={referralImage} className="referral-doctor-img " alt="" />
+                </div>
+              <div className="d-flex align-items-center pb-2" style={{borderBottom:"1px solid rgb(219, 216, 216)"}}>
+              
+              <div className=" all-txts mt-2 ms-2">{hp.firstName}</div>
+                </div> 
+                <div className="d-flex align-items-center mt-2 pb-2" style={{borderBottom:"1px solid rgb(219, 216, 216)"}}>
+                
+              <div className=" all-txts mt-2 ms-2 ">{hp.lastName}</div>
+                </div> 
+                <div className="d-flex align-items-center mt-2">
+          
+              <div className=" all-txts  ms-2 m">{hp.userEmail}</div>
+                </div> 
+            
+              </Card>
+           
             );
           })}
-          {pageNumber <= totalNumberOfPages && !loadMore && (
-            <Button type="primary" onClick={() => setLoadMore(true)}>
-              Load more
-            </Button>
-          )}
-          {loadMore && "loading..."}
+         </div>
 
           {selectedHps.length !== 0 && (
-            <div>
+            <div className=" mt-4">
               <input
+                className="referral-search-doctor2 "
                 type="text"
                 placeholder="Referral Description"
                 value={referralDescription}
                 onChange={(e) => setReferralDescription(e.target.value)}
               />
-              <Button type="primary" onClick={() => addReferral()}>
+              <Button
+                type="primary"
+                onClick={() => addReferral()}
+                className="referral-search-btn"
+              >
                 Add Referral
               </Button>
             </div>
           )}
+           <div className="load-more" >
+         {pageNumber <= totalNumberOfPages && !loadMore && (
+            <Button type="primary" onClick={() => setLoadMore(true)} className="mt-3">
+              Load more
+            </Button>
+          )}
+           
+          </div>
+          {loadMore && "loading..."}
         </div>
       </Col>
     </Main>

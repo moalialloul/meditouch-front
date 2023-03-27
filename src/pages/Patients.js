@@ -56,23 +56,23 @@ export default function Patients() {
             <Card bordered={false} className="criclebox cardbody ">
               <div className="project-ant">
                 <div>
-                  <Title level={5}>Patients</Title>
+                  <div className="heading-title" level={5}>Your Patients</div>
                 </div>
               </div>
               <div className="ant-list-box table-responsive">
                 <table className="width-100">
                   <thead>
                     <tr>
-                      <th>PATIENT NAME</th>
-                      <th>PATIENT EMAIL</th>
-                      <th>ACTION</th>
+                      <th >PATIENT NAME</th>
+                      <th >PATIENT EMAIL</th>
+                      <th >ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
                     {patientsData?.map((ap, index) => (
                       <tr key={index}>
                         <td>
-                          <h6>{ap.firstName + " " + ap.lastName}</h6>
+                          <td className="heading-title">{ap.firstName + " " + ap.lastName}</td>
                         </td>
                         <td>{ap.userEmail}</td>
                         <td>

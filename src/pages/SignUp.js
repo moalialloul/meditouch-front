@@ -23,6 +23,7 @@ import {
 } from "@ant-design/icons";
 import { userController } from "../controllers/userController";
 import LayoutWrapper from "../components/Layout";
+import { toast } from "react-toastify";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
@@ -282,10 +283,24 @@ export default function SignUp() {
                             .then((response) => {
                               let data = response.data;
                               if (data.responseCode !== 200) {
-                                alert(data.message);
+                                toast.error(data.message, {
+                                  position: "top-center",
+                                  autoClose: 5000,
+                                  hideProgressBar: true,
+                                  closeOnClick: true,
+                                  pauseOnHover: false,
+                                  draggable: false,
+                                });
                                 return;
                               }
-                              alert(data.message);
+                              toast.success(data.message, {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: true,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: false,
+                              });
                               navigate("/verify", {
                                 state: {
                                   userFk: data.userId,
@@ -304,7 +319,7 @@ export default function SignUp() {
                 </Form>
                 <p className="font-semibold text-muted text-center">
                   Already have an account?{" "}
-                  <Link to="/sign-in" className="font-bold text-dark">
+                  <Link to="/sign-in" className="signin-txt" style={{textDecoration:"underline"}}>
                     Sign In
                   </Link>
                 </p>

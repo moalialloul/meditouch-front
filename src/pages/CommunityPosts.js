@@ -147,27 +147,30 @@ export default function CommunityPosts() {
     <Main>
       <Col xs={24} sm={24} md={24} lg={24} xl={24} className="mb-24">
         <Button
+        className="ms-3"
           type="primary"
           onClick={() => setAddPostVisibility(!addPostVisibility)}
         >
           Post
         </Button>
         {addPostVisibility && (
-          <Card bordered={false} className="criclebox h-full">
+          <Card bordered={false} className="criclebox h-full ">
             <Input
               type="text"
+              className="patient-details-input mb-4"
               placeholder="Service Title"
               onChange={(e) => updatePostDetails("postService", e.target.value)}
             />
             <Input
               type="text"
+              className="patient-details-input"
               value={postDetails.postDescription}
               onChange={(e) =>
                 updatePostDetails("postDescription", e.target.value)
               }
             />
 
-            <div className="d-flex w-100 justify-content-end">
+            <div className="d-flex w-100 justify-content-end mt-4">
               <Button type="primary" onClick={() => addPost()}>
                 Add Post
               </Button>
@@ -175,15 +178,17 @@ export default function CommunityPosts() {
           </Card>
         )}
         <Card bordered={false} className="criclebox h-full">
-          <div className="d-flex">
-            <div>
+          <div className="d-flex flex-column">
+            <div >
               {userData.communityPosts.posts.map((post, index) => {
                 return (
                   <div
+                 
                     style={{
                       cursor: "pointer",
-                      backgroundColor:
-                        postSelectedIndex === index ? "red" : "white",
+                      // backgroundColor:
+                      //   postSelectedIndex === index ? "red" : "white",
+                    
                     }}
                     onClick={() => {
                       if (post.commentCount !== 0) {
@@ -192,12 +197,12 @@ export default function CommunityPosts() {
                       }
                     }}
                     key={"post" + index}
-                    className="mt-3"
+                    className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1 mb-2 pt-2 ps-3 pe-3 w-100"
                   >
-                    <div> {post.firstName + " " + post.lastName}</div>
-                    <div> {post.postService}</div>
-                    <div> {post.postDescription}</div>
-                    <div>{post.commentCount} comment</div>
+                    <div className="community-post-name"> {post.firstName + " " + post.lastName}</div>
+                    <div className="community-post-txt mt-2">Service: {post.postService}</div>
+                    <div className="community-post-txt mt-2 "> Description:{post.postDescription}</div>
+                    <div className="comment-count mt-2 d-flex justify-content-end">{post.commentCount} comments</div>
                   </div>
                 );
               })}
@@ -210,31 +215,34 @@ export default function CommunityPosts() {
                 )}
             </div>
             {postSelectedIndex !== -1 && (
-              <div>
+              <div >
                 {userData.communityPosts.posts[
                   postSelectedIndex
                 ].communityPostComments.comments.map((com) => {
                   return (
                     <div className="mt-3">
-                      <div>{com.firstName}</div>
-                      <div>{com.lastName}</div>
+                      <div className="community-post-name2" >{com.firstName + "" + com.lastName}</div>
+                     
                       <div>{com.userEmail}</div>
                       <div>{com.commentDescription}</div>
                     </div>
+                    
                   );
                 })}
-                <div className="d-flex">
-                  <input
+                <div className="d-flex m-auto">
+                  <textarea
+                  className="patient-details-input w-100"
                     type="text"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Add Comment"
+                    placeholder="Add Comment..."
                   />
-                  <Button type="primary" onClick={() => addComment()}>
+                 
+                </div>
+                <Button type="primary" onClick={() => addComment()} className="me-3 mt-3">
                     Add comment
                   </Button>
-                </div>
-                <Button type="primary" onClick={() => setPostSelectedIndex(-1)}>
+                <Button type="primary" onClick={() => setPostSelectedIndex(-1)} className="me-3 mt-3">
                   back
                 </Button>
                 {userData.communityPosts.posts[postSelectedIndex]
