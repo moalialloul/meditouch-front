@@ -1202,7 +1202,7 @@ span.blue {
 }
 
 .timelinelist span {
-  color: #8c8c8c;
+  /* color: #8c8c8c; */
   font-size: 12px;
 }
 .ant-muse span {
@@ -3073,4 +3073,175 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
   padding: 50px;
   background: rgba(0, 0, 0, 0.05);
   border-radius: 4px;
+}
+.signup-image{
+  width:80%;
+
+}
+.signin-txt{
+  color:#1890ff;
+  text-decoration: none;
+  font-size:14px;
+}
+.signin-txt-title{
+  color:black;
+  font-size:24px;
+  font-weight:bold;}
+  .username{
+    font-weight:bold;
+  }
+  .content1 span{
+    font-weight:bold;
+  }
+  .stat-txt{
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 600;
+    font-size:15px;
+    line-height: 48px;
+    color: #001247;
+  }
+  .all-txts{
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 600;
+    font-size:15px;
+
+    color: #001247;
+  }
+  .all-txts1{
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 600;
+    font-size:12px;
+
+    color: #001247;
+  }
+.heading-title{
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 600;
+  font-size:18px;
+
+  color: #001247;
+}
+.schedule-time-date{
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  border:none;
+  padding-left:10px;
+}
+.patient-image{
+  filter: invert(51%) sepia(26%) saturate(7287%) hue-rotate(190deg) brightness(98%) contrast(108%);
+}
+.patient-details-input{
+  border:none;
+  background: rgba(229, 235, 255, 0.5);
+  border-radius: 10px;
+  padding:10px;
+}
+.doctor-image{  box-shadow: 0 20px 27px rgb(0 0 0 / 5%);}
+
+.all-cards-info::-webkit-scrollbar {
+  background: #f5f7ff;
+  width: 9px;
+  margin-left:10px;
+}
+.all-cards-info::-webkit-scrollbar-thumb {
+  background: rgba(164, 165, 167, 0.5);
+
+  border-radius: 4px;
+  opacity: 0.5;
+}
+.referral-search-doctor{
+  border:none;
+  background: #ffffff;
+  height: 53px;
+  width: 50%;
+  padding-left: 20px;
+  box-shadow: 0px 4px 10px rgba(107, 119, 154, 0.15);
+  border-radius: 15px 0 0 15px;
+}
+.referral-search-doctor:focus{
+  border:none;
+  background: #ffffff;
+  height: 53px;
+  width: 50%;
+  padding-left: 20px;
+  box-shadow: 0px 4px 10px rgba(107, 119, 154, 0.15);
+  border-radius: 15px 0 0 15px;
+}
+.referral-search-doctor2{
+  border:none;
+  background: #f5f7ff;
+  height: 53px;
+  padding-left: 20px;
+  box-shadow: 0px 4px 10px rgba(107, 119, 154, 0.15);
+  border-radius: 15px 0 0 15px;
+}
+.referral-search-btn{
+  height: 53px;
+  border:none;
+  background: #1890ff;
+}
+.referral-selected-information{
+  width:250px;
+  height:auto;
+}
+.referral-doctor-img{
+  width:50px;
+  height:50px;
+  filter: invert(51%) sepia(26%) saturate(7287%) hue-rotate(190deg) brightness(98%) contrast(108%);
+ 
+}
+.referral-doc{
+  border-bottom:1px solid rgb(219, 216, 216);
+}
+.user-img{
+  width:15px;
+  height:15px;
+  filter: invert(51%) sepia(26%) saturate(7287%) hue-rotate(190deg) brightness(98%) contrast(108%);
+}
+.load-more{
+  position: absolute;
+  bottom:0;
+  left:50%;
+  transform: translate(-50%, -50%);
+}
+.appointment-status{
+  color:rgb(176, 173, 173)
+}
+.community-post-name{
+  white-space: nowrap;
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: bold;
+  font-size:18px;
+  color: #001247;
+ 
+}
+.community-post-name2{
+  white-space: nowrap;
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: bold;
+  font-size:18px;
+  color: #1890ff;
+}
+.community-post-txt{
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 400;
+  font-size:15px;
+  color: #001247;
+}
+.comment-count{
+  color:rgb(176, 173, 173);
+  font-family: Poppins;
+  font-style: normal;
+  font-weight: 400;
+  font-size:15px;
+}
+.community-post-name{
+  border-bottom:1px solid rgb(219, 216, 216);
 }

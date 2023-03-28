@@ -15,6 +15,7 @@ import { util } from "../public/util";
 import moment from "moment";
 import classNames from "classnames";
 import Lock from "../icons/lock";
+import { toast } from "react-toastify";
 
 function Appointments() {
   const dispatch = useDispatch();
@@ -135,7 +136,14 @@ function Appointments() {
       })
       .then((response) => {
         let data = response.data;
-        alert(data.message);
+        toast.success(data.message, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
         let tempAppointments = [...userData.myAppointments];
 
         let indexOfApp = tempAppointments.findIndex(
@@ -589,31 +597,31 @@ function Appointments() {
                   return (
                     <div
                       key={index}
-                      className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1"
+                      className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1 mb-2"
                     >
-                      <div className="d-flex flex-column ">
-                        <div className="d-flex align-items-center">
+                      <div className="d-flex flex-column " >
+                        <div className="d-flex align-items-center" style={{borderBottom:"1px solid rgb(219, 216, 216)"}}>
                           <div className="appointment-profile">
                             <img src={avatar} className="" alt="" />
                           </div>
-                          <div className="d-flex flex-column justify-content-center">
+                          <div className="d-flex flex-column justify-content-center all-txts1">
                             {ap.firstName + " " + ap.lastName}
-                            <div> {ap.serviceName}</div>
-                            <div className="appointment-status">
+                            {/* <div> {ap.serviceName}</div> */}
+                            <div className="appointment-status ">
                               {ap.appointmentStatus}
                             </div>
                           </div>
                         </div>
-                        <div className="d-flex flex-column">
-                          <div>Service Name</div>
-                          <div>{ap.serviceName}</div>
+                        <div className="d-flex align-items-center mb-2 mt-2">
+                          <div className="all-txts me-2">Service Name :</div>
+                          <div className="all-txts1">{ap.serviceName}</div>
                         </div>
-                        <div className="d-flex justify-content-between w-100">
-                          <div className="d-flex align-items-center appointment-datetime">
-                            <Calendar />
+                        <div className="d-flex justify-content-between w-100 mb-2 " >
+                          <div className="d-flex align-items-center appointment-datetime all-txts1 ">
+                            <div className="me-2"> <Calendar /></div>
                             {ap.slotStartTime}
                           </div>
-                          <div className="d-flex align-items-center appointment-datetime">
+                          <div className="d-flex align-items-center appointment-datetime all-txts1">
                             <Dollor color={"black"} />
                             {ap.servicePrice + "" + ap.currencyUnit}
                           </div>
@@ -656,7 +664,7 @@ function Appointments() {
                               ap.appointmentActualStartTime !== undefined && (
                                 <Button
                                   type="primary"
-                                  className="w-100"
+                                  className="w-100 mt-3"
                                   onClick={() => {
                                     navigate("/referral", {
                                       state: {
@@ -685,7 +693,7 @@ function Appointments() {
                               <div className="d-flex">
                                 <Button
                                   type="primary"
-                                  className="w-100"
+                                  className="w-100 me-2 mt-3"
                                   onClick={() => {
                                     setAppointmentSelected(ap);
                                     setDoctorSelected({
@@ -698,7 +706,7 @@ function Appointments() {
                                 </Button>
                                 <Button
                                   type="primary"
-                                  className="w-100"
+                                  className="w-100 mt-3"
                                   onClick={() => {
                                     cancelAppointment(index);
                                   }}

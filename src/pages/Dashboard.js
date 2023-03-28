@@ -144,83 +144,72 @@ export default function Dashboard() {
   const [appointmentsData, setAppointmentsData] = useState({});
   useEffect(() => {
     if (!userData.loadingApp) {
-      if (userData.businessAccountInfo) {
-        if (
-          userData.businessAccountInfo !== -1 &&
-          userData.businessAccountInfo !== -2
-        ) {
-          businessAccountController
-            .getBusinessAccountStatistics({
-              businessAccountId: userData.businessAccountInfo.businessAccountId,
-            })
-            .then((response) => {
-              setCardsStatisitcs(response.data.result);
-            });
-        } else {
-          if (userData.userInfo) {
-            if (userData.businessAccountInfo === -2) {
-              businessAccountController
-                .getAdminStatistics()
-                .then((response) => {
-                  setCardsStatisitcs(response.data.result);
-                });
-            } else {
-              userController
-                .getUserStatistics({ userFk: userData.userInfo.userId })
-                .then((response) => {
-                  setCardsStatisitcs(response.data.result);
-                });
-            }
-          }
-        }
-        if (userData.userInfo && userData.businessAccountInfo !== -2) {
-          businessAccountController
-            .getAppointments({
-              userType: userData.userInfo.userRole,
-              id:
-                userData.userInfo.userRole === "PATIENT"
-                  ? userData.userInfo.userId
-                  : userData.businessAccountInfo.businessAccountId,
-              pageNumber: 1,
-              recordsByPage: 4,
-              body: {
-                appointmentStatus: "",
-                appointmentType: "ALL",
-                isCancelled: -1,
-              },
-            })
-            .then((response) => {
-              let data = response.data;
-              for (let i = 0; i < data.length; i++) {
-                data[i].appointmentActualStartTime = moment(
-                  util.formatTimeByOffset(
-                    new Date(
-                      moment(
-                        data[i].appointmentActualStartTime,
-                        "YYYY-MM-DD HH:mm:ss"
-                      )
-                    )
-                  ),
-                  "YYYY-MM-DD HH:mm:ss"
-                ).format("YYYY-MM-DD HH:mm:ss");
-                data[i].appointmentActualEndTime = moment(
-                  util.formatTimeByOffset(
-                    new Date(
-                      moment(
-                        data[i].appointmentActualEndTime,
-                        "YYYY-MM-DD HH:mm:ss"
-                      )
-                    )
-                  ),
-                  "YYYY-MM-DD HH:mm:ss"
-                ).format("YYYY-MM-DD HH:mm:ss");
-              }
-              setAppointmentsData(data);
-              setLoadingAppointments(false);
-            })
-            .then(() => {});
-        }
+      if (userData.userInfo.userRole === "HEALTH_PROFESSIONAL") {
+        businessAccountController
+          .getBusinessAccountStatistics({
+            businessAccountId: userData.businessAccountInfo.businessAccountId,
+          })
+          .then((response) => {
+            setCardsStatisitcs(response.data.result);
+          });
+      }
+      if (userData.userInfo.userRole === "PATIENT") {
+        userController
+          .getUserStatistics({ userFk: userData.userInfo.userId })
+          .then((response) => {
+            setCardsStatisitcs(response.data.result);
+          });
+      }
+      if (userData.userInfo.userRole === "ADMIN") {
+        businessAccountController.getAdminStatistics().then((response) => {
+          setCardsStatisitcs(response.data.result);
+        });
       } else {
+        businessAccountController
+          .getAppointments({
+            userType: userData.userInfo.userRole,
+            id:
+              userData.userInfo.userRole === "PATIENT"
+                ? userData.userInfo.userId
+                : userData.businessAccountInfo.businessAccountId,
+            pageNumber: 1,
+            recordsByPage: 4,
+            body: {
+              appointmentStatus: "",
+              appointmentType: "ALL",
+              isCancelled: -1,
+            },
+          })
+          .then((response) => {
+            let data = response.data;
+            for (let i = 0; i < data.length; i++) {
+              data[i].appointmentActualStartTime = moment(
+                util.formatTimeByOffset(
+                  new Date(
+                    moment(
+                      data[i].appointmentActualStartTime,
+                      "YYYY-MM-DD HH:mm:ss"
+                    )
+                  )
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+              data[i].appointmentActualEndTime = moment(
+                util.formatTimeByOffset(
+                  new Date(
+                    moment(
+                      data[i].appointmentActualEndTime,
+                      "YYYY-MM-DD HH:mm:ss"
+                    )
+                  )
+                ),
+                "YYYY-MM-DD HH:mm:ss"
+              ).format("YYYY-MM-DD HH:mm:ss");
+            }
+            setAppointmentsData(data);
+            setLoadingAppointments(false);
+          })
+          .then(() => {});
       }
     }
   }, [userData.loadingApp]);
@@ -389,15 +378,17 @@ export default function Dashboard() {
                 bordered={false}
                 className="criclebox cardbody "
                 extra={
-                  <div className="d-flex flex-column">
+                  <div className="d-flex flex-column ">
                     <div className="d-flex">
                       <input
+                      className="patient-details-input "
                         type="text"
                         value={searchHpText}
                         onChange={(e) => setSearchHpText(e.target.value)}
                         placeholder="Search"
                       />
                       <Button
+                      className="referral-search-btn ms-2"
                         onClick={() => {
                           if (searchHpText.replace(/\s+/g, "") !== "") {
                             let tempPaginationProps = { ...paginationProps };
@@ -411,8 +402,9 @@ export default function Dashboard() {
                         Search
                       </Button>
                     </div>
-                    <div className="d-flex">
-                      Add Approve Condition{" "}
+                    <div className="d-flex mt-2 align-items-center flex-column ">
+                      <div className="d-flex align-items-center">
+                     <div className="me-2 all-txts ">Add Approve Condition{" "}</div> 
                       <input
                         type="checkbox"
                         checked={isWithApprove}
@@ -428,11 +420,13 @@ export default function Dashboard() {
                           }
                         }}
                       />
+                      </div>
                       {isWithApprove && (
-                        <div className="d-flex">
-                          Approved{" "}
+                        <div className="d-flex ms-2">
+                          <div className="me-2">Approved{" "}</div>
                           <input
                             type="radio"
+                            className="me-2"
                             name="withApproved"
                             onClick={() => {
                               setWithApproveVal(1);
@@ -443,10 +437,11 @@ export default function Dashboard() {
                               setLoadMore(true);
                             }}
                           />
-                          Not{" "}
+                         <div className="me-2">Not{" "}</div>
                           <input
                             type="radio"
                             name="withApproved"
+                            className="me-s"
                             onClick={() => {
                               setWithApproveVal(0);
                               let tempPaginationProps = { ...paginationProps };

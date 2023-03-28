@@ -25,6 +25,7 @@ import { businessAccountController } from "../controllers/businessAccountControl
 import { EncryptStorage } from "encrypt-storage";
 import Navbar from "../components/Navbar";
 import LayoutWrapper from "../components/Layout";
+import { toast } from "react-toastify";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
@@ -144,7 +145,14 @@ export default function ForgetPassword() {
       .then((response) => {
         let data = response.data;
         if (data.responseCode === -1) {
-          alert(data.message);
+          toast.error(data.message, {
+            position: "invalid token",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+          });
           return;
         } else {
           if (index === 0) {
@@ -167,7 +175,14 @@ export default function ForgetPassword() {
         .then((response) => {
           let data = response.data;
           if (data.responseCode === -1) {
-            alert(data.message);
+            toast.error(data.message, {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: false,
+            });
             return;
           }
           setIndex(2);
@@ -185,8 +200,14 @@ export default function ForgetPassword() {
         })
         .then((response) => {
           let data = response.data;
-
-          alert(data.message);
+          toast.success(data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+          });
           navigate("/sign-in");
         });
     }

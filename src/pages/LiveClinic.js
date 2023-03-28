@@ -228,10 +228,10 @@ export default function LiveClinic() {
         hidden: true,
       }}
     >
-      <div>Height : {appointments[viewMedicalInfoIndex]?.height + " cm"}</div>
-      <div>Weight : {appointments[viewMedicalInfoIndex]?.weight + " Kg"}</div>
-      <div>Diseases : {appointments[viewMedicalInfoIndex]?.diseasesDescription}</div>
-      <div>Vacination : {appointments[viewMedicalInfoIndex]?.vaccinationDescription}</div>
+      <div >Height : {appointments[viewMedicalInfoIndex]?.height + " cm"}</div>
+      <div className="mt-2">Weight : {appointments[viewMedicalInfoIndex]?.weight + " Kg"}</div>
+      <div className="mt-2">Diseases : {appointments[viewMedicalInfoIndex]?.diseasesDescription}</div>
+      <div className="mt-2">Vacination : {appointments[viewMedicalInfoIndex]?.vaccinationDescription}</div>
 
     </Modal>
   );
@@ -291,6 +291,7 @@ export default function LiveClinic() {
                                   appointments[index - 1].ended === false
                             }
                             type="primary"
+                            className="me-3 mt-2"
                           >
                             Start
                           </Button>
@@ -301,6 +302,7 @@ export default function LiveClinic() {
                               t.appointmentActualEndTime !== -1
                             }
                             danger
+                            className="me-3 mt-2"
                           >
                             End
                           </Button>
@@ -310,6 +312,7 @@ export default function LiveClinic() {
                               setMedicalInfoModal(true);
                             }}
                             type="primary"
+                            className="me-3 mt-2"
                           >
                             Medical Info
                           </Button>

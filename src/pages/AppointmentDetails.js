@@ -34,6 +34,7 @@ export default function AppointmentDetails() {
       }
     }
   }, [state, userData.loadingApp]);
+  console.log("data",appointmentData)
   return (
     <Main>
       {loading ? (
@@ -52,7 +53,7 @@ export default function AppointmentDetails() {
             Doctor Name:{" "}
             {appointmentData.doctorFirstName +
               " " +
-              appointmentData.doctorFirstName}
+              appointmentData.doctorLastName}
           </div>
           <div>Description : {appointmentData.appointmentDescription}</div>
         </>

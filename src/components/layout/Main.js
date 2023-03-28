@@ -141,7 +141,7 @@ function Main({ children }) {
                 <Header
                   onPress={openDrawer}
                   name={pathname}
-                  subName={pathname}
+                  subName=""
                   handleSidenavColor={handleSidenavColor}
                   handleSidenavType={handleSidenavType}
                   handleFixedNavbar={handleFixedNavbar}
@@ -153,7 +153,7 @@ function Main({ children }) {
               <Header
                 onPress={openDrawer}
                 name={pathname}
-                subName={pathname}
+                subName=""
                 handleSidenavColor={handleSidenavColor}
                 handleSidenavType={handleSidenavType}
                 handleFixedNavbar={handleFixedNavbar}

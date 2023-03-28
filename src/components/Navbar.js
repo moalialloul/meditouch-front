@@ -71,7 +71,7 @@ const Navbar = (props) => {
                         </li>
                       )}
                       <li class="nav-item ">
-                        <a class="nav-link" href="#findUs">
+                        <a class="nav-link" href="/#/contactUs">
                           Contact Us{" "}
                         </a>
                       </li>

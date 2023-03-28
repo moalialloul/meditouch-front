@@ -14,6 +14,7 @@ import moment from "moment";
 import classNames from "classnames";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const draggingGroupName = "appointmentsGroup";
 
@@ -162,7 +163,14 @@ export default function Schedule() {
   };
   function fetchSlots() {
     if (daysChosen.length === 0 || serviceSelected === -1) {
-      alert("choose days or service");
+      toast.warning("Choose days or service", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
       return;
     }
     let tempMySlots = [...mySlots];
@@ -224,7 +232,15 @@ export default function Schedule() {
     if (!overlapped) {
       setMySlots(tempMySlots);
     } else {
-      alert("timings overlap");
+     
+      toast.warning("timings overlap", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
     }
   }
   function addSlots() {
@@ -253,7 +269,28 @@ export default function Schedule() {
     businessAccountController.setSchedule({
       businessAccountId: userData.businessAccountInfo.businessAccountId,
       body: body,
-    });
+    }).then((response)=>{
+      let data = response.data;
+      if (data.responseCode === -1) {
+        toast.error(data.message, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
+      }else{
+        toast.success(data.message, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
+      }
+    })
   }
   function deleteSchedule() {
     businessAccountController
@@ -267,7 +304,7 @@ export default function Schedule() {
   return (
     <Main>
       <div className="d-flex justify-content-between">
-        <div className="d-flex">
+        <div className="d-flex"  style={{gap:"10px"}}>
           <select
             onChange={(e) => setServiceSelected(e.target.value)}
             defaultValue={-1}
@@ -282,6 +319,7 @@ export default function Schedule() {
             })}
           </select>
           <InputNumber
+           className="schedule-time-date"
             size="large"
             min={1}
             max={60}
@@ -289,16 +327,19 @@ export default function Schedule() {
             onChange={setSlotDuration}
           />
           <input
+          className="schedule-time-date"
             type={"time"}
             value={times.startTime}
             onChange={(e) => modifyTiming("startTime", e.target.value)}
           />
           <input
+            className="schedule-time-date"
             type={"time"}
             value={times.endTime}
             onChange={(e) => modifyTiming("endTime", e.target.value)}
           />
           <InputNumber
+           className="schedule-time-date"
             size="large"
             min={1}
             max={60}
@@ -307,7 +348,7 @@ export default function Schedule() {
           />
         </div>
 
-        <div className="d-flex">
+        <div className="d-flex align-items-center" style={{gap:"5px"}}>
           {daysOfWeek.map((day, index) => {
             return (
               <div
@@ -345,7 +386,7 @@ export default function Schedule() {
           )}
         </div>
       </div>
-      <div className="d-flex w-100">
+      <div className="d-flex w-100 mt-3">
         <Scheduler
           min={new Date(daysOfWeek[0])}
           max={new Date(daysOfWeek[daysOfWeek.length - 1])}

@@ -33,9 +33,9 @@ export default function Landing() {
     number_of_specialities: 0,
   });
   useEffect(() => {
-    // userController.getGeneralStatistics().then((response) => {
-    //   setGeneralStatisticsData(response.data.statistics);
-    // });
+    userController.getGeneralStatistics().then((response) => {
+      setGeneralStatisticsData(response.data.statistics);
+    });
   }, []);
  
   const userData = useSelector(state => state);
@@ -221,7 +221,7 @@ export default function Landing() {
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img2} alt="" />
                 </div>
-                <div className="content ">
+                <div className="conten1 ">
                   <div
                     className="speciality-name"
                     style={{ whiteSpace: "nowrap", textAlign: "center" }}
@@ -236,7 +236,7 @@ export default function Landing() {
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img1} alt="" />
                 </div>
-                <div className="content">
+                <div className="content1">
                   <div className="speciality-name">Nutrition</div>
                 </div>
               </div>
@@ -246,7 +246,7 @@ export default function Landing() {
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img3} alt="" />
                 </div>
-                <div className="content">
+                <div className="content1">
                   <div className="speciality-name">Pediatrics</div>
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function Landing() {
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img4} alt="" />
                 </div>
-                <div className="content">
+                <div className="content1">
                   <div className="speciality-name">Dentistry</div>
                 </div>
               </div>
@@ -289,7 +289,7 @@ export default function Landing() {
                         <div className="icon color-1">
                           <img src={img6} alt="" />
                         </div>
-                        <div className="content">
+                        <div className="content1">
                           <h1
                             id="secondo1"
                             className="countup"
@@ -307,7 +307,7 @@ export default function Landing() {
                         <div className="icon color-2">
                           <img src={img7} alt="" />
                         </div>
-                        <div className="content">
+                        <div className="content1">
                           <h1
                             id="secondo2"
                             className="countup"
@@ -325,7 +325,7 @@ export default function Landing() {
                         <div className="icon color-3">
                           <img src={img8} alt="" />
                         </div>
-                        <div className="content">
+                        <div className="content1">
                           <h1
                             id="secondo3"
                             className="countup"
@@ -343,7 +343,7 @@ export default function Landing() {
                         <div className="icon color-4">
                           <img src={img9} alt="" />
                         </div>
-                        <div className="content">
+                        <div className="content1">
                           <h1
                             id="secondo4"
                             className="countup"

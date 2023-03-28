@@ -25,6 +25,7 @@ import { businessAccountController } from "../controllers/businessAccountControl
 import { EncryptStorage } from "encrypt-storage";
 import Navbar from "../components/Navbar";
 import LayoutWrapper from "../components/Layout";
+import { toast } from "react-toastify";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
@@ -228,10 +229,25 @@ export default function VerifyUser() {
                                     if (
                                       responseVerify.data.responseCode !== 200
                                     ) {
-                                      alert(responseVerify.data.message);
+                                      toast.error(responseVerify.data.message, {
+                                        position: "top-center",
+                                        autoClose: 5000,
+                                        hideProgressBar: true,
+                                        closeOnClick: true,
+                                        pauseOnHover: false,
+                                        draggable: false,
+                                      });
                                       return;
                                     }
-                                    alert(responseVerify.data.message);
+
+                                    toast.success(responseVerify.data.message, {
+                                      position: "top-center",
+                                      autoClose: 5000,
+                                      hideProgressBar: true,
+                                      closeOnClick: true,
+                                      pauseOnHover: false,
+                                      draggable: false,
+                                    });
                                     if (
                                       responseVerify.data.userRole === "PATIENT"
                                     ) {
@@ -251,7 +267,14 @@ export default function VerifyUser() {
                                     }
                                   });
                               } else {
-                                alert(response.data.message);
+                                toast.error(response.data.message, {
+                                  position: "top-center",
+                                  autoClose: 5000,
+                                  hideProgressBar: true,
+                                  closeOnClick: true,
+                                  pauseOnHover: false,
+                                  draggable: false,
+                                });
                                 return;
                               }
                             });
@@ -276,7 +299,14 @@ export default function VerifyUser() {
                             })
                             .then((response) => {
                               if (response.data.responseCode !== 200) {
-                                alert(response.data.message);
+                                toast.error(response.data.message, {
+                                  position: "top-center",
+                                  autoClose: 5000,
+                                  hideProgressBar: true,
+                                  closeOnClick: true,
+                                  pauseOnHover: false,
+                                  draggable: false,
+                                });
                                 return;
                               }
                               updateUser("userFk", response.data.userId);

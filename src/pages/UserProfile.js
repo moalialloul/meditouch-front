@@ -22,7 +22,7 @@ import {
   VerticalAlignTopOutlined,
 } from "@ant-design/icons";
 
-import BgProfile from "../assets/images/bg-profile.jpg";
+import BgProfile from "../assets/images/patientImg.jpg";
 import profilavatar from "../assets/images/face-1.jpg";
 import convesionImg from "../assets/images/face-3.jpg";
 import convesionImg2 from "../assets/images/face-4.jpg";
@@ -38,6 +38,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { useNavigate } from "react-router-dom";
 import { userController } from "../controllers/userController";
+import { toast } from "react-toastify";
 function UserProfile() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state);
@@ -101,15 +102,22 @@ function UserProfile() {
         userFk: userData.userInfo.userId,
       })
       .then(() => {
-        alert("done");
+        toast.success("done", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
       });
   }
- 
+
   return (
     <Main>
       <div
         className="profile-nav-bg"
-        style={{ backgroundImage: "url(" + BgProfile + ")" }}
+        style={{ backgroundImage: "url(" + BgProfile + ")", height:"400px",width:"100%" } }
       ></div>
 
       <Card
@@ -117,7 +125,7 @@ function UserProfile() {
         bodyStyle={{ display: "none" }}
         title={
           <Row justify="space-between" align="middle" gutter={[24, 0]}>
-            <Col span={24} md={12} className="col-info">
+            <Col span={24} md={12} className="col-info ">
               <Avatar.Group>
                 <Avatar
                   size={74}
@@ -202,7 +210,7 @@ function UserProfile() {
         }
       ></Card>
 
-      <Row gutter={[24, 0]}>
+      <Row gutter={[24, 0]} justify="center">
         <Col span={24} md={8} className="mb-24">
           <Card
             bordered={false}
@@ -228,6 +236,12 @@ function UserProfile() {
               <Descriptions.Item label="Weight" span={3}>
                 {userData.userMedicalInfo?.weight + " kg"}
               </Descriptions.Item>
+              <Descriptions.Item label="Vaccination" span={3}>
+                {userData.userMedicalInfo?.vaccinationDescription}
+              </Descriptions.Item>
+              <Descriptions.Item label="Diseases" span={3}>
+                {userData.userMedicalInfo?.diseasesDescription}
+              </Descriptions.Item>
             </Descriptions>
           </Card>
         </Col>
@@ -238,9 +252,6 @@ function UserProfile() {
             title={<h6 className="font-semibold m-0">User Notifications</h6>}
           >
             <ul className="list settings-list">
-            
-             
-           
               <li>
                 <h6 className="list-header text-sm text-muted m-0">
                   APPLICATION
@@ -275,32 +286,7 @@ function UserProfile() {
           </Card>
         </Col>
 
-        <Col span={24} md={8} className="mb-24">
-          <Card
-            bordered={false}
-            title={<h6 className="font-semibold m-0">Conversations</h6>}
-            className="header-solid h-full"
-            bodyStyle={{ paddingTop: 0, paddingBottom: 16 }}
-          >
-            <List
-              itemLayout="horizontal"
-              //   dataSource={data}
-              split={false}
-              className="conversations-list"
-              renderItem={(item) => (
-                <List.Item actions={[<Button type="link">REPLY</Button>]}>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar shape="square" size={48} src={item.avatar} />
-                    }
-                    title={item.title}
-                    description={item.description}
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
+        
       </Row>
     </Main>
   );

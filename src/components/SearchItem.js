@@ -15,6 +15,7 @@ import {
   HeartOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function SearchItem({ item }) {
   const [daysOfWeek, setDaysOfWeek] = useState([]);
@@ -129,11 +130,26 @@ export default function SearchItem({ item }) {
           },
         })
         .then((response) => {
-          alert(response.data.message);
+        
+          toast.success(response.data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+          });
           setAppointmentModal(false);
         });
     } else {
-      alert("login first");
+      toast.warning("Login First", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
     }
   }
   useEffect(() => {
@@ -256,7 +272,7 @@ export default function SearchItem({ item }) {
         hidden: true,
       }}
     >
-      <div className="d-flex justify-content-center w-100">
+      <div className="d-flex justify-content-center w-100 all-txts">
         {loadingIsReservedSlot
           ? "loading..."
           : isSlotReserved
@@ -266,7 +282,7 @@ export default function SearchItem({ item }) {
       {!loadingIsReservedSlot &&
         (!isSlotReserved ? (
           <div className="d-flex justify-content-center w-100">
-            <Button type="primary" onClick={() => reserveSlot()}>
+            <Button type="primary" onClick={() => reserveSlot()} className="mt-3">
               Agree
             </Button>
           </div>
@@ -301,21 +317,28 @@ export default function SearchItem({ item }) {
     >
       {userData.userMedicalInfo.height !== 0 ? (
         <div>
-          Are you sure you want to reserve this appointment?
-          <div>
-            Doctor Name:{" "}
+          <div className="all-txts">Are you sure you want to reserve this appointment?</div>
+          <div className="d-flex align-items-center mt-2" >
+           <div className="all-txts me-2"> Doctor Name:{" "}</div>
             {item.userDetails.firstName + " " + item.userDetails?.lastName}
           </div>
-          <div>Speciality Name: {item.userDetails.specialityName}</div>
-          <div>
-            Service Name and Price:{" "}
-            {slots[slotIndexChosen]?.serviceName +
+          <div className="d-flex align-items-center mt-2">
+          <div className="all-txts me-2">Speciality Name: </div>
+          <div>{item.userDetails.specialityName}</div>
+          </div>
+          <div className="d-flex align-items-center mt-2">
+          <div className="all-txts me-2">  Service Name and Price:{" "}</div>
+            <div>{slots[slotIndexChosen]?.serviceName +
               " for" +
               slots[slotIndexChosen]?.servicePrice +
               " " +
               slots[slotIndexChosen]?.currencyUnit}
+              </div>
           </div>
-          <div>Appointment Time: {slots[slotIndexChosen]?.slotStartTime}</div>
+          <div className="d-flex align-items-center mt-2">
+          <div className="all-txts me-2">Appointment Time: </div>
+          <div>{slots[slotIndexChosen]?.slotStartTime}</div>
+          </div>
         </div>
       ) : (
         <div>
@@ -492,7 +515,7 @@ export default function SearchItem({ item }) {
               )}
             </div>
             {slots.length !== 0 && (
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center mt-3 all-txts1 ms-3">
                 <Badge status="default" />
                 Reserved slots
                 <div
