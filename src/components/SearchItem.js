@@ -73,21 +73,8 @@ export default function SearchItem({ item }) {
 
   const [slotIndexChosen, setSlotIndexChosen] = useState(0);
   const [slots, setSlots] = useState([]);
-  const [userProfle, setUserProfile] = useState("");
   const dispatch = useDispatch();
-  useEffect(() => {
-    if (userData.storage) {
-      const getFile = userData.storage.root.children.find(
-        (file) => file.name === "profile" + item.userId
-      );
-      if (getFile) {
-        getFile.downloadBuffer((error, data) => {
-          if (error) console.error(error);
-          setUserProfile(data);
-        });
-      }
-    }
-  }, [userData.storage]);
+
   useEffect(() => {
     let daysOfWeek = util.getDaysOfWeekDates();
     let days = [];
@@ -130,7 +117,6 @@ export default function SearchItem({ item }) {
           },
         })
         .then((response) => {
-        
           toast.success(response.data.message, {
             position: "top-center",
             autoClose: 5000,
@@ -282,7 +268,11 @@ export default function SearchItem({ item }) {
       {!loadingIsReservedSlot &&
         (!isSlotReserved ? (
           <div className="d-flex justify-content-center w-100">
-            <Button type="primary" onClick={() => reserveSlot()} className="mt-3">
+            <Button
+              type="primary"
+              onClick={() => reserveSlot()}
+              className="mt-3"
+            >
               Agree
             </Button>
           </div>
@@ -317,27 +307,30 @@ export default function SearchItem({ item }) {
     >
       {userData.userMedicalInfo.height !== 0 ? (
         <div>
-          <div className="all-txts">Are you sure you want to reserve this appointment?</div>
-          <div className="d-flex align-items-center mt-2" >
-           <div className="all-txts me-2"> Doctor Name:{" "}</div>
+          <div className="all-txts">
+            Are you sure you want to reserve this appointment?
+          </div>
+          <div className="d-flex align-items-center mt-2">
+            <div className="all-txts me-2"> Doctor Name: </div>
             {item.userDetails.firstName + " " + item.userDetails?.lastName}
           </div>
           <div className="d-flex align-items-center mt-2">
-          <div className="all-txts me-2">Speciality Name: </div>
-          <div>{item.userDetails.specialityName}</div>
+            <div className="all-txts me-2">Speciality Name: </div>
+            <div>{item.userDetails.specialityName}</div>
           </div>
           <div className="d-flex align-items-center mt-2">
-          <div className="all-txts me-2">  Service Name and Price:{" "}</div>
-            <div>{slots[slotIndexChosen]?.serviceName +
-              " for" +
-              slots[slotIndexChosen]?.servicePrice +
-              " " +
-              slots[slotIndexChosen]?.currencyUnit}
-              </div>
+            <div className="all-txts me-2"> Service Name and Price: </div>
+            <div>
+              {slots[slotIndexChosen]?.serviceName +
+                " for" +
+                slots[slotIndexChosen]?.servicePrice +
+                " " +
+                slots[slotIndexChosen]?.currencyUnit}
+            </div>
           </div>
           <div className="d-flex align-items-center mt-2">
-          <div className="all-txts me-2">Appointment Time: </div>
-          <div>{slots[slotIndexChosen]?.slotStartTime}</div>
+            <div className="all-txts me-2">Appointment Time: </div>
+            <div>{slots[slotIndexChosen]?.slotStartTime}</div>
           </div>
         </div>
       ) : (
@@ -362,7 +355,11 @@ export default function SearchItem({ item }) {
               <Avatar
                 size={50}
                 shape="square"
-                src={userProfle === "" ? avatar : userProfle}
+                src={
+                  item.userDetails?.profilePicture
+                    ? item.userDetails?.profilePicture
+                    : avatar
+                }
               />
 
               <div className="avatar-info">

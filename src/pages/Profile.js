@@ -38,44 +38,38 @@ import { UploadOutlined } from "@ant-design/icons";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { userController } from "../controllers/userController";
 function Profile() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state);
   const navigate = useNavigate();
   async function upload(file) {
     const pic = file.target.files[0];
+    if (pic) {
+      const reader = new FileReader();
 
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      const buffer = Buffer.from(event.target.result);
-      completeupload(buffer);
-    };
-
-    reader.readAsArrayBuffer(pic);
+      reader.onload = (event) => {
+        let base64 = event.target.result;
+        userController
+          .updateProfilePicture({
+            body: {
+              userId: userData.userInfo.userId,
+              profilePicture: base64,
+            },
+          })
+          .then(() => {
+            let userInfo = { ...userData.userInfo };
+            userInfo.profilePicture = base64;
+            dispatch({
+              type: "SET_USER_INFO",
+              userInfo: userInfo,
+            });
+          });
+      };
+      reader.readAsDataURL(pic);
+    }
   }
-  async function completeupload(buffer) {
-    const files = await userData.storage.upload(
-      {
-        name: "profile" + userData.userInfo.userId,
-        allowUploadBuffering: true,
-      },
-      buffer
-    ).complete;
-    let userInfo = { ...userData.userInfo };
-    userInfo.profilePicture = buffer;
-    dispatch({
-      type: "SET_USER_INFO",
-      userInfo: userInfo,
-    });
-    const getFile = userData.storage.root.children.find(
-      (file) => file.name === "profile" + userData.userInfo.userId
-    );
-    dispatch({
-      type: "SET_USER_PROFILE_STORAGE_OBJECT",
-      userProfileStorageObject: getFile,
-    });
-  }
+
   function deletepic() {
     userData.userProfileStorageObject.delete((error, link) => {
       if (error) console.error(error);
@@ -87,34 +81,6 @@ function Profile() {
       });
     });
   }
-
-  const data = [
-    {
-      title: "Sophie B.",
-      avatar: convesionImg,
-      description: "Hi! I need more information…",
-    },
-    {
-      title: "Anne Marie",
-      avatar: convesionImg2,
-      description: "Awesome work, can you…",
-    },
-    {
-      title: "Ivan",
-      avatar: convesionImg3,
-      description: "About files I can…",
-    },
-    {
-      title: "Peterson",
-      avatar: convesionImg4,
-      description: "Have a great afternoon…",
-    },
-    {
-      title: "Nick Daniel",
-      avatar: convesionImg5,
-      description: "Hi! I need more information…",
-    },
-  ];
 
   function updateNotificationsSettings(key, value) {
     let tempNotificationSettings = { ...userData.notificationSettings };
@@ -160,9 +126,7 @@ function Profile() {
                     userData.userInfo
                       ? userData.userInfo.profilePicture !== "" &&
                         userData.userInfo.profilePicture !== -1
-                        ? `data:image/png;base64,${userData.userInfo.profilePicture.toString(
-                            "base64"
-                          )}`
+                        ? userData.userInfo.profilePicture
                         : avatar
                       : avatar
                   }
@@ -224,7 +188,11 @@ function Profile() {
                 {userData.userInfo &&
                   userData.userInfo.businessAccountInfo !== -1 &&
                   userData.userInfo.businessAccountInfo !== -2 && (
-                    <Button onClick={() => navigate("/hp-details")} type="primary" icon={<UploadOutlined />}>
+                    <Button
+                      onClick={() => navigate("/hp-details")}
+                      type="primary"
+                      icon={<UploadOutlined />}
+                    >
                       Edit Profile
                     </Button>
                   )}
@@ -332,7 +300,6 @@ function Profile() {
             </ul>
           </Card>
         </Col>
-
       </Row>
     </Main>
   );

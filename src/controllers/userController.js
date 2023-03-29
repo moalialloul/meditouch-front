@@ -332,6 +332,13 @@ const addBlog = ({ body }) => {
     data: body,
   });
 };
+const updateProfilePicture = ({ body }) => {
+  return axios({
+    method: "POST",
+    url: url + "updateProfilePicture",
+    data: body,
+  });
+};
 const deleteBlogs = ({ body }) => {
   return axios({
     method: "DELETE",
@@ -438,6 +445,12 @@ const getMedicalInformation = ({ userFk }) => {
     url: url + "getMedicalInformation/" + userFk,
   });
 };
+const getUser = ({ userFk }) => {
+  return axios({
+    method: "GET",
+    url: url + "getUser/" + userFk,
+  });
+};
 const setMedicalInformation = ({ body }) => {
   return axios({
     method: "PUT",
@@ -446,6 +459,8 @@ const setMedicalInformation = ({ body }) => {
   });
 };
 export const userController = {
+  getUser,
+  updateProfilePicture,
   deleteReservationSlotBySlot,
   isSlotReservedByUser,
   setMedicalInformation,
