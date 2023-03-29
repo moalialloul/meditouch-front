@@ -146,7 +146,7 @@ export default function ForgetPassword() {
         let data = response.data;
         if (data.responseCode === -1) {
           toast.error(data.message, {
-            position: "invalid token",
+            position: "top-center",
             autoClose: 5000,
             hideProgressBar: true,
             closeOnClick: true,

@@ -22,6 +22,8 @@ export default function LiveClinic() {
   const [message, setMessage] = useState("Work in progress...");
   const [medicalInfoModal, setMedicalInfoModal] = useState(false);
   const [viewMedicalInfoIndex, setViewMedicalInfoIndex] = useState(-1);
+  const [prescriptionModal, setPrescriptionModal] = useState(false);
+  const [prescriptionData, setPrescriptionData] = useState("");
   useEffect(() => {
     if (!userData.loadingApp) {
       let tempCurrentAppointmentIndex = -1;
@@ -118,10 +120,12 @@ export default function LiveClinic() {
               tempAppointments[index]["appointmentActualStartTime"],
             appointmentActualEndTime: null,
             appointmentStatus: "ACCEPTED",
+            businessAccountUserId: userData.userInfo.userId,
             isApproved: 1,
             isCancelled: 0,
             userFk: tempAppointments[index].userFk,
             appointmentId: tempAppointments[index].appointmentId,
+            slotFk: tempAppointments[index].slotFk,
           },
         })
         .then(() => {
@@ -148,10 +152,12 @@ export default function LiveClinic() {
               tempAppointments[index]["appointmentActualEndTime"],
             appointmentStatus: "ACCEPTED",
             isApproved: 1,
+            slotFk: tempAppointments[index].slotFk,
+            businessAccountUserId: userData.userInfo.userId,
             userFk:
               index === appointments.length - 1
                 ? -1
-                : tempAppointments[index + 1].userFk,
+                : tempAppointments[index + 1]?.userFk,
             isCancelled: 0,
             appointmentId: tempAppointments[index].appointmentId,
           },
@@ -183,13 +189,14 @@ export default function LiveClinic() {
 
     return () => clearInterval(intervalId);
   }, [currentAppointmentIndex, minutesRemaining, secondsRemaining]);
+
   function modifyAppointmentPrescription(t, index) {
     if (t.prescriptionId === -1) {
       businessAccountController
         .addAppointmentPrescription({
           body: {
             appointmentFk: t.appointmentId,
-            prescriptionDescription: "test",
+            prescriptionDescription: prescriptionData,
           },
         })
         .then((response) => {
@@ -202,7 +209,7 @@ export default function LiveClinic() {
       businessAccountController.updateAppointmentPrescription({
         body: {
           prescriptionId: t.prescriptionId,
-          prescriptionDescription: "test2",
+          prescriptionDescription: prescriptionData,
           appointmentFk: t.appointmentId,
         },
       });
@@ -210,6 +217,12 @@ export default function LiveClinic() {
   }
   const handleOk = (e) => {
     setMedicalInfoModal(false);
+  };
+  const handlePrescriptionOk = (e) => {
+    setPrescriptionModal(false);
+  };
+  const handlePrescriptionCancel = (e) => {
+    setPrescriptionModal(false);
   };
   const handleCancel = (e) => {
     setMedicalInfoModal(false);
@@ -228,11 +241,21 @@ export default function LiveClinic() {
         hidden: true,
       }}
     >
-      <div >Height : {appointments[viewMedicalInfoIndex]?.height + " cm"}</div>
-      <div className="mt-2">Weight : {appointments[viewMedicalInfoIndex]?.weight + " Kg"}</div>
-      <div className="mt-2">Diseases : {appointments[viewMedicalInfoIndex]?.diseasesDescription}</div>
-      <div className="mt-2">Vacination : {appointments[viewMedicalInfoIndex]?.vaccinationDescription}</div>
-
+      <div>Height : {appointments[viewMedicalInfoIndex]?.height + " cm"}</div>
+      <div className="mt-2">
+        Weight : {appointments[viewMedicalInfoIndex]?.weight + " Kg"}
+      </div>
+      <div className="mt-2">
+        Diseases : {appointments[viewMedicalInfoIndex]?.diseasesDescription}
+      </div>
+      <div className="mt-2">
+        Vacination :{" "}
+        {appointments[viewMedicalInfoIndex]?.vaccinationDescription}
+      </div>
+      <div className="mt-2">
+        Appointment Description :{" "}
+        {appointments[viewMedicalInfoIndex]?.appointmentDescription}
+      </div>
     </Modal>
   );
 
@@ -240,6 +263,7 @@ export default function LiveClinic() {
     <Main>
       <Col xs={24} sm={24} md={24} lg={24} xl={24} className="mb-24">
         {modal}
+
         <Card bordered={false} className="criclebox h-full">
           <div className="timeline-box">
             {loading ? (
@@ -317,16 +341,48 @@ export default function LiveClinic() {
                             Medical Info
                           </Button>
                           {t.started === true && t.ended === true && (
-                            <Button
-                              onClick={() =>
-                                modifyAppointmentPrescription(t, index)
-                              }
-                              type="primary"
-                            >
-                              {t.prescriptionId === -1
-                                ? " Add Appointment Prescription"
-                                : " Edit Appointment Prescription"}
-                            </Button>
+                            <>
+                              <Button
+                                type="primary"
+                                onClick={() => setPrescriptionModal(true)}
+                              >
+                                {t.prescriptionId === -1
+                                  ? " Add Appointment Prescription"
+                                  : " Edit Appointment Prescription"}
+                              </Button>
+                              <Modal
+                                open={prescriptionModal}
+                                onOk={handlePrescriptionOk}
+                                onCancel={handlePrescriptionCancel}
+                                okButtonProps={{
+                                  disabled: false,
+                                  hidden: false,
+                                }}
+                                cancelButtonProps={{
+                                  disabled: true,
+                                  hidden: true,
+                                }}
+                              >
+                                <div>
+                                  Add Appointment Prescription :
+                                  <input
+                                    type="text"
+                                    value={prescriptionData}
+                                    onChange={(e) =>
+                                      setPrescriptionData(e.target.value)
+                                    }
+                                  />
+                                  <input
+                                    type="button"
+                                    value="Add"
+                                    onClick={() => {
+                                      modifyAppointmentPrescription(t, index);
+                                      setPrescriptionModal(true);
+                                    }}
+                                  />
+                                </div>
+                              </Modal>
+                            </>
                           )}
                         </Text>
                       </div>
