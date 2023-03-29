@@ -19,55 +19,65 @@ export default function AuthenticationWrapper({ children }) {
     if (user) {
       if (userData.userInfo === null) {
         let userInfo = user.userInfo;
-        dispatch({
-          type: "SET_USER_INFO",
-          userInfo: userInfo,
-        });
-        if (userInfo.userRole === "PATIENT") {
-          if (!userData.userMedicalInfo.loaded) {
-            userController
-              .getMedicalInformation({ userFk: userInfo.userId })
-              .then((response) => {
-                let data = response.data.medical_information;
-                dispatch({
-                  type: "SET_MEDICAL_INFO",
-                  userMedicalInfo: { ...data, loaded: true },
-                });
-              })
-              .then(() => {
+        userController
+          .getUser({ userFk: userInfo.userId })
+          .then((response) => {
+            userInfo.profilePicture = response.data.user.profilePicture;
+            dispatch({
+              type: "SET_USER_INFO",
+              userInfo: userInfo,
+            });
+          })
+          .then(() => {
+            let userInfo = user.userInfo;
+
+            if (userInfo.userRole === "PATIENT") {
+              if (!userData.userMedicalInfo.loaded) {
+                userController
+                  .getMedicalInformation({ userFk: userInfo.userId })
+                  .then((response) => {
+                    let data = response.data.medical_information;
+                    dispatch({
+                      type: "SET_MEDICAL_INFO",
+                      userMedicalInfo: { ...data, loaded: true },
+                    });
+                  })
+                  .then(() => {
+                    setLoading(false);
+                    dispatch({
+                      type: "SET_LOADING_APP",
+                      loadingApp: false,
+                    });
+                  });
+              } else {
                 setLoading(false);
                 dispatch({
                   type: "SET_LOADING_APP",
                   loadingApp: false,
                 });
-              });
-          } else {
-            setLoading(false);
-            dispatch({
-              type: "SET_LOADING_APP",
-              loadingApp: false,
-            });
-          }
-        } else {
-          if (userData.businessAccountInfo === null) {
-            dispatch({
-              type: "SET_BUSINESS_ACCOUNT_INFO",
-              businessAccountInfo:
-                encryptStorage1.getItem("meditouch_user").businessAccountInfo,
-            });
-            setLoading(false);
-            dispatch({
-              type: "SET_LOADING_APP",
-              loadingApp: false,
-            });
-          } else {
-            setLoading(false);
-            dispatch({
-              type: "SET_LOADING_APP",
-              loadingApp: false,
-            });
-          }
-        }
+              }
+            } else {
+              if (userData.businessAccountInfo === null) {
+                dispatch({
+                  type: "SET_BUSINESS_ACCOUNT_INFO",
+                  businessAccountInfo:
+                    encryptStorage1.getItem("meditouch_user")
+                      .businessAccountInfo,
+                });
+                setLoading(false);
+                dispatch({
+                  type: "SET_LOADING_APP",
+                  loadingApp: false,
+                });
+              } else {
+                setLoading(false);
+                dispatch({
+                  type: "SET_LOADING_APP",
+                  loadingApp: false,
+                });
+              }
+            }
+          });
       } else {
         setLoading(false);
         dispatch({

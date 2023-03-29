@@ -26,57 +26,7 @@ export const SocketWrapperProvider = ({ ...props }) => {
   const specialities = useRef([]);
   const schedules = useRef([]);
   const appointmentModifications = useRef();
-  const [loggedIn, setLoggedIn] = useState(false);
-  useEffect(() => {
-    async function login() {
-      const tempStorage = new window.mega.Storage(
-        {
-          email: "mohammadalialloul@gmail.com",
-          password: "12121212@@AAAaa",
-          userAgent: null,
-        },
-        (error) => {
-          if (error) {
-            console.log("error");
-          } else {
-            console.log("success");
-          }
-        }
-      );
-
-      await tempStorage.ready;
-      dispatch({
-        type: "SET_STORAGE",
-        storage: tempStorage,
-      });
-      setLoggedIn(true);
-
-      const getFile = tempStorage.root.children.find(
-        (file) => file.name === "profile" + userData.userInfo.userId
-      );
-
-      if (getFile) {
-        dispatch({
-          type: "SET_USER_PROFILE_STORAGE_OBJECT",
-          userProfileStorageObject: getFile,
-        });
-        getFile.downloadBuffer((error, data) => {
-          if (error) console.error(error);
-          let userInfo = { ...userData.userInfo };
-          userInfo.profilePicture = data;
-          dispatch({
-            type: "SET_USER_INFO",
-            userInfo: userInfo,
-          });
-        });
-      }
-    }
-    if (userData.userInfo) {
-      if (!loggedIn) {
-        login();
-      }
-    }
-  }, [userData.userInfo]);
+ 
   useEffect(() => {
     appointmentModifications.current = userData.appointmentModifications;
   }, [userData.appointmentModifications]);

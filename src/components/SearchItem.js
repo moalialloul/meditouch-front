@@ -74,21 +74,8 @@ export default function SearchItem({ item }) {
 
   const [slotIndexChosen, setSlotIndexChosen] = useState(0);
   const [slots, setSlots] = useState([]);
-  const [userProfle, setUserProfile] = useState("");
   const dispatch = useDispatch();
-  useEffect(() => {
-    if (userData.storage) {
-      const getFile = userData.storage.root.children.find(
-        (file) => file.name === "profile" + item.userId
-      );
-      if (getFile) {
-        getFile.downloadBuffer((error, data) => {
-          if (error) console.error(error);
-          setUserProfile(data);
-        });
-      }
-    }
-  }, [userData.storage]);
+
   useEffect(() => {
     let daysOfWeek = util.getDaysOfWeekDates();
     let days = [];
@@ -395,7 +382,11 @@ export default function SearchItem({ item }) {
               <Avatar
                 size={50}
                 shape="square"
-                src={userProfle === "" ? avatar : userProfle}
+                src={
+                  item.userDetails?.profilePicture
+                    ? item.userDetails?.profilePicture
+                    : avatar
+                }
               />
 
               <div className="avatar-info">

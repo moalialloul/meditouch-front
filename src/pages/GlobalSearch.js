@@ -80,7 +80,6 @@ export default function GlobalSearch() {
           };
         });
     } else {
-     
       toast.warning("Sorry Not available!", {
         position: "top-center",
         autoClose: 5000,
@@ -95,10 +94,12 @@ export default function GlobalSearch() {
   useEffect(() => {
     if (
       loadMore &&
+      !userData.loadingApp &&
       paginationProps.pageNumber <= paginationProps.totalNumberOfPages
     ) {
       setLoading(true);
       let tempFilters = { ...filtersData };
+      tempFilters["date"] =  moment().format("YYYY-MM-DD");
       if (util.isUserAuthorized()) {
         let user = util.getUser();
         tempFilters["userId"] = user.userInfo.userId;
@@ -130,7 +131,7 @@ export default function GlobalSearch() {
           setLoading(false);
         });
     }
-  }, [loadMore]);
+  }, [loadMore, userData.loadingApp]);
   useEffect(() => {
     if (util.isUserAuthorized()) {
       let tempSearchData = [...searchData];
@@ -174,35 +175,33 @@ export default function GlobalSearch() {
           paddingLeft: "50px",
         }}
       >
-          <div className="d-flex">
-              <input
-                type="text"
-                value={searchText}
-                placeholder="Search by name/clinic location"
-                onChange={(e) => setSearchText(e.target.value)}
-                className="doctor-search me-2"
-              />
-              <Button
-                type="primary"
-                className="search-btn mt-2"
-                onClick={() => {
-                  if (
-                    searchText.replace(/\s+/g, "") !== "" ||
-                    (searchText.replace(/\s+/g, "") === "" &&
-                      filtersData["searchText"].replace(/\s+/g, "") !== "")
-                  ) {
-                    updateFilters("searchText", searchText);
-                  }
-                }}
-              >
-                Search
-              </Button>
-            </div>
+        <div className="d-flex">
+          <input
+            type="text"
+            value={searchText}
+            placeholder="Search by name/clinic location"
+            onChange={(e) => setSearchText(e.target.value)}
+            className="doctor-search me-2"
+          />
+          <Button
+            type="primary"
+            className="search-btn mt-2"
+            onClick={() => {
+              if (
+                searchText.replace(/\s+/g, "") !== "" ||
+                (searchText.replace(/\s+/g, "") === "" &&
+                  filtersData["searchText"].replace(/\s+/g, "") !== "")
+              ) {
+                updateFilters("searchText", searchText);
+              }
+            }}
+          >
+            Search
+          </Button>
+        </div>
         <Row className="rowgap-vbox mt-4" gutter={[24, 0]}>
-          
           <Col xs={24} sm={24} md={6} lg={6} xl={4} className="mb-24">
-          
-            <Card className="h-100 w-100" >
+            <Card className="h-100 w-100">
               <div className="d-flex flex-column">
                 <div className="d-flex justify-content-between">
                   <div className="globalsearch-txt">Specialities</div>
@@ -229,7 +228,7 @@ export default function GlobalSearch() {
                     }
                     className="all-specialities"
                   >
-                    <option value={-1} >All Specialities</option>
+                    <option value={-1}>All Specialities</option>
                     {userData.specialities.map((sp) => {
                       return (
                         <option value={sp.specialityId}>
@@ -291,7 +290,7 @@ export default function GlobalSearch() {
                       {filtersData.minPrice !== -1 &&
                         filtersData.maxPrice !== -1 && (
                           <Button
-                          className="ms-3"
+                            className="ms-3"
                             type="primary"
                             onClick={() => {
                               let tempFilters = { ...filtersData };
@@ -343,7 +342,7 @@ export default function GlobalSearch() {
                           setAvailabilityRange(tempAvailabilityRange);
                         }}
                       />
-                     
+
                       <input
                         placeholder="select start date time"
                         className="global-search-datetime"
@@ -357,7 +356,7 @@ export default function GlobalSearch() {
                     </div>
                     <div className="d-flex justify-content-center mt-3">
                       <Button
-                      className="me-3"
+                        className="me-3"
                         type="primary"
                         onClick={() => {
                           let m1 = moment(availabilityRange.min);
@@ -366,7 +365,6 @@ export default function GlobalSearch() {
                             availabilityRange.min === "" ||
                             availabilityRange.max === ""
                           ) {
-                       
                             toast.error("times error", {
                               position: "top-center",
                               autoClose: 5000,
@@ -511,12 +509,11 @@ export default function GlobalSearch() {
                   </div>
 
                   {filtersVisibility.favorites && (
-                    <div className="d-flex" style={{gap:"5px"}}>
+                    <div className="d-flex" style={{ gap: "5px" }}>
                       <input
                         type="radio"
                         name="withFavorite"
                         onClick={() => updateFilters("isFavorite", 1)}
-                       
                       />{" "}
                       Favorite
                       <input
