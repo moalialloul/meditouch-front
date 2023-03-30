@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 
 import { Button, Card, Col, Row, Spin, Typography } from "antd";
-import { RightOutlined } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 
 import Echart from "../components/chart/EChart";
 import LineChart from "../components/chart/LineChart";
 import { Empty } from "antd";
 
-import card from "../assets/images/info-card-1.jpg";
 import Main from "../components/layout/Main";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { useDispatch, useSelector } from "react-redux";
@@ -115,7 +113,6 @@ export default function Dashboard() {
     },
   ];
   const userData = useSelector((state) => state);
-  const dispatch = useDispatch();
   const [healthProfessionalList, setHealthProfessionalList] = useState([]);
   const [paginationProps, setPaginationProps] = useState({
     pageNumber: -1,
@@ -139,7 +136,7 @@ export default function Dashboard() {
     totalHps: 0,
     totalUsers: 0,
   });
-  const { Title, Text } = Typography;
+  const { Title } = Typography;
 
   const [appointmentsData, setAppointmentsData] = useState({});
   useEffect(() => {

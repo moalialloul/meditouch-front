@@ -9,13 +9,15 @@ import "../assets/styles/global-search.css";
 import moment from "moment";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 export default function GlobalSearch() {
   const [searchData, setSearchData] = useState([]);
+  const state = useLocation();
   const dispatch = useDispatch();
+  const [loadingPageState, setLoadingPageState] = useState(true);
   const userData = useSelector((state) => state);
   const [loading, setLoading] = useState(false);
   const [withFavorite, setWithFavorite] = useState(false);
-  const [withFavoriteVal, setWithFavoriteVal] = useState(-1);
   const [searchText, setSearchText] = useState("");
   const [sliderPrice, setSliderPrice] = useState({
     min: 20,
@@ -53,7 +55,32 @@ export default function GlobalSearch() {
     favorites: false,
     availability: false,
   });
+
   const [locationEnabled, setLocationEnabled] = useState(false);
+  const loadPageState = (tempFiltersData = null) => {
+    if (state?.state) {
+      if (state.state.specialityFk) {
+        let tempFilters =
+          tempFiltersData === null ? { ...filtersData } : tempFiltersData;
+        tempFilters.specialityFk = state.state.specialityFk;
+        let tempfiltersVisibility = { ...filtersVisibility };
+        tempfiltersVisibility.specialities = true;
+        setFiltersData(tempFilters);
+        setFiltersVisibility(tempfiltersVisibility);
+        setLoadingPageState(false);
+      } else {
+        if (tempFiltersData !== null) {
+          setFiltersData(tempFiltersData);
+        }
+        setLoadingPageState(false);
+      }
+    } else {
+      if (tempFiltersData !== null) {
+        setFiltersData(tempFiltersData);
+      }
+      setLoadingPageState(false);
+    }
+  };
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.permissions
@@ -66,17 +93,18 @@ export default function GlobalSearch() {
                 let tempFilters = { ...filtersData };
                 tempFilters.myLatitude = position.coords.latitude;
                 tempFilters.myLongitude = position.coords.longitude;
-
-                setFiltersData(tempFilters);
+                loadPageState(tempFilters);
                 setLocationEnabled(true);
               },
-              (error) => {}
+              (error) => {
+                loadPageState();
+              }
             );
           } else if (result.state === "denied") {
-            //If denied then you have to show instructions to enable location
+            loadPageState();
           }
           result.onchange = function () {
-            console.log(result.state);
+            loadPageState();
           };
         });
     } else {
@@ -88,12 +116,14 @@ export default function GlobalSearch() {
         pauseOnHover: false,
         draggable: false,
       });
+      loadPageState();
     }
   }, []);
   const [loadMore, setLoadMore] = useState(paginationProps.pageNumber === -1);
   useEffect(() => {
     if (
       loadMore &&
+      !loadingPageState &&
       !userData.loadingApp &&
       paginationProps.pageNumber <= paginationProps.totalNumberOfPages
     ) {
@@ -131,7 +161,7 @@ export default function GlobalSearch() {
           setLoading(false);
         });
     }
-  }, [loadMore, userData.loadingApp]);
+  }, [loadMore, userData.loadingApp, loadingPageState]);
   useEffect(() => {
     if (util.isUserAuthorized()) {
       let tempSearchData = [...searchData];
@@ -166,6 +196,7 @@ export default function GlobalSearch() {
     tempFiltersVisibility[key] = value;
     setFiltersVisibility(tempFiltersVisibility);
   }
+  console.log(filtersData);
   return (
     <LayoutWrapper withFooter={true}>
       <section
@@ -222,7 +253,7 @@ export default function GlobalSearch() {
                 </div>
                 {filtersVisibility.specialities && (
                   <select
-                    defaultValue={-1}
+                    value={filtersData.specialityFk}
                     onChange={(e) =>
                       updateFilters("specialityFk", e.target.value)
                     }

@@ -1,4 +1,4 @@
-import { Button, Card, Col, Descriptions, Layout, Row } from "antd";
+import { Button, Card, Col,  Layout, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -7,10 +7,7 @@ import { SmileOutlined } from "@ant-design/icons";
 import { Result } from "antd";
 import { util } from "../public/util";
 import LayoutWrapper from "../components/Layout";
-import { Modal, ModalBody } from "react-bootstrap";
-import CancelIcon from "../icons/CancelIcon";
 import patientImg from "../assets/images/patient.png";
-import Main from "../components/layout/Main";
 import { toast } from "react-toastify";
 export default function PatientDetails() {
   const { state } = useLocation();
@@ -18,7 +15,6 @@ export default function PatientDetails() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state);
   const [completed, setCompleted] = useState(false);
-  const [patientModal, setPatientModal] = useState(false);
   const [medicalInformation, setMedicalInformation] = useState({
     height: "",
     weight: "",

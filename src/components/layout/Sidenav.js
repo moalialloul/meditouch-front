@@ -1,9 +1,8 @@
-import { Menu, Button } from "antd";
+import { Menu } from "antd";
 import { EncryptStorage } from "encrypt-storage";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import logo from "../../assets/images/logo.png";
-import Logout from "../../icons/Logout";
 
 function Sidenav({ color }) {
   const { pathname } = useLocation();
@@ -150,7 +149,7 @@ function Sidenav({ color }) {
 
   return (
     <>
-      <div className="brand">
+      <div className="brand d-flex align-items-center">
         <NavLink to="/">
           <img src={logo} alt="" />
         </NavLink>

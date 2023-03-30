@@ -1,9 +1,8 @@
-import { BellOutlined, DownOutlined } from "@ant-design/icons";
+import { BellOutlined } from "@ant-design/icons";
 import { Badge } from "antd";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import avatar from "../assets/images/avatar.jpg";
 import { userController } from "../controllers/userController";
 import { util } from "../public/util";
 

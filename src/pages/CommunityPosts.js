@@ -1,15 +1,11 @@
-import { MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Typography, Timeline, Input } from "antd";
-import Title from "antd/lib/skeleton/Title";
-import moment from "moment";
-import React, { useContext, useEffect, useState } from "react";
+import { Button, Card, Col, Input } from "antd";
+
+import React, {  useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import "../assets/styles/schedule.css";
 import Main from "../components/layout/Main";
-import { businessAccountController } from "../controllers/businessAccountController";
 import { userController } from "../controllers/userController";
-import { SocketWrapperContext } from "../public/SocketWrapper";
 
 export default function CommunityPosts() {
   const userData = useSelector((state) => state);

@@ -2,13 +2,11 @@ import "../assets/styles/LineIcons.2.0.css";
 import "../assets/styles/tiny-slider.css";
 import "../assets/styles/animate.css";
 import "../assets/styles/landing.css";
-import { EncryptStorage } from "encrypt-storage";
 import aboutusImage from "../assets/images/eye-care.png";
 import img1 from "../assets/images/nutrition.png";
 import img2 from "../assets/images/radiology.png";
 import img3 from "../assets/images/pediatrics.png";
 import img4 from "../assets/images/dentistry.png";
-import img5 from "../assets/images/1.jfif";
 import img6 from "../assets/images/patient.png";
 import img7 from "../assets/images/doctor.png";
 import img8 from "../assets/images/appointments.png";
@@ -17,15 +15,17 @@ import img10 from "../assets/images/doctors.jpg";
 import Typewriter from "typewriter-effect";
 import { useEffect, useState } from "react";
 import { userController } from "../controllers/userController";
+import { useTranslation } from "react-i18next";
+import headerImage from "../assets/images/header.jpeg";
 
-import Navbar from "../components/Navbar";
-import Layout from "../components/Layout";
 import LayoutWrapper from "../components/Layout";
 import { useNavigate } from "react-router";
-import moment from "moment";
+import classNames from "classnames";
 import { useSelector } from "react-redux";
 export default function Landing() {
+  const [t, i18n] = useTranslation();
   const navigate = useNavigate();
+  let userData = useSelector((state) => state);
   const [generalStatisticsData, setGeneralStatisticsData] = useState({
     number_of_hps: 0,
     number_of_pts: 0,
@@ -37,20 +37,42 @@ export default function Landing() {
       setGeneralStatisticsData(response.data.statistics);
     });
   }, []);
- 
-  const userData = useSelector(state => state);
-  
-  
+  const getSpecialityId = (specialityName) => {
+    return userData.specialities.filter(
+      (s) => s.specialityName === specialityName
+    )[0].specialityId;
+  };
+
   return (
     <LayoutWrapper style={{ position: "relative" }} withFooter={true}>
-      <section id="home" className="hero-section">
-        <div className="container">
+      <section
+        id="home"
+        style={{}}
+        className={classNames("hero-section", {
+          "hero-section-ltr": i18n.language === "en",
+          "hero-section-rtl": i18n.language === "ar",
+        })}
+      >
+        <img
+          src={headerImage}
+          className={classNames("hero-section-img", {
+            "hero-section-img-ltr": i18n.language === "en",
+            "hero-section-img-rtl": i18n.language === "ar",
+          })}
+        />
+        <div
+          style={{
+            left: i18n.language === "en" ? "40px" : "",
+            right: i18n.language === "ar" ? "40px" : "",
+          }}
+          className="container hero-section-content"
+        >
           <div className="row align-items-center">
             <div className="col-lg-6">
               <div className="hero-content">
                 <div className="d-flex align-items-center">
                   <div className="hero-headline">
-                    Your Health Care is Our
+                    {t("your_health_care_is_our")}
                     <Typewriter
                       options={{
                         delay: 50,
@@ -59,13 +81,13 @@ export default function Landing() {
                       }}
                       onInit={(typewriter) => {
                         typewriter
-                          .typeString("Responsibility.")
+                          .typeString(t("responsibility") + ".")
                           .pauseFor(1000)
                           .deleteAll()
-                          .typeString("Purpose.")
+                          .typeString(t("purpose") + ".")
                           .pauseFor(1000)
                           .deleteAll()
-                          .typeString("Ambition.")
+                          .typeString(t("ambition") + ".")
                           .start();
                       }}
                     />
@@ -73,14 +95,14 @@ export default function Landing() {
                 </div>
 
                 <p className="hero-bio" data-wow-delay=".6s">
-                  We work to take care of your health and body.
+                  {t("we_work_to_take_care_of_health_and_body") + "."}
                 </p>
                 <button
                   onClick={() => navigate("/global-search")}
                   className="main-btn btn-hover wow fadeInUp"
                   data-wow-delay=".6s"
                 >
-                  Make an Appointment
+                  {t("make_an_appointment")}
                 </button>
               </div>
             </div>
@@ -92,7 +114,7 @@ export default function Landing() {
           </div>
         </div>
       </section>
-    
+
       <section id="about" className="about-section pt-150">
         <div className="container">
           <div className="row ">
@@ -104,98 +126,13 @@ export default function Landing() {
             <div className="col-lg-6">
               <div className="about-content mb-50">
                 <div className="section-title mb-50">
-                  <h1 className="mb-25">
-                    We are developing a healthcare system around you
-                  </h1>
+                  <h1 className="mb-25">{t("developing_healthcare_system")}</h1>
 
-                  <p>
-                    We think that everyone should have easy access to excellent
-                    healthcare. Our aim is to make the procedure as simple as
-                    possible for our patients and to offer treatment no matter
-                    where they are — in person or at their convenience.
-                  </p>
+                  <p>{t("developing_healthcare_system_p1")}</p>
                   <p className="wow fadeInUp" data-wow-delay=".4s">
-                    We've built a healthcare system that puts your needs first.
-                    For us, there is nothing more important than the health of
-                    you and your loved ones.
+                    {t("developing_healthcare_system_p2")}
                   </p>
                 </div>
-                {/* <div className="accordion pb-15" id="accordionExample">
-                  <div className="single-faq">
-                    <button
-                      className="w-100 text-start"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseOne"
-                      aria-expanded="true"
-                      aria-controls="collapseOne"
-                    >
-                      Which Service We Provide?
-                    </button>
-
-                    <div
-                      id="collapseOne"
-                      className="collapse show"
-                      aria-labelledby="headingOne"
-                      data-bs-parent="#accordionExample"
-                    >
-                      <div className="faq-content">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="single-faq">
-                    <button
-                      className="w-100 text-start collapsed"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseTwo"
-                      aria-expanded="false"
-                      aria-controls="collapseTwo"
-                    >
-                      What I need to start design?
-                    </button>
-                    <div
-                      id="collapseTwo"
-                      className="collapse"
-                      aria-labelledby="headingTwo"
-                      data-bs-parent="#accordionExample"
-                    >
-                      <div className="faq-content">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="single-faq">
-                    <button
-                      className="w-100 text-start collapsed"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseThree"
-                      aria-expanded="false"
-                      aria-controls="collapseThree"
-                    >
-                      What is our design process?
-                    </button>
-                    <div
-                      id="collapseThree"
-                      className="collapse"
-                      aria-labelledby="headingThree"
-                      data-bs-parent="#accordionExample"
-                    >
-                      <div className="faq-content">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high
-                        life accusamus terry richardson ad squid. 3 wolf moon
-                        officia aute, non cupidatat skateboard dolor brunch.
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-                {/* <button className="main-btn btn-hover">View More</button> */}
               </div>
             </div>
           </div>
@@ -210,13 +147,22 @@ export default function Landing() {
           <div className="row justify-content-center">
             <div className="col-xxl-5 col-xl-6 col-lg-7 col-md-10">
               <div className="section-title text-center mb-5 pb-5">
-                <div className="speciality-title">Our Specialities</div>
+                <div className="speciality-title">{t("our_specialities")}</div>
               </div>
             </div>
           </div>
 
           <div className="row">
-            <div className="col-xl-3 col-md-6">
+            <div
+              onClick={() =>
+                navigate("/global-search", {
+                  state: {
+                    specialityFk: getSpecialityId("Radiology"),
+                  },
+                })
+              }
+              className="col-xl-3 col-md-6"
+            >
               <div className="single-service">
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img2} alt="" />
@@ -226,38 +172,65 @@ export default function Landing() {
                     className="speciality-name"
                     style={{ whiteSpace: "nowrap", textAlign: "center" }}
                   >
-                    Radiology{" "}
+                    {t("radiology")}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="col-xl-3 col-md-6">
+            <div
+              onClick={() =>
+                navigate("/global-search", {
+                  state: {
+                    specialityFk: getSpecialityId("Nutrition"),
+                  },
+                })
+              }
+              className="col-xl-3 col-md-6"
+            >
               <div className="single-service">
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img1} alt="" />
                 </div>
                 <div className="content1">
-                  <div className="speciality-name">Nutrition</div>
+                  <div className="speciality-name">{t("nutrition")}</div>
                 </div>
               </div>
             </div>
-            <div className="col-xl-3 col-md-6">
+            <div
+              onClick={() =>
+                navigate("/global-search", {
+                  state: {
+                    specialityFk: getSpecialityId("Pediatrics"),
+                  },
+                })
+              }
+              className="col-xl-3 col-md-6"
+            >
               <div className="single-service">
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img3} alt="" />
                 </div>
                 <div className="content1">
-                  <div className="speciality-name">Pediatrics</div>
+                  <div className="speciality-name">{t("pediatrics")}</div>
                 </div>
               </div>
             </div>
-            <div className="col-xl-3 col-md-6">
+            <div
+              onClick={() =>
+                navigate("/global-search", {
+                  state: {
+                    specialityFk: getSpecialityId("Dentistry"),
+                  },
+                })
+              }
+              className="col-xl-3 col-md-6"
+            >
               <div className="single-service">
                 <div className="feature-img" style={{ borderRadius: "50%" }}>
                   <img src={img4} alt="" />
                 </div>
                 <div className="content1">
-                  <div className="speciality-name">Dentistry</div>
+                  <div className="speciality-name">{t("dentistry")}</div>
                 </div>
               </div>
             </div>
@@ -275,11 +248,10 @@ export default function Landing() {
               <div className="counter-up-content mb-50 ">
                 <div className="section-title mb-40">
                   <h1 className="mb-20 wow fadeInUp" data-wow-delay=".2s">
-                    Why we are the best, Why you hire?
+                    {t("why_best_why_hire")}
                   </h1>
                   <p className="wow fadeInUp content" data-wow-delay=".4s">
-                    You can get the care you need 24/7 – be it online or in
-                    person. You will be treated by caring specialist doctors.
+                    {t("get_care_you_need")}
                   </p>
                 </div>
                 <div className="counter-up-wrapper">
@@ -298,7 +270,7 @@ export default function Landing() {
                           >
                             {generalStatisticsData.number_of_pts}
                           </h1>
-                          <span>Patients</span>
+                          <span>{t("patients")}</span>
                         </div>
                       </div>
                     </div>
@@ -316,7 +288,7 @@ export default function Landing() {
                           >
                             {generalStatisticsData.number_of_hps}
                           </h1>
-                          <span>Health Professionals</span>
+                          <span>{t("health_professionals")}</span>
                         </div>
                       </div>
                     </div>
@@ -334,7 +306,7 @@ export default function Landing() {
                           >
                             {generalStatisticsData.number_of_appointments}
                           </h1>
-                          <span>Appointments</span>
+                          <span>{t("appointments")}</span>
                         </div>
                       </div>
                     </div>
@@ -352,7 +324,7 @@ export default function Landing() {
                           >
                             {generalStatisticsData.number_of_specialities}
                           </h1>
-                          <span>Specialities</span>
+                          <span>{t("specialities")}</span>
                         </div>
                       </div>
                     </div>

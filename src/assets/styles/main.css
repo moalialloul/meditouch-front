@@ -47,6 +47,7 @@ body {
 .layout-dashboard .ant-layout-sider.sider-primary .brand span {
   vertical-align: middle;
   margin-left: 3px;
+  font-size: 15px;
 }
 
 .layout-dashboard .ant-layout-sider.sider-primary .ant-layout-sider-children {

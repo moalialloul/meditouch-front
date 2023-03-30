@@ -34,7 +34,6 @@ export default function AppointmentDetails() {
       }
     }
   }, [state, userData.loadingApp]);
-  console.log("data",appointmentData)
   return (
     <Main>
       {loading ? (

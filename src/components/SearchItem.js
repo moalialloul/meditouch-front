@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Lock from "../icons/lock";
 import { util } from "../public/util";
 import "../assets/styles/search-item.css";
-import { func } from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
 import avatar from "../assets/images/avatar.jpg";

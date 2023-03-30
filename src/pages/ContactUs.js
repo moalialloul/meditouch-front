@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import LayoutWrapper from "../components/Layout";
 import "../assets/styles/contactUs.css";
-import { useNavigate, Link } from "react-router-dom";
 import contactus from "../assets/images/contactus.jfif";
 import {
   Layout,
@@ -27,7 +26,6 @@ const ContactUs = () => {
   const [lastname, setLastName] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  console.log(firstname);
 
   const submit = () => {
     userController

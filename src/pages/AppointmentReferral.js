@@ -8,8 +8,7 @@ import { userController } from "../controllers/userController";
 import referralImage from "../assets/images/referralDoctor.png";
 
 import BgProfile from "../assets/images/doctorProfile.jpg";
-import userImg from "../assets/images/user.png";
-import userMail from "../assets/images/mail.png";
+
 
 export default function AppointmentReferral() {
   const { state } = useLocation();

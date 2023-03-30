@@ -4,11 +4,10 @@ import Scheduler, {
   AppointmentDragging,
   View,
 } from "devextreme-react/scheduler";
-import Draggable from "devextreme-react/draggable";
-import ScrollView from "devextreme-react/scroll-view";
+
 import "../assets/styles/schedule.css";
 import Main from "../components/layout/Main";
-import { Button, InputNumber, TimePicker } from "antd";
+import { Button, InputNumber } from "antd";
 import { util } from "../public/util";
 import moment from "moment";
 import classNames from "classnames";

@@ -3,16 +3,14 @@ import { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Typography } from "antd";
 
 import Main from "../components/layout/Main";
-import { businessAccountController } from "../controllers/businessAccountController";
 import { useDispatch, useSelector } from "react-redux";
 import { userController } from "../controllers/userController";
 
 export default function ReservationSlots() {
   const userData = useSelector((state) => state);
   const dispatch = useDispatch();
-  const { Title, Text } = Typography;
+  const { Title } = Typography;
   const [loading, setLoading] = useState(false);
-  const [reservationSlotsData, setResrvationSlotsData] = useState([]);
   useEffect(() => {
     if (!userData.loadingApp && !userData.myReservedSlots.loaded) {
       setLoading(true);
@@ -22,7 +20,6 @@ export default function ReservationSlots() {
           userId: userData.userInfo.userId,
         })
         .then((response) => {
-          setResrvationSlotsData(response.data.reservations);
           dispatch({
             type: "SET_MY_RESERVED_SLOTS",
             myReservedSlots: {

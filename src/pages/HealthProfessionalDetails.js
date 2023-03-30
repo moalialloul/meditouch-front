@@ -1,5 +1,5 @@
 import { DeleteOutlined, SmileOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Descriptions, Layout, Result, Row } from "antd";
+import { Button, Card, Col,  Layout, Result, Row } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,7 +8,6 @@ import LayoutWrapper from "../components/Layout";
 import { businessAccountController } from "../controllers/businessAccountController";
 import { userController } from "../controllers/userController";
 import { util } from "../public/util";
-import doctorImg from "../assets/images/doctorImg.jpg";
 import { toast } from "react-toastify";
 export default function HealthProfessionalDetails() {
   const [specialities, setSpecialities] = useState([]);
