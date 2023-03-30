@@ -168,7 +168,7 @@ export default function Notifications() {
                     );
                   })}
               {userData.notifications.pageNumber !== -1 &&
-                userData.notifications.pageNumber <=
+                userData.notifications.pageNumber <
                   userData.notifications.totalNumberOfPages &&
                 !loading && (
                   <div onClick={() => setLoadMore(true)}>load more</div>
