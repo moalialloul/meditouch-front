@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import LayoutWrapper from "../components/Layout";
 import "../assets/styles/contactUs.css";
 import { useNavigate, Link } from "react-router-dom";
@@ -17,16 +17,57 @@ import {
   Spin,
 } from "antd";
 import { Content } from "antd/lib/layout/layout";
+import { userController } from "../controllers/userController";
+import { toast } from "react-toastify";
 
 const { TextArea } = Input;
 
 const ContactUs = () => {
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  console.log(firstname);
+
+  const submit = () => {
+    userController
+    .contactUs({
+      body: {
+        firstName: firstname,
+        lastName: lastname,
+        subject: subject,
+        message: message,
+      },
+    })
+    .then((response) => {
+      let data = response.data;
+      if (data.responseCode=== 200) {
+        setFirstName("");
+        setLastName("");
+        setSubject("");
+        setMessage("");
+  
+        toast.success("message submitted sucessfully", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
+      }
+    });
+  }
   const content = (
     <Content className="p-0 ">
-    
       <Row justify="center">
         <Col xs={{ span: 24 }} lg={{ span: 12 }} md={{ span: 12 }}>
-          <img src={contactus} alt="" className="contact-us-img  " style={{ marginTop: "100px"}}/>
+          <img
+            src={contactus}
+            alt=""
+            className="contact-us-img  "
+            style={{ marginTop: "100px" }}
+          />
         </Col>
         <Col
           xs={{ span: 24, offset: 0 }}
@@ -48,7 +89,8 @@ const ContactUs = () => {
               ]}
             >
               <Input
-                // onChange={(e) => updateUser("userEmail", e.target.value)}
+                value={firstname}
+                onChange={(e) => setFirstName(e.target.value)}
                 placeholder="First Name"
               />
             </Form.Item>
@@ -65,8 +107,9 @@ const ContactUs = () => {
               ]}
             >
               <Input
-                // onChange={(e) => updateUser("userEmail", e.target.value)}
                 placeholder="Last Name"
+                value={firstname}
+                onChange={(e) => setLastName(e.target.value)}
               />
             </Form.Item>
             <Form.Item
@@ -81,7 +124,8 @@ const ContactUs = () => {
               ]}
             >
               <Input
-                // onChange={(e) => updateUser("userEmail", e.target.value)}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
                 placeholder="Subject"
               />
             </Form.Item>
@@ -96,11 +140,16 @@ const ContactUs = () => {
                 },
               ]}
             >
-              <TextArea rows={4} />
+              <TextArea
+                rows={4}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
             </Form.Item>
 
             <Form.Item>
               <Button
+                onClick={() => submit()}
                 type="primary"
                 htmlType="submit"
                 style={{ width: "100%" }}

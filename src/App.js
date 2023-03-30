@@ -30,6 +30,7 @@ import AppointmentDetails from "./pages/AppointmentDetails";
 import ContactUs from "./pages/ContactUs";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Messages from "./pages/Messages";
 function App() {
   useEffect(() => {
     window.process = {
@@ -52,7 +53,7 @@ function App() {
           <Route exact path="/user-profile" element={<UserProfile />} />
           <Route exact path="/verify" element={<VerifyUser />} />
           <Route exact path="/forget-password" element={<ForgetPassword />} />
-
+          <Route exact path="/Messages" element={<Messages/>} />
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route exact path="/schedule" element={<Schedule />} />
           <Route exact path="/live-clinic" element={<LiveClinic />} />

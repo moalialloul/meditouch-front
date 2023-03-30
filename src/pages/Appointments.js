@@ -34,6 +34,8 @@ function Appointments() {
   const [slotIndexChosen, setSlotIndexChosen] = useState(0);
   const [slots, setSlots] = useState([]);
   const [appointmentSelected, setAppointmentSelected] = useState("");
+  const [prescriptionModal, setPrescriptionModal] = useState(false);
+  const [prescriptionData, setPrescriptionData] = useState([[]]);
   useEffect(() => {
     let daysOfWeek = util.getDaysOfWeekDates();
     let days = [];
@@ -158,6 +160,14 @@ function Appointments() {
         setScheduleModal(false);
       });
   }
+
+  const handlePrescriptionOk = (e) => {
+    setPrescriptionModal(false);
+  };
+  const handlePrescriptionCancel = (e) => {
+    setPrescriptionModal(false);
+  };
+
   const modal = (
     <Modal
       open={scheduleModal}
@@ -252,7 +262,7 @@ function Appointments() {
       )}
     </Modal>
   );
-
+ 
   function acceptAppointment(i) {
     let newData = [...upcomingAppointments];
     userController
@@ -377,10 +387,12 @@ function Appointments() {
       );
       if (indexOfAppointment >= 0) {
         allMyAppointments[indexOfAppointment][tempAppointments[i].key] =
-        tempAppointments[i].key === "slotStartTime"
+          tempAppointments[i].key === "slotStartTime"
             ? moment(
                 util.formatTimeByOffset(
-                  new Date(moment(tempAppointments[i].value, "YYYY-MM-DD HH:mm:ss"))
+                  new Date(
+                    moment(tempAppointments[i].value, "YYYY-MM-DD HH:mm:ss")
+                  )
                 ),
                 "YYYY-MM-DD HH:mm:ss"
               ).format("YYYY-MM-DD HH:mm:ss")
@@ -550,13 +562,14 @@ function Appointments() {
       .updateAppointment({
         body: {
           appointmentActualStartTime: null,
-          appointmentActualEndTime: null, 
+          appointmentActualEndTime: null,
           appointmentStatus: userData.myAppointments[index].appointmentStatus,
           isApproved: userData.myAppointments[index].isApproved,
           isCancelled: 1,
-          slotFk : userData.myAppointments[index].slotId,
+          slotFk: userData.myAppointments[index].slotId,
           userFk: userData.userInfo.userId,
-          businessAccountUserId: userData.myAppointments[index].businessAccountUserId,
+          businessAccountUserId:
+            userData.myAppointments[index].businessAccountUserId,
           cancelledBy: userData.userInfo.userRole,
           appointmentId: userData.myAppointments[index].appointmentId,
         },
@@ -570,9 +583,38 @@ function Appointments() {
         });
       });
   }
+
+  const getAppPrescriptions=(id)=>{
+    businessAccountController
+    .getAppointmentPrescription({
+      appointmentId:id,
+    })
+    .then((response) => {
+      setPrescriptionData(response.data);
+    });
+  }
+  const modal2 = (
+    <Modal
+      open={prescriptionModal}
+      onOk={handlePrescriptionOk}
+      onCancel={handlePrescriptionCancel}
+      okButtonProps={{
+        disabled: false,
+        hidden: false,
+      }}
+      cancelButtonProps={{
+        disabled: true,
+        hidden: true,
+      }}
+    >
+      <div>Appointment Prescription : {prescriptionData.result?.prescriptionDescription}</div>
+    </Modal>
+  );
+  console.log(prescriptionData)
   return (
     <Main>
       {modal}
+      {modal2}
       <div className="tabled">
         <Row gutter={[24, 0]}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24}>
@@ -599,8 +641,13 @@ function Appointments() {
                       key={index}
                       className="col-lg-5 col-md-5 col-sm-12 appointment-card mt-1 mb-2"
                     >
-                      <div className="d-flex flex-column " >
-                        <div className="d-flex align-items-center" style={{borderBottom:"1px solid rgb(219, 216, 216)"}}>
+                      <div className="d-flex flex-column ">
+                        <div
+                          className="d-flex align-items-center"
+                          style={{
+                            borderBottom: "1px solid rgb(219, 216, 216)",
+                          }}
+                        >
                           <div className="appointment-profile">
                             <img src={avatar} className="" alt="" />
                           </div>
@@ -616,9 +663,12 @@ function Appointments() {
                           <div className="all-txts me-2">Service Name :</div>
                           <div className="all-txts1">{ap.serviceName}</div>
                         </div>
-                        <div className="d-flex justify-content-between w-100 mb-2 " >
+                        <div className="d-flex justify-content-between w-100 mb-2 ">
                           <div className="d-flex align-items-center appointment-datetime all-txts1 ">
-                            <div className="me-2"> <Calendar /></div>
+                            <div className="me-2">
+                              {" "}
+                              <Calendar />
+                            </div>
                             {ap.slotStartTime}
                           </div>
                           <div className="d-flex align-items-center appointment-datetime all-txts1">
@@ -683,7 +733,7 @@ function Appointments() {
                           ) &&
                           ap.appointmentActualStartTime === undefined &&
                           ap.appointmentActualEndTime === undefined ? (
-                            "You didnot attend the appointment"
+                            "You did not attend the appointment"
                           ) : ap.appointmentActualStartTime === undefined &&
                             ap.appointmentActualEndTime === undefined &&
                             moment(ap.slotStartTime).isAfter(
@@ -726,7 +776,12 @@ function Appointments() {
                               ""
                             )
                           ) : (
-                            <Button type="primary">View Prescription</Button>
+                            <Button
+                              type="primary"
+                              onClick={() => {setPrescriptionModal(true);getAppPrescriptions(ap.appointmentId)}}
+                            >
+                              View Prescription
+                            </Button>
                           )
                         ) : (
                           ""

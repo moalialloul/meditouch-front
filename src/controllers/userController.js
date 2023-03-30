@@ -94,6 +94,7 @@ const addReservationSlot = ({ body }) => {
     data: body,
   });
 };
+
 const getUserFeedbacks = ({
   userId,
   pageNumber,
@@ -270,6 +271,12 @@ const getSpecialities = () => {
   return axios({
     method: "GET",
     url: url + "getSpecialities",
+  });
+};
+const getMessages = () => {
+  return axios({
+    method: "GET",
+    url: url + "getMessages",
   });
 };
 const postponeAppointment = ({ body }) => {
@@ -458,6 +465,7 @@ const setMedicalInformation = ({ body }) => {
     data: body,
   });
 };
+
 export const userController = {
   getUser,
   updateProfilePicture,
@@ -518,4 +526,5 @@ export const userController = {
   addSurvey,
   addSurveyAnswers,
   getSurveyQuestionsAnswers,
+  getMessages
 };

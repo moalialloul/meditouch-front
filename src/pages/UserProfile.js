@@ -45,48 +45,47 @@ function UserProfile() {
   const navigate = useNavigate();
   async function upload(file) {
     const pic = file.target.files[0];
+    if (pic) {
+      const reader = new FileReader();
 
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      const buffer = Buffer.from(event.target.result);
-      completeupload(buffer);
-    };
-
-    reader.readAsArrayBuffer(pic);
+      reader.onload = (event) => {
+        let base64 = event.target.result;
+        userController
+          .updateProfilePicture({
+            body: {
+              userId: userData.userInfo.userId,
+              profilePicture: base64,
+            },
+          })
+          .then(() => {
+            let userInfo = { ...userData.userInfo };
+            userInfo.profilePicture = base64;
+            dispatch({
+              type: "SET_USER_INFO",
+              userInfo: userInfo,
+            });
+          });
+      };
+      reader.readAsDataURL(pic);
+    }
   }
-  async function completeupload(buffer) {
-    const files = await userData.storage.upload(
-      {
-        name: "profile" + userData.userInfo.userId,
-        allowUploadBuffering: true,
-      },
-      buffer
-    ).complete;
-    let userInfo = { ...userData.userInfo };
-    userInfo.profilePicture = buffer;
-    dispatch({
-      type: "SET_USER_INFO",
-      userInfo: userInfo,
-    });
-    const getFile = userData.storage.root.children.find(
-      (file) => file.name === "profile" + userData.userInfo.userId
-    );
-    dispatch({
-      type: "SET_USER_PROFILE_STORAGE_OBJECT",
-      userProfileStorageObject: getFile,
-    });
-  }
+
   function deletepic() {
-    userData.userProfileStorageObject.delete((error, link) => {
-      if (error) console.error(error);
-      let userInfo = { ...userData.userInfo };
-      userInfo.profilePicture = -1;
-      dispatch({
-        type: "SET_USER_INFO",
-        userInfo: userInfo,
+    userController
+      .updateProfilePicture({
+        body: {
+          userId: userData.userInfo.userId,
+          profilePicture: "",
+        },
+      })
+      .then(() => {
+        let userInfo = { ...userData.userInfo };
+        userInfo.profilePicture = "";
+        dispatch({
+          type: "SET_USER_INFO",
+          userInfo: userInfo,
+        });
       });
-    });
   }
 
   function updateNotificationsSettings(key, value) {
@@ -117,7 +116,11 @@ function UserProfile() {
     <Main>
       <div
         className="profile-nav-bg"
-        style={{ backgroundImage: "url(" + BgProfile + ")", height:"400px",width:"100%" } }
+        style={{
+          backgroundImage: "url(" + BgProfile + ")",
+          height: "400px",
+          width: "100%",
+        }}
       ></div>
 
       <Card
@@ -134,9 +137,7 @@ function UserProfile() {
                     userData.userInfo
                       ? userData.userInfo.profilePicture !== "" &&
                         userData.userInfo.profilePicture !== -1
-                        ? `data:image/png;base64,${userData.userInfo.profilePicture.toString(
-                            "base64"
-                          )}`
+                        ? userData.userInfo.profilePicture
                         : avatar
                       : avatar
                   }
@@ -285,8 +286,6 @@ function UserProfile() {
             </ul>
           </Card>
         </Col>
-
-        
       </Row>
     </Main>
   );

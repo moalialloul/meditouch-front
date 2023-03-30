@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 export default function SearchItem({ item }) {
   const [daysOfWeek, setDaysOfWeek] = useState([]);
   const [loadingSchedule, setLoadingSchedule] = useState(true);
+  const [appointmentDescription, setAppointmentDescription] = useState("");
   const [slotLocked, setSlotLocked] = useState(-1);
   const [isSlotReserved, setIsSlotReserved] = useState(false);
   const [loadingIsReservedSlot, setLoadingIsReservedSlot] = useState(false);
@@ -104,8 +105,24 @@ export default function SearchItem({ item }) {
       setSlots(schedule);
     }
   }, [dayChosen, daysOfWeek, doctorSchedule]);
+  useEffect(() => {
+    if (!appointmentModal) {
+      setAppointmentDescription("");
+    }
+  }, [appointmentModal]);
   function reserveAppointment() {
     if (util.isUserAuthorized()) {
+      if (appointmentDescription.replace(/\s+/g, "") === "") {
+        toast.warning("Add description to your appointment", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
+        return;
+      }
       userController
         .registerAppointment({
           body: {
@@ -114,6 +131,7 @@ export default function SearchItem({ item }) {
             businessAccountUserId: item.userDetails.userId,
             userFk: userData.userInfo.userId,
             serviceFk: slots[slotIndexChosen].serviceId,
+            appointmentDescription: appointmentDescription,
           },
         })
         .then((response) => {
@@ -332,6 +350,15 @@ export default function SearchItem({ item }) {
             <div className="all-txts me-2">Appointment Time: </div>
             <div>{slots[slotIndexChosen]?.slotStartTime}</div>
           </div>
+          <div className="d-flex align-items-center mt-2">
+            <div className="all-txts me-2">Appointment Description: </div>
+            <input
+              type="text"
+              value={appointmentDescription}
+              onChange={(e) => setAppointmentDescription(e.target.value)}
+              placeholder="Appointment Description"
+            />
+          </div>
         </div>
       ) : (
         <div>
@@ -373,7 +400,7 @@ export default function SearchItem({ item }) {
             </Avatar.Group>
             {util.isUserAuthorized() &&
               (item.userDetails.businessAccountId !==
-              userData.businessAccountInfo.businessAccountId ? (
+              userData.businessAccountInfo?.businessAccountId ? (
                 <div
                   title={
                     userData.favoriteDoctors.findIndex(

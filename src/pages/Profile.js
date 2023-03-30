@@ -69,17 +69,22 @@ function Profile() {
       reader.readAsDataURL(pic);
     }
   }
-
   function deletepic() {
-    userData.userProfileStorageObject.delete((error, link) => {
-      if (error) console.error(error);
-      let userInfo = { ...userData.userInfo };
-      userInfo.profilePicture = -1;
-      dispatch({
-        type: "SET_USER_INFO",
-        userInfo: userInfo,
+    userController
+      .updateProfilePicture({
+        body: {
+          userId: userData.userInfo.userId,
+          profilePicture: "",
+        },
+      })
+      .then(() => {
+        let userInfo = { ...userData.userInfo };
+        userInfo.profilePicture = "";
+        dispatch({
+          type: "SET_USER_INFO",
+          userInfo: userInfo,
+        });
       });
-    });
   }
 
   function updateNotificationsSettings(key, value) {

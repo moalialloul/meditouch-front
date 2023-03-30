@@ -200,6 +200,22 @@ function Sidenav({ color }) {
             <span className="label">Community Posts</span>
           </NavLink>
         </Menu.Item>
+        {userData.userInfo?.userRole === "ADMIN" && (
+          <Menu.Item key="3">
+            <NavLink to="/Messages">
+              <span
+                className="icon"
+                style={{
+                  background: page === "messages" ? color : "",
+                }}
+              >
+                {billing}
+              </span>
+              <span className="label">Messages</span>
+            </NavLink>
+          </Menu.Item>
+        )}
+
         {/* <Menu.Item key="4">
           <NavLink to="/rtl">
             <span
@@ -227,16 +243,17 @@ function Sidenav({ color }) {
               <span className="label">Patients</span>
             </NavLink>
           </Menu.Item>
-
-          
         )}
-           {userData.userInfo?.userRole === "HEALTH_PROFESSIONAL" && (
+        {userData.userInfo?.userRole === "HEALTH_PROFESSIONAL" && (
           <Menu.Item key="4">
             <NavLink to="/referrals">
               <span
                 className="icon"
                 style={{
-                  background: page === "referrals" || page === "appointment-details" ? color : "",
+                  background:
+                    page === "referrals" || page === "appointment-details"
+                      ? color
+                      : "",
                 }}
               >
                 {rtl}
@@ -244,8 +261,6 @@ function Sidenav({ color }) {
               <span className="label">Referrals</span>
             </NavLink>
           </Menu.Item>
-
-          
         )}
 
         {userData.userInfo?.userRole !== "ADMIN" && (
@@ -274,7 +289,7 @@ function Sidenav({ color }) {
             </NavLink>
           </Menu.Item>
         )}
-          {userData.userInfo?.userRole === "PATIENT" && (
+        {userData.userInfo?.userRole === "PATIENT" && (
           <Menu.Item key="7">
             <NavLink to="/reservation-slots">
               <span className="icon">{signin}</span>
