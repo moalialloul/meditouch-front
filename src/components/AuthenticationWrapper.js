@@ -94,5 +94,5 @@ export default function AuthenticationWrapper({ children }) {
       // navigate("/sign-in");
     }
   }, []);
-  return loading ? <Spin tip="Loading...">{children}</Spin> : children;
+  return loading ? <Spin className="" tip="Loading...">{children}</Spin> : children;
 }

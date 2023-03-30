@@ -18,7 +18,6 @@ const Navbar = (props) => {
     encryptStorage1.getItem("meditouch_user") !== undefined;
 
   return (
-    <>
       <header className="header">
         <div className="navbar navbar-expand-lg navbar-light fixed-top py-3 d-block bg-light shadow-transition">
           <div
@@ -93,7 +92,6 @@ const Navbar = (props) => {
           </div>
         </div>
       </header>
-    </>
   );
 };
 

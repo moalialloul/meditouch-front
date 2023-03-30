@@ -157,9 +157,7 @@ export default function Notifications() {
           }
         />
       </div>
-      {userData.loadingApp
-        ? "loading..."
-        : showNotifications && (
+      { showNotifications && (
             <div className="d-flex flex-column nav-notifications">
               {userData.notifications.notifications.length === 0
                 ? "No notifications"

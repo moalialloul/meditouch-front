@@ -80,7 +80,7 @@ export default function GlobalSearch() {
           };
         });
     } else {
-      toast.warning("Sorry Not available!", {
+      toast.warning("Enable location to benifit from search by distance!", {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: true,
@@ -99,7 +99,7 @@ export default function GlobalSearch() {
     ) {
       setLoading(true);
       let tempFilters = { ...filtersData };
-      tempFilters["date"] =  moment().format("YYYY-MM-DD");
+      tempFilters["date"] = moment().format("YYYY-MM-DD");
       if (util.isUserAuthorized()) {
         let user = util.getUser();
         tempFilters["userId"] = user.userInfo.userId;
