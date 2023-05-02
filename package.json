@@ -34,6 +34,7 @@
     "inferno-dom": "latest",
     "inferno-extras": "7.4.11",
     "inferno-hydrate": "7.4.11",
+    "jsx-runtime": "^1.2.0",
     "jszip": "3.7.1",
     "luxon": "1.28.0",
     "moment": "^2.29.4",

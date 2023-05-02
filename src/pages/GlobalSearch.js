@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row, Slider } from "antd";
+import { Button, Card, Col, Drawer, Row, Slider } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LayoutWrapper from "../components/Layout";
@@ -10,10 +10,20 @@ import moment from "moment";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 export default function GlobalSearch() {
   const [searchData, setSearchData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const showDrawer = () => {
+    setOpen(true);
+  };
+  const onClose = () => {
+    setOpen(false);
+  };
   const state = useLocation();
   const dispatch = useDispatch();
+  const [t, i18n] = useTranslation();
+
   const [loadingPageState, setLoadingPageState] = useState(true);
   const userData = useSelector((state) => state);
   const [loading, setLoading] = useState(false);
@@ -196,7 +206,304 @@ export default function GlobalSearch() {
     tempFiltersVisibility[key] = value;
     setFiltersVisibility(tempFiltersVisibility);
   }
-  console.log(filtersData);
+  const filtersDiv = (
+    <div className="h-100 w-100">
+      <div className="d-flex flex-column">
+        <div className="d-flex justify-content-between">
+          <div className="globalsearch-txt">Specialities</div>
+          <div
+            onClick={() =>
+              modifyFiltersVisibility(
+                "specialities",
+                !filtersVisibility.specialities
+              )
+            }
+          >
+            {filtersVisibility.specialities ? <UpOutlined /> : <DownOutlined />}
+          </div>
+        </div>
+        {filtersVisibility.specialities && (
+          <select
+            value={filtersData.specialityFk}
+            onChange={(e) => updateFilters("specialityFk", e.target.value)}
+            className="all-specialities"
+          >
+            <option value={-1}>All Specialities</option>
+            {userData.specialities.map((sp) => {
+              return (
+                <option value={sp.specialityId}>{sp.specialityName}</option>
+              );
+            })}
+          </select>
+        )}
+      </div>
+      <div className="d-flex flex-column mt-3">
+        <div className="d-flex justify-content-between">
+          <div className="globalsearch-txt">Price Range</div>
+          <div
+            onClick={() =>
+              modifyFiltersVisibility("price", !filtersVisibility.price)
+            }
+          >
+            {filtersVisibility.price ? <UpOutlined /> : <DownOutlined />}
+          </div>
+        </div>
+        {filtersVisibility.price && (
+          <div className="d-flex flex-column">
+            <Slider
+              range
+              onChange={(e) => {
+                let tempSliderPrice = { ...sliderPrice };
+                tempSliderPrice.min = e[0];
+                tempSliderPrice.max = e[1];
+                setSliderPrice(tempSliderPrice);
+              }}
+              step={5}
+              min={0}
+              max={50}
+              defaultValue={[20, 40]}
+              className="global-search-slider"
+            />
+            <div className="d-flex justify-content-center">
+              <Button
+                type="primary"
+                onClick={() => {
+                  let tempFilters = { ...filtersData };
+                  tempFilters["minPrice"] = sliderPrice.min;
+                  tempFilters["maxPrice"] = sliderPrice.max;
+                  setFiltersData(tempFilters);
+                  setPaginationProps({
+                    pageNumber: -1,
+                    totalNumberOfPages: 1,
+                  });
+                  setLoadMore(true);
+                }}
+              >
+                Apply
+              </Button>
+              {filtersData.minPrice !== -1 && filtersData.maxPrice !== -1 && (
+                <Button
+                  className="ms-3"
+                  type="primary"
+                  onClick={() => {
+                    let tempFilters = { ...filtersData };
+                    tempFilters["minPrice"] = -1;
+                    tempFilters["maxPrice"] = -1;
+                    setFiltersData(tempFilters);
+                    setPaginationProps({
+                      pageNumber: -1,
+                      totalNumberOfPages: 1,
+                    });
+                    setLoadMore(true);
+                  }}
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="d-flex flex-column mt-3">
+        <div className="d-flex justify-content-between">
+          <div className="globalsearch-txt">Availability</div>
+          <div
+            onClick={() =>
+              modifyFiltersVisibility(
+                "availability",
+                !filtersVisibility.availability
+              )
+            }
+          >
+            {filtersVisibility.availability ? <UpOutlined /> : <DownOutlined />}
+          </div>
+        </div>
+        {filtersVisibility.availability && (
+          <div className="d-flex flex-column">
+            <div className="d-flex w-100 flex-column align-items-center">
+              <input
+                placeholder="select start date time"
+                type="datetime-local"
+                className="global-search-datetime"
+                onChange={(e) => {
+                  let tempAvailabilityRange = { ...availabilityRange };
+                  tempAvailabilityRange.min = e.target.value;
+                  setAvailabilityRange(tempAvailabilityRange);
+                }}
+              />
+
+              <input
+                placeholder="select start date time"
+                className="global-search-datetime"
+                type="datetime-local"
+                onChange={(e) => {
+                  let tempAvailabilityRange = { ...availabilityRange };
+                  tempAvailabilityRange.max = e.target.value;
+                  setAvailabilityRange(tempAvailabilityRange);
+                }}
+              />
+            </div>
+            <div className="d-flex justify-content-center mt-3">
+              <Button
+                className="me-3"
+                type="primary"
+                onClick={() => {
+                  let m1 = moment(availabilityRange.min);
+                  let m2 = moment(availabilityRange.max);
+                  if (
+                    availabilityRange.min === "" ||
+                    availabilityRange.max === ""
+                  ) {
+                    toast.error("times error", {
+                      position: "top-center",
+                      autoClose: 5000,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                      draggable: false,
+                    });
+                    return;
+                  }
+                  if (m1.isAfter(m2)) {
+                    toast.error("times error", {
+                      position: "top-center",
+                      autoClose: 5000,
+                      hideProgressBar: true,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                      draggable: false,
+                    });
+                    return;
+                  }
+                  let tempFilters = { ...filtersData };
+                  tempFilters["minAvailability"] = availabilityRange.min;
+                  tempFilters["maxAvailability"] = availabilityRange.max;
+                  setFiltersData(tempFilters);
+                  setPaginationProps({
+                    pageNumber: -1,
+                    totalNumberOfPages: 1,
+                  });
+                  setLoadMore(true);
+                }}
+              >
+                Apply
+              </Button>
+              {filtersData.minAvailability !== null &&
+                filtersData.maxAvailability !== null && (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      let tempFilters = { ...filtersData };
+                      tempFilters["minAvailability"] = null;
+                      tempFilters["maxAvailability"] = null;
+                      setFiltersData(tempFilters);
+                      setPaginationProps({
+                        pageNumber: -1,
+                        totalNumberOfPages: 1,
+                      });
+                      setLoadMore(true);
+                    }}
+                  >
+                    Reset
+                  </Button>
+                )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="d-flex flex-column mt-3">
+        <div className="d-flex justify-content-between">
+          <div className="globalsearch-txt">Distance in Km</div>
+          <div
+            onClick={() =>
+              modifyFiltersVisibility("distance", !filtersVisibility.distance)
+            }
+          >
+            {filtersVisibility.distance ? <UpOutlined /> : <DownOutlined />}
+          </div>
+        </div>
+        {filtersVisibility.distance &&
+          (filtersData.myLatitude !== -1 ? (
+            <div className="d-flex flex-column">
+              <Slider
+                range
+                onChange={(e) => {
+                  let tempSliderDistance = { ...sliderDistance };
+                  tempSliderDistance.min = e[0];
+                  tempSliderDistance.max = e[1];
+                  setSliderDistance(tempSliderDistance);
+                }}
+                step={5}
+                min={0}
+                max={50}
+                defaultValue={[20, 40]}
+                className="global-search-slider"
+              />
+              <div className="d-flex justify-content-center">
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    let tempFilters = { ...filtersData };
+                    tempFilters["minDistance"] = sliderDistance.min;
+                    tempFilters["maxDistance"] = sliderDistance.max;
+                    setFiltersData(tempFilters);
+                    setPaginationProps({
+                      pageNumber: -1,
+                      totalNumberOfPages: 1,
+                    });
+                    setLoadMore(true);
+                  }}
+                >
+                  Apply
+                </Button>
+              </div>
+            </div>
+          ) : (
+            "Enable location to benifit from this feature"
+          ))}
+      </div>
+
+      {util.isUserAuthorized() && (
+        <div className="d-flex flex-column mt-3">
+          <div className="d-flex justify-content-between">
+            <div className="globalsearch-txt"> Favorites </div>
+            <div
+              onClick={() => {
+                modifyFiltersVisibility(
+                  "favorites",
+                  !filtersVisibility.favorites
+                );
+                if (withFavorite) {
+                  updateFilters("isFavorite", -2);
+                }
+                setWithFavorite(!withFavorite);
+              }}
+            >
+              {filtersVisibility.favorites ? <UpOutlined /> : <DownOutlined />}
+            </div>
+          </div>
+
+          {filtersVisibility.favorites && (
+            <div className="d-flex" style={{ gap: "5px" }}>
+              <input
+                type="radio"
+                name="withFavorite"
+                onClick={() => updateFilters("isFavorite", 1)}
+              />{" "}
+              Favorite
+              <input
+                type="radio"
+                name="withFavorite"
+                onClick={() => updateFilters("isFavorite", -1)}
+              />{" "}
+              Not Favorite
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
   return (
     <LayoutWrapper withFooter={true}>
       <section
@@ -229,337 +536,39 @@ export default function GlobalSearch() {
           >
             Search
           </Button>
+          {userData.windowInnerWidth < 1130 && (
+            <Button
+              type="primary"
+              className="search-btn mt-2"
+              onClick={() => {
+                setOpen(!open);
+              }}
+            >
+              Add Filters
+            </Button>
+          )}
         </div>
+        {userData.windowInnerWidth < 1130 && (
+          <Drawer
+            title="Filters"
+            placement={i18n.language === "ar" ? "right" : "left "}
+            mask={true}
+            zIndex={6}
+            style={{ marginTop: "98px" }}
+            onClose={onClose}
+            open={open}
+            keyboard={true}
+          >
+            {filtersDiv}
+          </Drawer>
+        )}
         <Row className="rowgap-vbox mt-4" gutter={[24, 0]}>
-          <Col xs={24} sm={24} md={6} lg={6} xl={4} className="mb-24">
-            <Card className="h-100 w-100">
-              <div className="d-flex flex-column">
-                <div className="d-flex justify-content-between">
-                  <div className="globalsearch-txt">Specialities</div>
-                  <div
-                    onClick={() =>
-                      modifyFiltersVisibility(
-                        "specialities",
-                        !filtersVisibility.specialities
-                      )
-                    }
-                  >
-                    {filtersVisibility.specialities ? (
-                      <UpOutlined />
-                    ) : (
-                      <DownOutlined />
-                    )}
-                  </div>
-                </div>
-                {filtersVisibility.specialities && (
-                  <select
-                    value={filtersData.specialityFk}
-                    onChange={(e) =>
-                      updateFilters("specialityFk", e.target.value)
-                    }
-                    className="all-specialities"
-                  >
-                    <option value={-1}>All Specialities</option>
-                    {userData.specialities.map((sp) => {
-                      return (
-                        <option value={sp.specialityId}>
-                          {sp.specialityName}
-                        </option>
-                      );
-                    })}
-                  </select>
-                )}
-              </div>
-              <div className="d-flex flex-column mt-3">
-                <div className="d-flex justify-content-between">
-                  <div className="globalsearch-txt">Price Range</div>
-                  <div
-                    onClick={() =>
-                      modifyFiltersVisibility("price", !filtersVisibility.price)
-                    }
-                  >
-                    {filtersVisibility.price ? (
-                      <UpOutlined />
-                    ) : (
-                      <DownOutlined />
-                    )}
-                  </div>
-                </div>
-                {filtersVisibility.price && (
-                  <div className="d-flex flex-column">
-                    <Slider
-                      range
-                      onChange={(e) => {
-                        let tempSliderPrice = { ...sliderPrice };
-                        tempSliderPrice.min = e[0];
-                        tempSliderPrice.max = e[1];
-                        setSliderPrice(tempSliderPrice);
-                      }}
-                      step={5}
-                      min={0}
-                      max={50}
-                      defaultValue={[20, 40]}
-                      className="global-search-slider"
-                    />
-                    <div className="d-flex justify-content-center">
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          let tempFilters = { ...filtersData };
-                          tempFilters["minPrice"] = sliderPrice.min;
-                          tempFilters["maxPrice"] = sliderPrice.max;
-                          setFiltersData(tempFilters);
-                          setPaginationProps({
-                            pageNumber: -1,
-                            totalNumberOfPages: 1,
-                          });
-                          setLoadMore(true);
-                        }}
-                      >
-                        Apply
-                      </Button>
-                      {filtersData.minPrice !== -1 &&
-                        filtersData.maxPrice !== -1 && (
-                          <Button
-                            className="ms-3"
-                            type="primary"
-                            onClick={() => {
-                              let tempFilters = { ...filtersData };
-                              tempFilters["minPrice"] = -1;
-                              tempFilters["maxPrice"] = -1;
-                              setFiltersData(tempFilters);
-                              setPaginationProps({
-                                pageNumber: -1,
-                                totalNumberOfPages: 1,
-                              });
-                              setLoadMore(true);
-                            }}
-                          >
-                            Reset
-                          </Button>
-                        )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="d-flex flex-column mt-3">
-                <div className="d-flex justify-content-between">
-                  <div className="globalsearch-txt">Availability</div>
-                  <div
-                    onClick={() =>
-                      modifyFiltersVisibility(
-                        "availability",
-                        !filtersVisibility.availability
-                      )
-                    }
-                  >
-                    {filtersVisibility.availability ? (
-                      <UpOutlined />
-                    ) : (
-                      <DownOutlined />
-                    )}
-                  </div>
-                </div>
-                {filtersVisibility.availability && (
-                  <div className="d-flex flex-column">
-                    <div className="d-flex w-100 flex-column align-items-center">
-                      <input
-                        placeholder="select start date time"
-                        type="datetime-local"
-                        className="global-search-datetime"
-                        onChange={(e) => {
-                          let tempAvailabilityRange = { ...availabilityRange };
-                          tempAvailabilityRange.min = e.target.value;
-                          setAvailabilityRange(tempAvailabilityRange);
-                        }}
-                      />
-
-                      <input
-                        placeholder="select start date time"
-                        className="global-search-datetime"
-                        type="datetime-local"
-                        onChange={(e) => {
-                          let tempAvailabilityRange = { ...availabilityRange };
-                          tempAvailabilityRange.max = e.target.value;
-                          setAvailabilityRange(tempAvailabilityRange);
-                        }}
-                      />
-                    </div>
-                    <div className="d-flex justify-content-center mt-3">
-                      <Button
-                        className="me-3"
-                        type="primary"
-                        onClick={() => {
-                          let m1 = moment(availabilityRange.min);
-                          let m2 = moment(availabilityRange.max);
-                          if (
-                            availabilityRange.min === "" ||
-                            availabilityRange.max === ""
-                          ) {
-                            toast.error("times error", {
-                              position: "top-center",
-                              autoClose: 5000,
-                              hideProgressBar: true,
-                              closeOnClick: true,
-                              pauseOnHover: false,
-                              draggable: false,
-                            });
-                            return;
-                          }
-                          if (m1.isAfter(m2)) {
-                            toast.error("times error", {
-                              position: "top-center",
-                              autoClose: 5000,
-                              hideProgressBar: true,
-                              closeOnClick: true,
-                              pauseOnHover: false,
-                              draggable: false,
-                            });
-                            return;
-                          }
-                          let tempFilters = { ...filtersData };
-                          tempFilters["minAvailability"] =
-                            availabilityRange.min;
-                          tempFilters["maxAvailability"] =
-                            availabilityRange.max;
-                          setFiltersData(tempFilters);
-                          setPaginationProps({
-                            pageNumber: -1,
-                            totalNumberOfPages: 1,
-                          });
-                          setLoadMore(true);
-                        }}
-                      >
-                        Apply
-                      </Button>
-                      {filtersData.minAvailability !== null &&
-                        filtersData.maxAvailability !== null && (
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              let tempFilters = { ...filtersData };
-                              tempFilters["minAvailability"] = null;
-                              tempFilters["maxAvailability"] = null;
-                              setFiltersData(tempFilters);
-                              setPaginationProps({
-                                pageNumber: -1,
-                                totalNumberOfPages: 1,
-                              });
-                              setLoadMore(true);
-                            }}
-                          >
-                            Reset
-                          </Button>
-                        )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="d-flex flex-column mt-3">
-                <div className="d-flex justify-content-between">
-                  <div className="globalsearch-txt">Distance in Km</div>
-                  <div
-                    onClick={() =>
-                      modifyFiltersVisibility(
-                        "distance",
-                        !filtersVisibility.distance
-                      )
-                    }
-                  >
-                    {filtersVisibility.distance ? (
-                      <UpOutlined />
-                    ) : (
-                      <DownOutlined />
-                    )}
-                  </div>
-                </div>
-                {filtersVisibility.distance &&
-                  (filtersData.myLatitude !== -1 ? (
-                    <div className="d-flex flex-column">
-                      <Slider
-                        range
-                        onChange={(e) => {
-                          let tempSliderDistance = { ...sliderDistance };
-                          tempSliderDistance.min = e[0];
-                          tempSliderDistance.max = e[1];
-                          setSliderDistance(tempSliderDistance);
-                        }}
-                        step={5}
-                        min={0}
-                        max={50}
-                        defaultValue={[20, 40]}
-                        className="global-search-slider"
-                      />
-                      <div className="d-flex justify-content-center">
-                        <Button
-                          type="primary"
-                          onClick={() => {
-                            let tempFilters = { ...filtersData };
-                            tempFilters["minDistance"] = sliderDistance.min;
-                            tempFilters["maxDistance"] = sliderDistance.max;
-                            setFiltersData(tempFilters);
-                            setPaginationProps({
-                              pageNumber: -1,
-                              totalNumberOfPages: 1,
-                            });
-                            setLoadMore(true);
-                          }}
-                        >
-                          Apply
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    "Enable location to benifit from this feature"
-                  ))}
-              </div>
-
-              {util.isUserAuthorized() && (
-                <div className="d-flex flex-column mt-3">
-                  <div className="d-flex justify-content-between">
-                    <div className="globalsearch-txt"> Favorites </div>
-                    <div
-                      onClick={() => {
-                        modifyFiltersVisibility(
-                          "favorites",
-                          !filtersVisibility.favorites
-                        );
-                        if (withFavorite) {
-                          updateFilters("isFavorite", -2);
-                        }
-                        setWithFavorite(!withFavorite);
-                      }}
-                    >
-                      {filtersVisibility.favorites ? (
-                        <UpOutlined />
-                      ) : (
-                        <DownOutlined />
-                      )}
-                    </div>
-                  </div>
-
-                  {filtersVisibility.favorites && (
-                    <div className="d-flex" style={{ gap: "5px" }}>
-                      <input
-                        type="radio"
-                        name="withFavorite"
-                        onClick={() => updateFilters("isFavorite", 1)}
-                      />{" "}
-                      Favorite
-                      <input
-                        type="radio"
-                        name="withFavorite"
-                        onClick={() => updateFilters("isFavorite", -1)}
-                      />{" "}
-                      Not Favorite
-                    </div>
-                  )}
-                </div>
-              )}
-            </Card>
-          </Col>
-          <Col xs={24} sm={24} md={18} lg={18} xl={20} className="mb-24">
+          {userData.windowInnerWidth > 1130 && (
+            <Col xs={24} sm={24} md={6} lg={6} xl={4} className="mb-24">
+              <Card className="h-100 w-100">{filtersDiv}</Card>
+            </Col>
+          )}
+          <Col xs={24} sm={24} md={24} lg={22} xl={20} className="mb-24">
             {loading ? (
               "loading..."
             ) : !loading && searchData.length === 0 ? (

@@ -7,6 +7,8 @@ import { util } from "./util";
 import moment from "moment";
 export const SocketWrapperContext = React.createContext("");
 export const SocketWrapperProvider = ({ ...props }) => {
+  const [windowInnerWidth, setWindowInnerWidth] = useState(window.innerWidth);
+
   const [connected, setConnected] = useState(false);
   let stompClientRef = useRef(null);
   const dispatch = useDispatch();
@@ -51,6 +53,19 @@ export const SocketWrapperProvider = ({ ...props }) => {
   useEffect(() => {
     myReferrals.current = userData.myReferrals;
   }, [userData.myReferrals]);
+  const updateDimensions = () => {
+    setWindowInnerWidth(window.innerWidth);
+    dispatch({
+      type: "SET_WINDOW_WIDTH",
+      windowInnerWidth: window.innerWidth,
+    });
+
+  };
+  useEffect(() => {
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
+
   useEffect(() => {
     if (userData.specialities.length === 0) {
       userController.getSpecialities().then((response) => {

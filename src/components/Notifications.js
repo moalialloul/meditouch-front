@@ -54,7 +54,7 @@ export default function Notifications() {
               let outputString = notificationText.replace(
                 /\[.*?\]/g,
                 function (match, captureGroup) {
-                  let date = match.substring(1, match.length-1);
+                  let date = match.substring(1, match.length - 1);
                   date = moment(
                     util.formatTimeByOffset(
                       new Date(moment(date, "YYYY-MM-DD HH:mm:ss"))
@@ -105,7 +105,7 @@ export default function Notifications() {
             let outputString = notificationText.replace(
               /\[.*?\]/g,
               function (match, captureGroup) {
-                let date = match.substring(1, match.length-1);
+                let date = match.substring(1, match.length - 1);
                 date = moment(
                   util.formatTimeByOffset(
                     new Date(moment(date, "YYYY-MM-DD HH:mm:ss"))
@@ -137,7 +137,7 @@ export default function Notifications() {
         });
     }
   }, [loadMore]);
-  
+  console.log(userData.notifications)
   return (
     <div className="nav-notification-wrapper">
       <div
@@ -156,25 +156,21 @@ export default function Notifications() {
           }
         />
       </div>
-      { showNotifications && (
-            <div className="d-flex flex-column nav-notifications">
-              {userData.notifications.notifications.length === 0
-                ? "No notifications"
-                : userData.notifications.notifications.map((not) => {
-                    return (
-                      <div className="nav-notification">
-                        {not.notificationText}
-                      </div>
-                    );
-                  })}
-              {userData.notifications.pageNumber !== -1 &&
-                userData.notifications.pageNumber <
-                  userData.notifications.totalNumberOfPages &&
-                !loading && (
-                  <div onClick={() => setLoadMore(true)}>load more</div>
-                )}
-            </div>
-          )}
+      {showNotifications && (
+        <div className="d-flex flex-column nav-notifications">
+          {userData.notifications.notifications.length === 0
+            ? "No notifications"
+            : userData.notifications.notifications.map((not) => {
+                return (
+                  <div className="nav-notification">{not.notificationText}</div>
+                );
+              })}
+          {(userData.notifications.pageNumber !== -1 &&
+            userData.notifications.pageNumber <
+              userData.notifications.totalNumberOfPages &&
+            !loading) && <div onClick={() => setLoadMore(true)}>load more</div>}
+        </div>
+      )}
     </div>
   );
 }

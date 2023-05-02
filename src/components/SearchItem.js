@@ -15,7 +15,6 @@ import {
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-
 export default function SearchItem({ item }) {
   const [daysOfWeek, setDaysOfWeek] = useState([]);
   const [loadingSchedule, setLoadingSchedule] = useState(true);
@@ -371,7 +370,7 @@ export default function SearchItem({ item }) {
     </Modal>
   );
   return (
-    <Col xs={24} sm={24} md={12} lg={9} xl={10}>
+    <Col xs={24} sm={24} md={12} lg={11} xl={12}>
       {modal}
       {appointmentModalUi}
       <Card
@@ -537,10 +536,9 @@ export default function SearchItem({ item }) {
                 })
               )}
             </div>
-            {slots.length !== 0 && (
               <div className="d-flex align-items-center mt-3 all-txts1 ms-3">
-                <Badge status="default" />
-                Reserved slots
+                <Badge status="default" className="ps-1" />
+                <div className="mx-1">Reserved slots</div>
                 <div
                   style={{ cursor: "pointer" }}
                   title="Click on this slot to reserve it for futture cancelation"
@@ -549,7 +547,6 @@ export default function SearchItem({ item }) {
                   <ExclamationCircleOutlined />
                 </div>
               </div>
-            )}
             <div className="w-100 justify-content-center d-flex mt-3">
               <Button
                 type={slotIndexChosen !== -1 ? "primary" : ""}

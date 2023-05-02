@@ -40,6 +40,7 @@ const data = {
   myReferrals: [],
   schedules: [],
   appointmentModifications: [],
+  windowInnerWidth: window.innerWidth,
 };
 const reducer = (state = data, action) => {
   switch (action.type) {
@@ -47,6 +48,11 @@ const reducer = (state = data, action) => {
       return {
         ...state,
         userInfo: action.userInfo,
+      };
+    case "SET_WINDOW_WIDTH":
+      return {
+        ...state,
+        windowInnerWidth: action.windowInnerWidth,
       };
     case "SET_REFERRALS":
       return {

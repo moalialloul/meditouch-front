@@ -635,6 +635,16 @@ header.ant-layout-header.subheader {
   font-size: 16px;
   font-weight: 600;
 }
+.navbar-body{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+@media (max-width: 572px) {
+  .navbar-body{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
 
 hr.horizontal.dark {
   background-image: linear-gradient(

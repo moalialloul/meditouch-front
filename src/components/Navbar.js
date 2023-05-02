@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { EncryptStorage } from "encrypt-storage";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -19,13 +20,13 @@ const Navbar = () => {
   return (
     <header className="header">
       <div className="navbar navbar-expand-lg navbar-light fixed-top py-3 d-block bg-light shadow-transition">
-        <div className="" style={{ paddingRight: "50px", paddingLeft: "50px" }}>
+        <div className="navbar-body">
           <div className="row w-100 align-items-center">
             <div className="col-lg-12">
               <nav className="navbar d-flex justify-content-between navbar-expand-lg">
                 <a
                   className="navbar-brand"
-                  href="/"
+                  href="/#/"
                   style={{ fontWeight: "bold", color: "#4E6EF1" }}
                 >
                   <img src={img5} alt="" />
@@ -48,7 +49,12 @@ const Navbar = () => {
                   className="collapse navbar-collapse sub-menu-bar"
                   id="navbarSupportedContent"
                 >
-                  <ul class="navbar-nav ml-auto pt-2 pt-lg-0 font-base">
+                  <ul
+                    class={classNames(
+                      "navbar-nav w-100 justify-content-end ml-auto pt-2 pt-lg-0 font-base",
+                     
+                    )}
+                  >
                     <li class="nav-item active">
                       <a class="nav-link" aria-current="page" href="/#/">
                         {t("home")}
@@ -66,7 +72,10 @@ const Navbar = () => {
                         {t("contact_us")}
                       </a>
                     </li>
-                    <div className="d-flex align-items-center">
+                    <div
+                      style={{ marginLeft: "20px" }}
+                      className="d-flex align-items-center"
+                    >
                       <li style={{ marginLeft: "0px" }} className="nav-item">
                         <a
                           class="nav-link"
@@ -135,7 +144,7 @@ const Navbar = () => {
                       class="btn btn-sm btn-outline-primary rounded-pill order-1 order-lg-0 ms-lg-4 px-3 py-2"
                       href="/#/sign-in"
                     >
-                       {t("sign_in")}
+                      {t("sign_in")}
                     </a>
                   )}
                 </div>
